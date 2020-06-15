@@ -1,0 +1,1283 @@
+
+vector-g++:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+0000000000000968 <_init>:
+ 968:	48 83 ec 08          	sub    rsp,0x8
+ 96c:	48 8b 05 75 26 20 00 	mov    rax,QWORD PTR [rip+0x202675]        # 202fe8 <__gmon_start__>
+ 973:	48 85 c0             	test   rax,rax
+ 976:	74 02                	je     97a <_init+0x12>
+ 978:	ff d0                	call   rax
+ 97a:	48 83 c4 08          	add    rsp,0x8
+ 97e:	c3                   	ret    
+
+Disassembly of section .plt:
+
+0000000000000980 <.plt>:
+ 980:	ff 35 e2 25 20 00    	push   QWORD PTR [rip+0x2025e2]        # 202f68 <_GLOBAL_OFFSET_TABLE_+0x8>
+ 986:	ff 25 e4 25 20 00    	jmp    QWORD PTR [rip+0x2025e4]        # 202f70 <_GLOBAL_OFFSET_TABLE_+0x10>
+ 98c:	0f 1f 40 00          	nop    DWORD PTR [rax+0x0]
+
+0000000000000990 <std::__throw_bad_alloc()@plt>:
+ 990:	ff 25 e2 25 20 00    	jmp    QWORD PTR [rip+0x2025e2]        # 202f78 <std::__throw_bad_alloc()@GLIBCXX_3.4>
+ 996:	68 00 00 00 00       	push   0x0
+ 99b:	e9 e0 ff ff ff       	jmp    980 <.plt>
+
+00000000000009a0 <__cxa_atexit@plt>:
+ 9a0:	ff 25 da 25 20 00    	jmp    QWORD PTR [rip+0x2025da]        # 202f80 <__cxa_atexit@GLIBC_2.2.5>
+ 9a6:	68 01 00 00 00       	push   0x1
+ 9ab:	e9 d0 ff ff ff       	jmp    980 <.plt>
+
+00000000000009b0 <operator delete(void*)@plt>:
+ 9b0:	ff 25 d2 25 20 00    	jmp    QWORD PTR [rip+0x2025d2]        # 202f88 <operator delete(void*)@GLIBCXX_3.4>
+ 9b6:	68 02 00 00 00       	push   0x2
+ 9bb:	e9 c0 ff ff ff       	jmp    980 <.plt>
+
+00000000000009c0 <std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*)@plt>:
+ 9c0:	ff 25 ca 25 20 00    	jmp    QWORD PTR [rip+0x2025ca]        # 202f90 <std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*)@GLIBCXX_3.4>
+ 9c6:	68 03 00 00 00       	push   0x3
+ 9cb:	e9 b0 ff ff ff       	jmp    980 <.plt>
+
+00000000000009d0 <operator new(unsigned long)@plt>:
+ 9d0:	ff 25 c2 25 20 00    	jmp    QWORD PTR [rip+0x2025c2]        # 202f98 <operator new(unsigned long)@GLIBCXX_3.4>
+ 9d6:	68 04 00 00 00       	push   0x4
+ 9db:	e9 a0 ff ff ff       	jmp    980 <.plt>
+
+00000000000009e0 <std::ostream::operator<<(std::ostream& (*)(std::ostream&))@plt>:
+ 9e0:	ff 25 ba 25 20 00    	jmp    QWORD PTR [rip+0x2025ba]        # 202fa0 <std::ostream::operator<<(std::ostream& (*)(std::ostream&))@GLIBCXX_3.4>
+ 9e6:	68 05 00 00 00       	push   0x5
+ 9eb:	e9 90 ff ff ff       	jmp    980 <.plt>
+
+00000000000009f0 <__stack_chk_fail@plt>:
+ 9f0:	ff 25 b2 25 20 00    	jmp    QWORD PTR [rip+0x2025b2]        # 202fa8 <__stack_chk_fail@GLIBC_2.4>
+ 9f6:	68 06 00 00 00       	push   0x6
+ 9fb:	e9 80 ff ff ff       	jmp    980 <.plt>
+
+0000000000000a00 <std::ios_base::Init::Init()@plt>:
+ a00:	ff 25 aa 25 20 00    	jmp    QWORD PTR [rip+0x2025aa]        # 202fb0 <std::ios_base::Init::Init()@GLIBCXX_3.4>
+ a06:	68 07 00 00 00       	push   0x7
+ a0b:	e9 70 ff ff ff       	jmp    980 <.plt>
+
+0000000000000a10 <std::ostream::operator<<(int)@plt>:
+ a10:	ff 25 a2 25 20 00    	jmp    QWORD PTR [rip+0x2025a2]        # 202fb8 <std::ostream::operator<<(int)@GLIBCXX_3.4>
+ a16:	68 08 00 00 00       	push   0x8
+ a1b:	e9 60 ff ff ff       	jmp    980 <.plt>
+
+0000000000000a20 <_Unwind_Resume@plt>:
+ a20:	ff 25 9a 25 20 00    	jmp    QWORD PTR [rip+0x20259a]        # 202fc0 <_Unwind_Resume@GCC_3.0>
+ a26:	68 09 00 00 00       	push   0x9
+ a2b:	e9 50 ff ff ff       	jmp    980 <.plt>
+
+Disassembly of section .plt.got:
+
+0000000000000a30 <__cxa_finalize@plt>:
+ a30:	ff 25 92 25 20 00    	jmp    QWORD PTR [rip+0x202592]        # 202fc8 <__cxa_finalize@GLIBC_2.2.5>
+ a36:	66 90                	xchg   ax,ax
+
+Disassembly of section .text:
+
+0000000000000a40 <_start>:
+     a40:	31 ed                	xor    ebp,ebp
+     a42:	49 89 d1             	mov    r9,rdx
+     a45:	5e                   	pop    rsi
+     a46:	48 89 e2             	mov    rdx,rsp
+     a49:	48 83 e4 f0          	and    rsp,0xfffffffffffffff0
+     a4d:	50                   	push   rax
+     a4e:	54                   	push   rsp
+     a4f:	4c 8d 05 ba 0a 00 00 	lea    r8,[rip+0xaba]        # 1510 <__libc_csu_fini>
+     a56:	48 8d 0d 43 0a 00 00 	lea    rcx,[rip+0xa43]        # 14a0 <__libc_csu_init>
+     a5d:	48 8d 3d f8 00 00 00 	lea    rdi,[rip+0xf8]        # b5c <main>
+     a64:	ff 15 76 25 20 00    	call   QWORD PTR [rip+0x202576]        # 202fe0 <__libc_start_main@GLIBC_2.2.5>
+     a6a:	f4                   	hlt    
+     a6b:	0f 1f 44 00 00       	nop    DWORD PTR [rax+rax*1+0x0]
+
+0000000000000a70 <deregister_tm_clones>:
+     a70:	48 8d 3d a1 25 20 00 	lea    rdi,[rip+0x2025a1]        # 203018 <__TMC_END__>
+     a77:	55                   	push   rbp
+     a78:	48 8d 05 99 25 20 00 	lea    rax,[rip+0x202599]        # 203018 <__TMC_END__>
+     a7f:	48 39 f8             	cmp    rax,rdi
+     a82:	48 89 e5             	mov    rbp,rsp
+     a85:	74 19                	je     aa0 <deregister_tm_clones+0x30>
+     a87:	48 8b 05 4a 25 20 00 	mov    rax,QWORD PTR [rip+0x20254a]        # 202fd8 <_ITM_deregisterTMCloneTable>
+     a8e:	48 85 c0             	test   rax,rax
+     a91:	74 0d                	je     aa0 <deregister_tm_clones+0x30>
+     a93:	5d                   	pop    rbp
+     a94:	ff e0                	jmp    rax
+     a96:	66 2e 0f 1f 84 00 00 	nop    WORD PTR cs:[rax+rax*1+0x0]
+     a9d:	00 00 00 
+     aa0:	5d                   	pop    rbp
+     aa1:	c3                   	ret    
+     aa2:	0f 1f 40 00          	nop    DWORD PTR [rax+0x0]
+     aa6:	66 2e 0f 1f 84 00 00 	nop    WORD PTR cs:[rax+rax*1+0x0]
+     aad:	00 00 00 
+
+0000000000000ab0 <register_tm_clones>:
+     ab0:	48 8d 3d 61 25 20 00 	lea    rdi,[rip+0x202561]        # 203018 <__TMC_END__>
+     ab7:	48 8d 35 5a 25 20 00 	lea    rsi,[rip+0x20255a]        # 203018 <__TMC_END__>
+     abe:	55                   	push   rbp
+     abf:	48 29 fe             	sub    rsi,rdi
+     ac2:	48 89 e5             	mov    rbp,rsp
+     ac5:	48 c1 fe 03          	sar    rsi,0x3
+     ac9:	48 89 f0             	mov    rax,rsi
+     acc:	48 c1 e8 3f          	shr    rax,0x3f
+     ad0:	48 01 c6             	add    rsi,rax
+     ad3:	48 d1 fe             	sar    rsi,1
+     ad6:	74 18                	je     af0 <register_tm_clones+0x40>
+     ad8:	48 8b 05 11 25 20 00 	mov    rax,QWORD PTR [rip+0x202511]        # 202ff0 <_ITM_registerTMCloneTable>
+     adf:	48 85 c0             	test   rax,rax
+     ae2:	74 0c                	je     af0 <register_tm_clones+0x40>
+     ae4:	5d                   	pop    rbp
+     ae5:	ff e0                	jmp    rax
+     ae7:	66 0f 1f 84 00 00 00 	nop    WORD PTR [rax+rax*1+0x0]
+     aee:	00 00 
+     af0:	5d                   	pop    rbp
+     af1:	c3                   	ret    
+     af2:	0f 1f 40 00          	nop    DWORD PTR [rax+0x0]
+     af6:	66 2e 0f 1f 84 00 00 	nop    WORD PTR cs:[rax+rax*1+0x0]
+     afd:	00 00 00 
+
+0000000000000b00 <__do_global_dtors_aux>:
+     b00:	80 3d 29 26 20 00 00 	cmp    BYTE PTR [rip+0x202629],0x0        # 203130 <completed.7698>
+     b07:	75 2f                	jne    b38 <__do_global_dtors_aux+0x38>
+     b09:	48 83 3d b7 24 20 00 	cmp    QWORD PTR [rip+0x2024b7],0x0        # 202fc8 <__cxa_finalize@GLIBC_2.2.5>
+     b10:	00 
+     b11:	55                   	push   rbp
+     b12:	48 89 e5             	mov    rbp,rsp
+     b15:	74 0c                	je     b23 <__do_global_dtors_aux+0x23>
+     b17:	48 8b 3d ea 24 20 00 	mov    rdi,QWORD PTR [rip+0x2024ea]        # 203008 <__dso_handle>
+     b1e:	e8 0d ff ff ff       	call   a30 <__cxa_finalize@plt>
+     b23:	e8 48 ff ff ff       	call   a70 <deregister_tm_clones>
+     b28:	c6 05 01 26 20 00 01 	mov    BYTE PTR [rip+0x202601],0x1        # 203130 <completed.7698>
+     b2f:	5d                   	pop    rbp
+     b30:	c3                   	ret    
+     b31:	0f 1f 80 00 00 00 00 	nop    DWORD PTR [rax+0x0]
+     b38:	f3 c3                	repz ret 
+     b3a:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+0000000000000b40 <frame_dummy>:
+     b40:	55                   	push   rbp
+     b41:	48 89 e5             	mov    rbp,rsp
+     b44:	5d                   	pop    rbp
+     b45:	e9 66 ff ff ff       	jmp    ab0 <register_tm_clones>
+
+0000000000000b4a <main::{lambda(int)#1}::operator()(int) const>:
+  Vector<int> nums(5);
+  for(int i = 0; i < 5; i++) {
+    nums[i] = i;
+  }
+
+  Vector<int> doubled = nums.map([] (int n) { return n * 2; });
+     b4a:	55                   	push   rbp
+     b4b:	48 89 e5             	mov    rbp,rsp
+     b4e:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     b52:	89 75 f4             	mov    DWORD PTR [rbp-0xc],esi
+     b55:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+     b58:	01 c0                	add    eax,eax
+     b5a:	5d                   	pop    rbp
+     b5b:	c3                   	ret    
+
+0000000000000b5c <main>:
+int main() {
+     b5c:	55                   	push   rbp
+     b5d:	48 89 e5             	mov    rbp,rsp
+     b60:	53                   	push   rbx
+     b61:	48 83 ec 58          	sub    rsp,0x58
+     b65:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+     b6c:	00 00 
+     b6e:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+     b72:	31 c0                	xor    eax,eax
+  Vector<int> nums(5);
+     b74:	48 8d 45 b0          	lea    rax,[rbp-0x50]
+     b78:	be 05 00 00 00       	mov    esi,0x5
+     b7d:	48 89 c7             	mov    rdi,rax
+     b80:	e8 5b 02 00 00       	call   de0 <Vector<int>::Vector(unsigned int)>
+  for(int i = 0; i < 5; i++) {
+     b85:	c7 45 a8 00 00 00 00 	mov    DWORD PTR [rbp-0x58],0x0
+     b8c:	83 7d a8 04          	cmp    DWORD PTR [rbp-0x58],0x4
+     b90:	7f 1f                	jg     bb1 <main+0x55>
+    nums[i] = i;
+     b92:	8b 55 a8             	mov    edx,DWORD PTR [rbp-0x58]
+     b95:	48 8d 45 b0          	lea    rax,[rbp-0x50]
+     b99:	89 d6                	mov    esi,edx
+     b9b:	48 89 c7             	mov    rdi,rax
+     b9e:	e8 07 03 00 00       	call   eaa <Vector<int>::operator[](unsigned int)>
+     ba3:	48 89 c2             	mov    rdx,rax
+     ba6:	8b 45 a8             	mov    eax,DWORD PTR [rbp-0x58]
+     ba9:	89 02                	mov    DWORD PTR [rdx],eax
+  for(int i = 0; i < 5; i++) {
+     bab:	83 45 a8 01          	add    DWORD PTR [rbp-0x58],0x1
+     baf:	eb db                	jmp    b8c <main+0x30>
+  Vector<int> doubled = nums.map([] (int n) { return n * 2; });
+     bb1:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+     bb5:	48 8d 55 b0          	lea    rdx,[rbp-0x50]
+     bb9:	48 83 ec 08          	sub    rsp,0x8
+     bbd:	53                   	push   rbx
+     bbe:	48 89 d6             	mov    rsi,rdx
+     bc1:	48 89 c7             	mov    rdi,rax
+     bc4:	e8 e3 00 00 00       	call   cac <Vector<int> Vector<int>::map<main::{lambda(int)#1}>(main::{lambda(int)#1})>
+     bc9:	48 83 c4 10          	add    rsp,0x10
+
+  for(int i = 0; i < 5; i++) {
+     bcd:	c7 45 ac 00 00 00 00 	mov    DWORD PTR [rbp-0x54],0x0
+     bd4:	83 7d ac 04          	cmp    DWORD PTR [rbp-0x54],0x4
+     bd8:	7f 6b                	jg     c45 <main+0xe9>
+    std::cout << nums[i] << " * 2 = " << doubled[i] << std::endl;
+     bda:	8b 55 ac             	mov    edx,DWORD PTR [rbp-0x54]
+     bdd:	48 8d 45 b0          	lea    rax,[rbp-0x50]
+     be1:	89 d6                	mov    esi,edx
+     be3:	48 89 c7             	mov    rdi,rax
+     be6:	e8 bf 02 00 00       	call   eaa <Vector<int>::operator[](unsigned int)>
+     beb:	8b 00                	mov    eax,DWORD PTR [rax]
+     bed:	89 c6                	mov    esi,eax
+     bef:	48 8d 3d 2a 24 20 00 	lea    rdi,[rip+0x20242a]        # 203020 <std::cout@@GLIBCXX_3.4>
+     bf6:	e8 15 fe ff ff       	call   a10 <std::ostream::operator<<(int)@plt>
+     bfb:	48 8d 35 23 09 00 00 	lea    rsi,[rip+0x923]        # 1525 <std::piecewise_construct+0x1>
+     c02:	48 89 c7             	mov    rdi,rax
+     c05:	e8 b6 fd ff ff       	call   9c0 <std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*)@plt>
+     c0a:	48 89 c3             	mov    rbx,rax
+     c0d:	8b 55 ac             	mov    edx,DWORD PTR [rbp-0x54]
+     c10:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+     c14:	89 d6                	mov    esi,edx
+     c16:	48 89 c7             	mov    rdi,rax
+     c19:	e8 8c 02 00 00       	call   eaa <Vector<int>::operator[](unsigned int)>
+     c1e:	8b 00                	mov    eax,DWORD PTR [rax]
+     c20:	89 c6                	mov    esi,eax
+     c22:	48 89 df             	mov    rdi,rbx
+     c25:	e8 e6 fd ff ff       	call   a10 <std::ostream::operator<<(int)@plt>
+     c2a:	48 89 c2             	mov    rdx,rax
+     c2d:	48 8b 05 9c 23 20 00 	mov    rax,QWORD PTR [rip+0x20239c]        # 202fd0 <std::basic_ostream<char, std::char_traits<char> >& std::endl<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&)@GLIBCXX_3.4>
+     c34:	48 89 c6             	mov    rsi,rax
+     c37:	48 89 d7             	mov    rdi,rdx
+     c3a:	e8 a1 fd ff ff       	call   9e0 <std::ostream::operator<<(std::ostream& (*)(std::ostream&))@plt>
+  for(int i = 0; i < 5; i++) {
+     c3f:	83 45 ac 01          	add    DWORD PTR [rbp-0x54],0x1
+     c43:	eb 8f                	jmp    bd4 <main+0x78>
+  }
+
+  return 0;
+     c45:	bb 00 00 00 00       	mov    ebx,0x0
+  Vector<int> doubled = nums.map([] (int n) { return n * 2; });
+     c4a:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+     c4e:	48 89 c7             	mov    rdi,rax
+     c51:	e8 6e 01 00 00       	call   dc4 <Vector<int>::~Vector()>
+  Vector<int> nums(5);
+     c56:	48 8d 45 b0          	lea    rax,[rbp-0x50]
+     c5a:	48 89 c7             	mov    rdi,rax
+     c5d:	e8 62 01 00 00       	call   dc4 <Vector<int>::~Vector()>
+     c62:	89 d8                	mov    eax,ebx
+}
+     c64:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
+     c68:	64 48 33 0c 25 28 00 	xor    rcx,QWORD PTR fs:0x28
+     c6f:	00 00 
+     c71:	74 32                	je     ca5 <main+0x149>
+     c73:	eb 2b                	jmp    ca0 <main+0x144>
+     c75:	48 89 c3             	mov    rbx,rax
+  Vector<int> doubled = nums.map([] (int n) { return n * 2; });
+     c78:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+     c7c:	48 89 c7             	mov    rdi,rax
+     c7f:	e8 40 01 00 00       	call   dc4 <Vector<int>::~Vector()>
+     c84:	eb 03                	jmp    c89 <main+0x12d>
+     c86:	48 89 c3             	mov    rbx,rax
+  Vector<int> nums(5);
+     c89:	48 8d 45 b0          	lea    rax,[rbp-0x50]
+     c8d:	48 89 c7             	mov    rdi,rax
+     c90:	e8 2f 01 00 00       	call   dc4 <Vector<int>::~Vector()>
+     c95:	48 89 d8             	mov    rax,rbx
+     c98:	48 89 c7             	mov    rdi,rax
+     c9b:	e8 80 fd ff ff       	call   a20 <_Unwind_Resume@plt>
+}
+     ca0:	e8 4b fd ff ff       	call   9f0 <__stack_chk_fail@plt>
+     ca5:	48 8b 5d f8          	mov    rbx,QWORD PTR [rbp-0x8]
+     ca9:	c9                   	leave  
+     caa:	c3                   	ret    
+     cab:	90                   	nop
+
+0000000000000cac <Vector<int> Vector<int>::map<main::{lambda(int)#1}>(main::{lambda(int)#1})>:
+    Vector map(Func f) {
+     cac:	55                   	push   rbp
+     cad:	48 89 e5             	mov    rbp,rsp
+     cb0:	41 54                	push   r12
+     cb2:	53                   	push   rbx
+     cb3:	48 83 ec 20          	sub    rsp,0x20
+     cb7:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+     cbb:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+     cbf:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+     cc6:	00 00 
+     cc8:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+     ccc:	31 c0                	xor    eax,eax
+      Vector ret(size());
+     cce:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+     cd2:	48 89 c7             	mov    rdi,rax
+     cd5:	e8 52 03 00 00       	call   102c <Vector<int>::size()>
+     cda:	89 c2                	mov    edx,eax
+     cdc:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+     ce0:	89 d6                	mov    esi,edx
+     ce2:	48 89 c7             	mov    rdi,rax
+     ce5:	e8 f6 00 00 00       	call   de0 <Vector<int>::Vector(unsigned int)>
+      for(unsigned int i = 0; i < size(); i++) {
+     cea:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [rbp-0x1c],0x0
+     cf1:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+     cf5:	48 89 c7             	mov    rdi,rax
+     cf8:	e8 2f 03 00 00       	call   102c <Vector<int>::size()>
+     cfd:	39 45 e4             	cmp    DWORD PTR [rbp-0x1c],eax
+     d00:	0f 92 c0             	setb   al
+     d03:	84 c0                	test   al,al
+     d05:	74 3d                	je     d44 <Vector<int> Vector<int>::map<main::{lambda(int)#1}>(main::{lambda(int)#1})+0x98>
+        ret[i] = f(v[i]);
+     d07:	8b 55 e4             	mov    edx,DWORD PTR [rbp-0x1c]
+     d0a:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+     d0e:	48 89 d6             	mov    rsi,rdx
+     d11:	48 89 c7             	mov    rdi,rax
+     d14:	e8 f3 02 00 00       	call   100c <std::vector<int, std::allocator<int> >::operator[](unsigned long)>
+     d19:	8b 18                	mov    ebx,DWORD PTR [rax]
+     d1b:	8b 55 e4             	mov    edx,DWORD PTR [rbp-0x1c]
+     d1e:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+     d22:	89 d6                	mov    esi,edx
+     d24:	48 89 c7             	mov    rdi,rax
+     d27:	e8 7e 01 00 00       	call   eaa <Vector<int>::operator[](unsigned int)>
+     d2c:	49 89 c4             	mov    r12,rax
+     d2f:	89 de                	mov    esi,ebx
+     d31:	48 8d 7d 10          	lea    rdi,[rbp+0x10]
+     d35:	e8 10 fe ff ff       	call   b4a <main::{lambda(int)#1}::operator()(int) const>
+     d3a:	41 89 04 24          	mov    DWORD PTR [r12],eax
+      for(unsigned int i = 0; i < size(); i++) {
+     d3e:	83 45 e4 01          	add    DWORD PTR [rbp-0x1c],0x1
+     d42:	eb ad                	jmp    cf1 <Vector<int> Vector<int>::map<main::{lambda(int)#1}>(main::{lambda(int)#1})+0x45>
+      return ret;
+     d44:	90                   	nop
+    }
+     d45:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+     d49:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
+     d4d:	64 48 33 0c 25 28 00 	xor    rcx,QWORD PTR fs:0x28
+     d54:	00 00 
+     d56:	74 05                	je     d5d <Vector<int> Vector<int>::map<main::{lambda(int)#1}>(main::{lambda(int)#1})+0xb1>
+     d58:	e8 93 fc ff ff       	call   9f0 <__stack_chk_fail@plt>
+     d5d:	48 83 c4 20          	add    rsp,0x20
+     d61:	5b                   	pop    rbx
+     d62:	41 5c                	pop    r12
+     d64:	5d                   	pop    rbp
+     d65:	c3                   	ret    
+
+0000000000000d66 <__static_initialization_and_destruction_0(int, int)>:
+}
+     d66:	55                   	push   rbp
+     d67:	48 89 e5             	mov    rbp,rsp
+     d6a:	48 83 ec 10          	sub    rsp,0x10
+     d6e:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+     d71:	89 75 f8             	mov    DWORD PTR [rbp-0x8],esi
+     d74:	83 7d fc 01          	cmp    DWORD PTR [rbp-0x4],0x1
+     d78:	75 32                	jne    dac <__static_initialization_and_destruction_0(int, int)+0x46>
+     d7a:	81 7d f8 ff ff 00 00 	cmp    DWORD PTR [rbp-0x8],0xffff
+     d81:	75 29                	jne    dac <__static_initialization_and_destruction_0(int, int)+0x46>
+  extern wostream wclog;	/// Linked to standard error (buffered)
+#endif
+  //@}
+
+  // For construction of filebuffers for cout, cin, cerr, clog et. al.
+  static ios_base::Init __ioinit;
+     d83:	48 8d 3d a7 23 20 00 	lea    rdi,[rip+0x2023a7]        # 203131 <std::__ioinit>
+     d8a:	e8 71 fc ff ff       	call   a00 <std::ios_base::Init::Init()@plt>
+     d8f:	48 8d 15 72 22 20 00 	lea    rdx,[rip+0x202272]        # 203008 <__dso_handle>
+     d96:	48 8d 35 94 23 20 00 	lea    rsi,[rip+0x202394]        # 203131 <std::__ioinit>
+     d9d:	48 8b 05 54 22 20 00 	mov    rax,QWORD PTR [rip+0x202254]        # 202ff8 <std::ios_base::Init::~Init()@GLIBCXX_3.4>
+     da4:	48 89 c7             	mov    rdi,rax
+     da7:	e8 f4 fb ff ff       	call   9a0 <__cxa_atexit@plt>
+     dac:	90                   	nop
+     dad:	c9                   	leave  
+     dae:	c3                   	ret    
+
+0000000000000daf <_GLOBAL__sub_I_main>:
+     daf:	55                   	push   rbp
+     db0:	48 89 e5             	mov    rbp,rsp
+     db3:	be ff ff 00 00       	mov    esi,0xffff
+     db8:	bf 01 00 00 00       	mov    edi,0x1
+     dbd:	e8 a4 ff ff ff       	call   d66 <__static_initialization_and_destruction_0(int, int)>
+     dc2:	5d                   	pop    rbp
+     dc3:	c3                   	ret    
+
+0000000000000dc4 <Vector<int>::~Vector()>:
+class Vector {
+     dc4:	55                   	push   rbp
+     dc5:	48 89 e5             	mov    rbp,rsp
+     dc8:	48 83 ec 10          	sub    rsp,0x10
+     dcc:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     dd0:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     dd4:	48 89 c7             	mov    rdi,rax
+     dd7:	e8 8a 00 00 00       	call   e66 <std::vector<int, std::allocator<int> >::~vector()>
+     ddc:	90                   	nop
+     ddd:	c9                   	leave  
+     dde:	c3                   	ret    
+     ddf:	90                   	nop
+
+0000000000000de0 <Vector<int>::Vector(unsigned int)>:
+    Vector(const unsigned int size) : v(size) {}
+     de0:	55                   	push   rbp
+     de1:	48 89 e5             	mov    rbp,rsp
+     de4:	53                   	push   rbx
+     de5:	48 83 ec 28          	sub    rsp,0x28
+     de9:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+     ded:	89 75 d4             	mov    DWORD PTR [rbp-0x2c],esi
+     df0:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+     df7:	00 00 
+     df9:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+     dfd:	31 c0                	xor    eax,eax
+     dff:	48 8b 5d d8          	mov    rbx,QWORD PTR [rbp-0x28]
+     e03:	48 8d 45 e7          	lea    rax,[rbp-0x19]
+     e07:	48 89 c7             	mov    rdi,rax
+     e0a:	e8 bf 00 00 00       	call   ece <std::allocator<int>::allocator()>
+     e0f:	8b 45 d4             	mov    eax,DWORD PTR [rbp-0x2c]
+     e12:	48 8d 55 e7          	lea    rdx,[rbp-0x19]
+     e16:	48 89 c6             	mov    rsi,rax
+     e19:	48 89 df             	mov    rdi,rbx
+     e1c:	e8 e5 00 00 00       	call   f06 <std::vector<int, std::allocator<int> >::vector(unsigned long, std::allocator<int> const&)>
+     e21:	48 8d 45 e7          	lea    rax,[rbp-0x19]
+     e25:	48 89 c7             	mov    rdi,rax
+     e28:	e8 bd 00 00 00       	call   eea <std::allocator<int>::~allocator()>
+     e2d:	90                   	nop
+     e2e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+     e32:	64 48 33 04 25 28 00 	xor    rax,QWORD PTR fs:0x28
+     e39:	00 00 
+     e3b:	74 21                	je     e5e <Vector<int>::Vector(unsigned int)+0x7e>
+     e3d:	eb 1a                	jmp    e59 <Vector<int>::Vector(unsigned int)+0x79>
+     e3f:	48 89 c3             	mov    rbx,rax
+     e42:	48 8d 45 e7          	lea    rax,[rbp-0x19]
+     e46:	48 89 c7             	mov    rdi,rax
+     e49:	e8 9c 00 00 00       	call   eea <std::allocator<int>::~allocator()>
+     e4e:	48 89 d8             	mov    rax,rbx
+     e51:	48 89 c7             	mov    rdi,rax
+     e54:	e8 c7 fb ff ff       	call   a20 <_Unwind_Resume@plt>
+     e59:	e8 92 fb ff ff       	call   9f0 <__stack_chk_fail@plt>
+     e5e:	48 83 c4 28          	add    rsp,0x28
+     e62:	5b                   	pop    rbx
+     e63:	5d                   	pop    rbp
+     e64:	c3                   	ret    
+     e65:	90                   	nop
+
+0000000000000e66 <std::vector<int, std::allocator<int> >::~vector()>:
+       *  The dtor only erases the elements, and note that if the
+       *  elements themselves are pointers, the pointed-to memory is
+       *  not touched in any way.  Managing the pointer is the user's
+       *  responsibility.
+       */
+      ~vector() _GLIBCXX_NOEXCEPT
+     e66:	55                   	push   rbp
+     e67:	48 89 e5             	mov    rbp,rsp
+     e6a:	48 83 ec 10          	sub    rsp,0x10
+     e6e:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+      { std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+		      _M_get_Tp_allocator()); }
+     e72:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     e76:	48 89 c7             	mov    rdi,rax
+     e79:	e8 56 01 00 00       	call   fd4 <std::_Vector_base<int, std::allocator<int> >::_M_get_Tp_allocator()>
+     e7e:	48 89 c2             	mov    rdx,rax
+      { std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+     e81:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     e85:	48 8b 48 08          	mov    rcx,QWORD PTR [rax+0x8]
+     e89:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     e8d:	48 8b 00             	mov    rax,QWORD PTR [rax]
+     e90:	48 89 ce             	mov    rsi,rcx
+     e93:	48 89 c7             	mov    rdi,rax
+     e96:	e8 47 01 00 00       	call   fe2 <void std::_Destroy<int*, int>(int*, int*, std::allocator<int>&)>
+		      _M_get_Tp_allocator()); }
+     e9b:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     e9f:	48 89 c7             	mov    rdi,rax
+     ea2:	e8 dd 00 00 00       	call   f84 <std::_Vector_base<int, std::allocator<int> >::~_Vector_base()>
+     ea7:	90                   	nop
+     ea8:	c9                   	leave  
+     ea9:	c3                   	ret    
+
+0000000000000eaa <Vector<int>::operator[](unsigned int)>:
+    Item& operator[](const unsigned int idx) {
+     eaa:	55                   	push   rbp
+     eab:	48 89 e5             	mov    rbp,rsp
+     eae:	48 83 ec 10          	sub    rsp,0x10
+     eb2:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     eb6:	89 75 f4             	mov    DWORD PTR [rbp-0xc],esi
+      return v[idx];
+     eb9:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+     ebc:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     ec0:	48 89 d6             	mov    rsi,rdx
+     ec3:	48 89 c7             	mov    rdi,rax
+     ec6:	e8 41 01 00 00       	call   100c <std::vector<int, std::allocator<int> >::operator[](unsigned long)>
+    }
+     ecb:	c9                   	leave  
+     ecc:	c3                   	ret    
+     ecd:	90                   	nop
+
+0000000000000ece <std::allocator<int>::allocator()>:
+      typedef true_type propagate_on_container_move_assignment;
+
+      typedef true_type is_always_equal;
+#endif
+
+      allocator() throw() { }
+     ece:	55                   	push   rbp
+     ecf:	48 89 e5             	mov    rbp,rsp
+     ed2:	48 83 ec 10          	sub    rsp,0x10
+     ed6:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     eda:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     ede:	48 89 c7             	mov    rdi,rax
+     ee1:	e8 60 01 00 00       	call   1046 <__gnu_cxx::new_allocator<int>::new_allocator()>
+     ee6:	90                   	nop
+     ee7:	c9                   	leave  
+     ee8:	c3                   	ret    
+     ee9:	90                   	nop
+
+0000000000000eea <std::allocator<int>::~allocator()>:
+      : __allocator_base<_Tp>(__a) { }
+
+      template<typename _Tp1>
+	allocator(const allocator<_Tp1>&) throw() { }
+
+      ~allocator() throw() { }
+     eea:	55                   	push   rbp
+     eeb:	48 89 e5             	mov    rbp,rsp
+     eee:	48 83 ec 10          	sub    rsp,0x10
+     ef2:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     ef6:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     efa:	48 89 c7             	mov    rdi,rax
+     efd:	e8 50 01 00 00       	call   1052 <__gnu_cxx::new_allocator<int>::~new_allocator()>
+     f02:	90                   	nop
+     f03:	c9                   	leave  
+     f04:	c3                   	ret    
+     f05:	90                   	nop
+
+0000000000000f06 <std::vector<int, std::allocator<int> >::vector(unsigned long, std::allocator<int> const&)>:
+      vector(size_type __n, const allocator_type& __a = allocator_type())
+     f06:	55                   	push   rbp
+     f07:	48 89 e5             	mov    rbp,rsp
+     f0a:	53                   	push   rbx
+     f0b:	48 83 ec 28          	sub    rsp,0x28
+     f0f:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+     f13:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+     f17:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
+      : _Base(__n, __a)
+     f1b:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+     f1f:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+     f23:	48 8b 4d e0          	mov    rcx,QWORD PTR [rbp-0x20]
+     f27:	48 89 ce             	mov    rsi,rcx
+     f2a:	48 89 c7             	mov    rdi,rax
+     f2d:	e8 2c 01 00 00       	call   105e <std::_Vector_base<int, std::allocator<int> >::_Vector_base(unsigned long, std::allocator<int> const&)>
+      { _M_default_initialize(__n); }
+     f32:	48 8b 55 e0          	mov    rdx,QWORD PTR [rbp-0x20]
+     f36:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+     f3a:	48 89 d6             	mov    rsi,rdx
+     f3d:	48 89 c7             	mov    rdi,rax
+     f40:	e8 77 01 00 00       	call   10bc <std::vector<int, std::allocator<int> >::_M_default_initialize(unsigned long)>
+     f45:	eb 1a                	jmp    f61 <std::vector<int, std::allocator<int> >::vector(unsigned long, std::allocator<int> const&)+0x5b>
+     f47:	48 89 c3             	mov    rbx,rax
+      : _Base(__n, __a)
+     f4a:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+     f4e:	48 89 c7             	mov    rdi,rax
+     f51:	e8 2e 00 00 00       	call   f84 <std::_Vector_base<int, std::allocator<int> >::~_Vector_base()>
+     f56:	48 89 d8             	mov    rax,rbx
+     f59:	48 89 c7             	mov    rdi,rax
+     f5c:	e8 bf fa ff ff       	call   a20 <_Unwind_Resume@plt>
+      { _M_default_initialize(__n); }
+     f61:	48 83 c4 28          	add    rsp,0x28
+     f65:	5b                   	pop    rbx
+     f66:	5d                   	pop    rbp
+     f67:	c3                   	ret    
+
+0000000000000f68 <std::_Vector_base<int, std::allocator<int> >::_Vector_impl::~_Vector_impl()>:
+      struct _Vector_impl
+     f68:	55                   	push   rbp
+     f69:	48 89 e5             	mov    rbp,rsp
+     f6c:	48 83 ec 10          	sub    rsp,0x10
+     f70:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     f74:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     f78:	48 89 c7             	mov    rdi,rax
+     f7b:	e8 6a ff ff ff       	call   eea <std::allocator<int>::~allocator()>
+     f80:	90                   	nop
+     f81:	c9                   	leave  
+     f82:	c3                   	ret    
+     f83:	90                   	nop
+
+0000000000000f84 <std::_Vector_base<int, std::allocator<int> >::~_Vector_base()>:
+      ~_Vector_base() _GLIBCXX_NOEXCEPT
+     f84:	55                   	push   rbp
+     f85:	48 89 e5             	mov    rbp,rsp
+     f88:	48 83 ec 10          	sub    rsp,0x10
+     f8c:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+      { _M_deallocate(this->_M_impl._M_start, this->_M_impl._M_end_of_storage
+     f90:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     f94:	48 8b 40 10          	mov    rax,QWORD PTR [rax+0x10]
+		      - this->_M_impl._M_start); }
+     f98:	48 89 c2             	mov    rdx,rax
+     f9b:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     f9f:	48 8b 00             	mov    rax,QWORD PTR [rax]
+     fa2:	48 29 c2             	sub    rdx,rax
+     fa5:	48 89 d0             	mov    rax,rdx
+     fa8:	48 c1 f8 02          	sar    rax,0x2
+      { _M_deallocate(this->_M_impl._M_start, this->_M_impl._M_end_of_storage
+     fac:	48 89 c2             	mov    rdx,rax
+     faf:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     fb3:	48 8b 08             	mov    rcx,QWORD PTR [rax]
+     fb6:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     fba:	48 89 ce             	mov    rsi,rcx
+     fbd:	48 89 c7             	mov    rdi,rax
+     fc0:	e8 3b 01 00 00       	call   1100 <std::_Vector_base<int, std::allocator<int> >::_M_deallocate(int*, unsigned long)>
+		      - this->_M_impl._M_start); }
+     fc5:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     fc9:	48 89 c7             	mov    rdi,rax
+     fcc:	e8 97 ff ff ff       	call   f68 <std::_Vector_base<int, std::allocator<int> >::_Vector_impl::~_Vector_impl()>
+     fd1:	90                   	nop
+     fd2:	c9                   	leave  
+     fd3:	c3                   	ret    
+
+0000000000000fd4 <std::_Vector_base<int, std::allocator<int> >::_M_get_Tp_allocator()>:
+      _M_get_Tp_allocator() _GLIBCXX_NOEXCEPT
+     fd4:	55                   	push   rbp
+     fd5:	48 89 e5             	mov    rbp,rsp
+     fd8:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+      { return *static_cast<_Tp_alloc_type*>(&this->_M_impl); }
+     fdc:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     fe0:	5d                   	pop    rbp
+     fe1:	c3                   	ret    
+
+0000000000000fe2 <void std::_Destroy<int*, int>(int*, int*, std::allocator<int>&)>:
+	__traits::destroy(__alloc, std::__addressof(*__first));
+    }
+
+  template<typename _ForwardIterator, typename _Tp>
+    inline void
+    _Destroy(_ForwardIterator __first, _ForwardIterator __last,
+     fe2:	55                   	push   rbp
+     fe3:	48 89 e5             	mov    rbp,rsp
+     fe6:	48 83 ec 20          	sub    rsp,0x20
+     fea:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     fee:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+     ff2:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+	     allocator<_Tp>&)
+    {
+      _Destroy(__first, __last);
+     ff6:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+     ffa:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     ffe:	48 89 d6             	mov    rsi,rdx
+    1001:	48 89 c7             	mov    rdi,rax
+    1004:	e8 2c 01 00 00       	call   1135 <void std::_Destroy<int*>(int*, int*)>
+    }
+    1009:	90                   	nop
+    100a:	c9                   	leave  
+    100b:	c3                   	ret    
+
+000000000000100c <std::vector<int, std::allocator<int> >::operator[](unsigned long)>:
+       *  Note that data access with this operator is unchecked and
+       *  out_of_range lookups are not defined. (For checked lookups
+       *  see at().)
+       */
+      reference
+      operator[](size_type __n) _GLIBCXX_NOEXCEPT
+    100c:	55                   	push   rbp
+    100d:	48 89 e5             	mov    rbp,rsp
+    1010:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    1014:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+      {
+	__glibcxx_requires_subscript(__n);
+	return *(this->_M_impl._M_start + __n);
+    1018:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    101c:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    101f:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1023:	48 c1 e2 02          	shl    rdx,0x2
+    1027:	48 01 d0             	add    rax,rdx
+      }
+    102a:	5d                   	pop    rbp
+    102b:	c3                   	ret    
+
+000000000000102c <Vector<int>::size()>:
+    unsigned int size() { return v.size(); }
+    102c:	55                   	push   rbp
+    102d:	48 89 e5             	mov    rbp,rsp
+    1030:	48 83 ec 10          	sub    rsp,0x10
+    1034:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    1038:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    103c:	48 89 c7             	mov    rdi,rax
+    103f:	e8 18 01 00 00       	call   115c <std::vector<int, std::allocator<int> >::size() const>
+    1044:	c9                   	leave  
+    1045:	c3                   	ret    
+
+0000000000001046 <__gnu_cxx::new_allocator<int>::new_allocator()>:
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 2103. propagate_on_container_move_assignment
+      typedef std::true_type propagate_on_container_move_assignment;
+#endif
+
+      new_allocator() _GLIBCXX_USE_NOEXCEPT { }
+    1046:	55                   	push   rbp
+    1047:	48 89 e5             	mov    rbp,rsp
+    104a:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    104e:	90                   	nop
+    104f:	5d                   	pop    rbp
+    1050:	c3                   	ret    
+    1051:	90                   	nop
+
+0000000000001052 <__gnu_cxx::new_allocator<int>::~new_allocator()>:
+      new_allocator(const new_allocator&) _GLIBCXX_USE_NOEXCEPT { }
+
+      template<typename _Tp1>
+	new_allocator(const new_allocator<_Tp1>&) _GLIBCXX_USE_NOEXCEPT { }
+
+      ~new_allocator() _GLIBCXX_USE_NOEXCEPT { }
+    1052:	55                   	push   rbp
+    1053:	48 89 e5             	mov    rbp,rsp
+    1056:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    105a:	90                   	nop
+    105b:	5d                   	pop    rbp
+    105c:	c3                   	ret    
+    105d:	90                   	nop
+
+000000000000105e <std::_Vector_base<int, std::allocator<int> >::_Vector_base(unsigned long, std::allocator<int> const&)>:
+      _Vector_base(size_t __n, const allocator_type& __a)
+    105e:	55                   	push   rbp
+    105f:	48 89 e5             	mov    rbp,rsp
+    1062:	53                   	push   rbx
+    1063:	48 83 ec 28          	sub    rsp,0x28
+    1067:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+    106b:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+    106f:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
+      : _M_impl(__a)
+    1073:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    1077:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    107b:	48 89 d6             	mov    rsi,rdx
+    107e:	48 89 c7             	mov    rdi,rax
+    1081:	e8 fc 00 00 00       	call   1182 <std::_Vector_base<int, std::allocator<int> >::_Vector_impl::_Vector_impl(std::allocator<int> const&)>
+      { _M_create_storage(__n); }
+    1086:	48 8b 55 e0          	mov    rdx,QWORD PTR [rbp-0x20]
+    108a:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    108e:	48 89 d6             	mov    rsi,rdx
+    1091:	48 89 c7             	mov    rdi,rax
+    1094:	e8 33 01 00 00       	call   11cc <std::_Vector_base<int, std::allocator<int> >::_M_create_storage(unsigned long)>
+    1099:	eb 1a                	jmp    10b5 <std::_Vector_base<int, std::allocator<int> >::_Vector_base(unsigned long, std::allocator<int> const&)+0x57>
+    109b:	48 89 c3             	mov    rbx,rax
+      : _M_impl(__a)
+    109e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    10a2:	48 89 c7             	mov    rdi,rax
+    10a5:	e8 be fe ff ff       	call   f68 <std::_Vector_base<int, std::allocator<int> >::_Vector_impl::~_Vector_impl()>
+    10aa:	48 89 d8             	mov    rax,rbx
+    10ad:	48 89 c7             	mov    rdi,rax
+    10b0:	e8 6b f9 ff ff       	call   a20 <_Unwind_Resume@plt>
+      { _M_create_storage(__n); }
+    10b5:	48 83 c4 28          	add    rsp,0x28
+    10b9:	5b                   	pop    rbx
+    10ba:	5d                   	pop    rbp
+    10bb:	c3                   	ret    
+
+00000000000010bc <std::vector<int, std::allocator<int> >::_M_default_initialize(unsigned long)>:
+      }
+
+#if __cplusplus >= 201103L
+      // Called by the vector(n) constructor.
+      void
+      _M_default_initialize(size_type __n)
+    10bc:	55                   	push   rbp
+    10bd:	48 89 e5             	mov    rbp,rsp
+    10c0:	48 83 ec 10          	sub    rsp,0x10
+    10c4:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    10c8:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+      {
+	this->_M_impl._M_finish =
+	  std::__uninitialized_default_n_a(this->_M_impl._M_start, __n,
+					   _M_get_Tp_allocator());
+    10cc:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    10d0:	48 89 c7             	mov    rdi,rax
+    10d3:	e8 fc fe ff ff       	call   fd4 <std::_Vector_base<int, std::allocator<int> >::_M_get_Tp_allocator()>
+    10d8:	48 89 c2             	mov    rdx,rax
+	  std::__uninitialized_default_n_a(this->_M_impl._M_start, __n,
+    10db:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    10df:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    10e2:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    10e6:	48 89 ce             	mov    rsi,rcx
+    10e9:	48 89 c7             	mov    rdi,rax
+    10ec:	e8 34 01 00 00       	call   1225 <int* std::__uninitialized_default_n_a<int*, unsigned long, int>(int*, unsigned long, std::allocator<int>&)>
+    10f1:	48 89 c2             	mov    rdx,rax
+	this->_M_impl._M_finish =
+    10f4:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    10f8:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+      }
+    10fc:	90                   	nop
+    10fd:	c9                   	leave  
+    10fe:	c3                   	ret    
+    10ff:	90                   	nop
+
+0000000000001100 <std::_Vector_base<int, std::allocator<int> >::_M_deallocate(int*, unsigned long)>:
+      _M_deallocate(pointer __p, size_t __n)
+    1100:	55                   	push   rbp
+    1101:	48 89 e5             	mov    rbp,rsp
+    1104:	48 83 ec 20          	sub    rsp,0x20
+    1108:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    110c:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    1110:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+	if (__p)
+    1114:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+    1119:	74 17                	je     1132 <std::_Vector_base<int, std::allocator<int> >::_M_deallocate(int*, unsigned long)+0x32>
+	  _Tr::deallocate(_M_impl, __p, __n);
+    111b:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    111f:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    1123:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    1127:	48 89 ce             	mov    rsi,rcx
+    112a:	48 89 c7             	mov    rdi,rax
+    112d:	e8 1c 01 00 00       	call   124e <std::allocator_traits<std::allocator<int> >::deallocate(std::allocator<int>&, int*, unsigned long)>
+      }
+    1132:	90                   	nop
+    1133:	c9                   	leave  
+    1134:	c3                   	ret    
+
+0000000000001135 <void std::_Destroy<int*>(int*, int*)>:
+    _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+    1135:	55                   	push   rbp
+    1136:	48 89 e5             	mov    rbp,rsp
+    1139:	48 83 ec 10          	sub    rsp,0x10
+    113d:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    1141:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+	__destroy(__first, __last);
+    1145:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1149:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    114d:	48 89 d6             	mov    rsi,rdx
+    1150:	48 89 c7             	mov    rdi,rax
+    1153:	e8 24 01 00 00       	call   127c <void std::_Destroy_aux<true>::__destroy<int*>(int*, int*)>
+    }
+    1158:	90                   	nop
+    1159:	c9                   	leave  
+    115a:	c3                   	ret    
+    115b:	90                   	nop
+
+000000000000115c <std::vector<int, std::allocator<int> >::size() const>:
+      size() const _GLIBCXX_NOEXCEPT
+    115c:	55                   	push   rbp
+    115d:	48 89 e5             	mov    rbp,rsp
+    1160:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+      { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+    1164:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1168:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    116c:	48 89 c2             	mov    rdx,rax
+    116f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1173:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1176:	48 29 c2             	sub    rdx,rax
+    1179:	48 89 d0             	mov    rax,rdx
+    117c:	48 c1 f8 02          	sar    rax,0x2
+    1180:	5d                   	pop    rbp
+    1181:	c3                   	ret    
+
+0000000000001182 <std::_Vector_base<int, std::allocator<int> >::_Vector_impl::_Vector_impl(std::allocator<int> const&)>:
+	_Vector_impl(_Tp_alloc_type const& __a) _GLIBCXX_NOEXCEPT
+    1182:	55                   	push   rbp
+    1183:	48 89 e5             	mov    rbp,rsp
+    1186:	48 83 ec 10          	sub    rsp,0x10
+    118a:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    118e:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+	: _Tp_alloc_type(__a), _M_start(), _M_finish(), _M_end_of_storage()
+    1192:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1196:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    119a:	48 89 d6             	mov    rsi,rdx
+    119d:	48 89 c7             	mov    rdi,rax
+    11a0:	e8 e7 00 00 00       	call   128c <std::allocator<int>::allocator(std::allocator<int> const&)>
+    11a5:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    11a9:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
+    11b0:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    11b4:	48 c7 40 08 00 00 00 	mov    QWORD PTR [rax+0x8],0x0
+    11bb:	00 
+    11bc:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    11c0:	48 c7 40 10 00 00 00 	mov    QWORD PTR [rax+0x10],0x0
+    11c7:	00 
+	{ }
+    11c8:	90                   	nop
+    11c9:	c9                   	leave  
+    11ca:	c3                   	ret    
+    11cb:	90                   	nop
+
+00000000000011cc <std::_Vector_base<int, std::allocator<int> >::_M_create_storage(unsigned long)>:
+      _M_create_storage(size_t __n)
+    11cc:	55                   	push   rbp
+    11cd:	48 89 e5             	mov    rbp,rsp
+    11d0:	48 83 ec 10          	sub    rsp,0x10
+    11d4:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    11d8:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+	this->_M_impl._M_start = this->_M_allocate(__n);
+    11dc:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    11e0:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    11e4:	48 89 d6             	mov    rsi,rdx
+    11e7:	48 89 c7             	mov    rdi,rax
+    11ea:	e8 c3 00 00 00       	call   12b2 <std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long)>
+    11ef:	48 89 c2             	mov    rdx,rax
+    11f2:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    11f6:	48 89 10             	mov    QWORD PTR [rax],rdx
+	this->_M_impl._M_finish = this->_M_impl._M_start;
+    11f9:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    11fd:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+    1200:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1204:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+    1208:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    120c:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    120f:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1213:	48 c1 e2 02          	shl    rdx,0x2
+    1217:	48 01 c2             	add    rdx,rax
+    121a:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    121e:	48 89 50 10          	mov    QWORD PTR [rax+0x10],rdx
+      }
+    1222:	90                   	nop
+    1223:	c9                   	leave  
+    1224:	c3                   	ret    
+
+0000000000001225 <int* std::__uninitialized_default_n_a<int*, unsigned long, int>(int*, unsigned long, std::allocator<int>&)>:
+	}
+    }
+
+  template<typename _ForwardIterator, typename _Size, typename _Tp>
+    inline _ForwardIterator
+    __uninitialized_default_n_a(_ForwardIterator __first, _Size __n, 
+    1225:	55                   	push   rbp
+    1226:	48 89 e5             	mov    rbp,rsp
+    1229:	48 83 ec 20          	sub    rsp,0x20
+    122d:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    1231:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    1235:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+				allocator<_Tp>&)
+    { return std::__uninitialized_default_n(__first, __n); }
+    1239:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    123d:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1241:	48 89 d6             	mov    rsi,rdx
+    1244:	48 89 c7             	mov    rdi,rax
+    1247:	e8 99 00 00 00       	call   12e5 <int* std::__uninitialized_default_n<int*, unsigned long>(int*, unsigned long)>
+    124c:	c9                   	leave  
+    124d:	c3                   	ret    
+
+000000000000124e <std::allocator_traits<std::allocator<int> >::deallocate(std::allocator<int>&, int*, unsigned long)>:
+       *  @param  __n  The number of objects space was allocated for.
+       *
+       *  Calls <tt> a.deallocate(p, n) </tt>
+      */
+      static void
+      deallocate(allocator_type& __a, pointer __p, size_type __n)
+    124e:	55                   	push   rbp
+    124f:	48 89 e5             	mov    rbp,rsp
+    1252:	48 83 ec 20          	sub    rsp,0x20
+    1256:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    125a:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    125e:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+      { __a.deallocate(__p, __n); }
+    1262:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    1266:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    126a:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    126e:	48 89 ce             	mov    rsi,rcx
+    1271:	48 89 c7             	mov    rdi,rax
+    1274:	e8 95 00 00 00       	call   130e <__gnu_cxx::new_allocator<int>::deallocate(int*, unsigned long)>
+    1279:	90                   	nop
+    127a:	c9                   	leave  
+    127b:	c3                   	ret    
+
+000000000000127c <void std::_Destroy_aux<true>::__destroy<int*>(int*, int*)>:
+        __destroy(_ForwardIterator, _ForwardIterator) { }
+    127c:	55                   	push   rbp
+    127d:	48 89 e5             	mov    rbp,rsp
+    1280:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    1284:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    1288:	90                   	nop
+    1289:	5d                   	pop    rbp
+    128a:	c3                   	ret    
+    128b:	90                   	nop
+
+000000000000128c <std::allocator<int>::allocator(std::allocator<int> const&)>:
+      allocator(const allocator& __a) throw()
+    128c:	55                   	push   rbp
+    128d:	48 89 e5             	mov    rbp,rsp
+    1290:	48 83 ec 10          	sub    rsp,0x10
+    1294:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    1298:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+      : __allocator_base<_Tp>(__a) { }
+    129c:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    12a0:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    12a4:	48 89 d6             	mov    rsi,rdx
+    12a7:	48 89 c7             	mov    rdi,rax
+    12aa:	e8 83 00 00 00       	call   1332 <__gnu_cxx::new_allocator<int>::new_allocator(__gnu_cxx::new_allocator<int> const&)>
+    12af:	90                   	nop
+    12b0:	c9                   	leave  
+    12b1:	c3                   	ret    
+
+00000000000012b2 <std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long)>:
+      _M_allocate(size_t __n)
+    12b2:	55                   	push   rbp
+    12b3:	48 89 e5             	mov    rbp,rsp
+    12b6:	48 83 ec 10          	sub    rsp,0x10
+    12ba:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    12be:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+    12c2:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+    12c7:	74 15                	je     12de <std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long)+0x2c>
+    12c9:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    12cd:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    12d1:	48 89 d6             	mov    rsi,rdx
+    12d4:	48 89 c7             	mov    rdi,rax
+    12d7:	e8 65 00 00 00       	call   1341 <std::allocator_traits<std::allocator<int> >::allocate(std::allocator<int>&, unsigned long)>
+    12dc:	eb 05                	jmp    12e3 <std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long)+0x31>
+    12de:	b8 00 00 00 00       	mov    eax,0x0
+      }
+    12e3:	c9                   	leave  
+    12e4:	c3                   	ret    
+
+00000000000012e5 <int* std::__uninitialized_default_n<int*, unsigned long>(int*, unsigned long)>:
+    __uninitialized_default_n(_ForwardIterator __first, _Size __n)
+    12e5:	55                   	push   rbp
+    12e6:	48 89 e5             	mov    rbp,rsp
+    12e9:	48 83 ec 20          	sub    rsp,0x20
+    12ed:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+    12f1:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+      const bool __assignable = is_copy_assignable<_ValueType>::value;
+    12f5:	c6 45 ff 01          	mov    BYTE PTR [rbp-0x1],0x1
+	__uninit_default_n(__first, __n);
+    12f9:	48 8b 55 e0          	mov    rdx,QWORD PTR [rbp-0x20]
+    12fd:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    1301:	48 89 d6             	mov    rsi,rdx
+    1304:	48 89 c7             	mov    rdi,rax
+    1307:	e8 5f 00 00 00       	call   136b <int* std::__uninitialized_default_n_1<true>::__uninit_default_n<int*, unsigned long>(int*, unsigned long)>
+    }
+    130c:	c9                   	leave  
+    130d:	c3                   	ret    
+
+000000000000130e <__gnu_cxx::new_allocator<int>::deallocate(int*, unsigned long)>:
+	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+      }
+
+      // __p is not permitted to be a null pointer.
+      void
+      deallocate(pointer __p, size_type)
+    130e:	55                   	push   rbp
+    130f:	48 89 e5             	mov    rbp,rsp
+    1312:	48 83 ec 20          	sub    rsp,0x20
+    1316:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    131a:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    131e:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+	  {
+	    ::operator delete(__p, std::align_val_t(alignof(_Tp)));
+	    return;
+	  }
+#endif
+	::operator delete(__p);
+    1322:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    1326:	48 89 c7             	mov    rdi,rax
+    1329:	e8 82 f6 ff ff       	call   9b0 <operator delete(void*)@plt>
+      }
+    132e:	90                   	nop
+    132f:	c9                   	leave  
+    1330:	c3                   	ret    
+    1331:	90                   	nop
+
+0000000000001332 <__gnu_cxx::new_allocator<int>::new_allocator(__gnu_cxx::new_allocator<int> const&)>:
+      new_allocator(const new_allocator&) _GLIBCXX_USE_NOEXCEPT { }
+    1332:	55                   	push   rbp
+    1333:	48 89 e5             	mov    rbp,rsp
+    1336:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    133a:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    133e:	90                   	nop
+    133f:	5d                   	pop    rbp
+    1340:	c3                   	ret    
+
+0000000000001341 <std::allocator_traits<std::allocator<int> >::allocate(std::allocator<int>&, unsigned long)>:
+      allocate(allocator_type& __a, size_type __n)
+    1341:	55                   	push   rbp
+    1342:	48 89 e5             	mov    rbp,rsp
+    1345:	48 83 ec 10          	sub    rsp,0x10
+    1349:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    134d:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+      { return __a.allocate(__n); }
+    1351:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    1355:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1359:	ba 00 00 00 00       	mov    edx,0x0
+    135e:	48 89 ce             	mov    rsi,rcx
+    1361:	48 89 c7             	mov    rdi,rax
+    1364:	e8 55 00 00 00       	call   13be <__gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*)>
+    1369:	c9                   	leave  
+    136a:	c3                   	ret    
+
+000000000000136b <int* std::__uninitialized_default_n_1<true>::__uninit_default_n<int*, unsigned long>(int*, unsigned long)>:
+        __uninit_default_n(_ForwardIterator __first, _Size __n)
+    136b:	55                   	push   rbp
+    136c:	48 89 e5             	mov    rbp,rsp
+    136f:	48 83 ec 20          	sub    rsp,0x20
+    1373:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+    1377:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+    137b:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+    1382:	00 00 
+    1384:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1388:	31 c0                	xor    eax,eax
+	  return std::fill_n(__first, __n, _ValueType());
+    138a:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
+    1391:	48 8d 55 f4          	lea    rdx,[rbp-0xc]
+    1395:	48 8b 4d e0          	mov    rcx,QWORD PTR [rbp-0x20]
+    1399:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    139d:	48 89 ce             	mov    rsi,rcx
+    13a0:	48 89 c7             	mov    rdi,rax
+    13a3:	e8 58 00 00 00       	call   1400 <int* std::fill_n<int*, unsigned long, int>(int*, unsigned long, int const&)>
+	}
+    13a8:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    13ac:	64 48 33 0c 25 28 00 	xor    rcx,QWORD PTR fs:0x28
+    13b3:	00 00 
+    13b5:	74 05                	je     13bc <int* std::__uninitialized_default_n_1<true>::__uninit_default_n<int*, unsigned long>(int*, unsigned long)+0x51>
+    13b7:	e8 34 f6 ff ff       	call   9f0 <__stack_chk_fail@plt>
+    13bc:	c9                   	leave  
+    13bd:	c3                   	ret    
+
+00000000000013be <__gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*)>:
+      allocate(size_type __n, const void* = static_cast<const void*>(0))
+    13be:	55                   	push   rbp
+    13bf:	48 89 e5             	mov    rbp,rsp
+    13c2:	48 83 ec 20          	sub    rsp,0x20
+    13c6:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    13ca:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    13ce:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+	if (__n > this->max_size())
+    13d2:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    13d6:	48 89 c7             	mov    rdi,rax
+    13d9:	e8 5a 00 00 00       	call   1438 <__gnu_cxx::new_allocator<int>::max_size() const>
+    13de:	48 39 45 f0          	cmp    QWORD PTR [rbp-0x10],rax
+    13e2:	0f 97 c0             	seta   al
+    13e5:	84 c0                	test   al,al
+    13e7:	74 05                	je     13ee <__gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*)+0x30>
+	  std::__throw_bad_alloc();
+    13e9:	e8 a2 f5 ff ff       	call   990 <std::__throw_bad_alloc()@plt>
+	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+    13ee:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    13f2:	48 c1 e0 02          	shl    rax,0x2
+    13f6:	48 89 c7             	mov    rdi,rax
+    13f9:	e8 d2 f5 ff ff       	call   9d0 <operator new(unsigned long)@plt>
+      }
+    13fe:	c9                   	leave  
+    13ff:	c3                   	ret    
+
+0000000000001400 <int* std::fill_n<int*, unsigned long, int>(int*, unsigned long, int const&)>:
+   *  _GLIBCXX_RESOLVE_LIB_DEFECTS
+   *  DR 865. More algorithms that throw away information
+  */
+  template<typename _OI, typename _Size, typename _Tp>
+    inline _OI
+    fill_n(_OI __first, _Size __n, const _Tp& __value)
+    1400:	55                   	push   rbp
+    1401:	48 89 e5             	mov    rbp,rsp
+    1404:	48 83 ec 20          	sub    rsp,0x20
+    1408:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    140c:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+    1410:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+    {
+      // concept requirements
+      __glibcxx_function_requires(_OutputIteratorConcept<_OI, _Tp>)
+
+      return _OI(std::__fill_n_a(std::__niter_base(__first), __n, __value));
+    1414:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1418:	48 89 c7             	mov    rdi,rax
+    141b:	e8 2c 00 00 00       	call   144c <int* std::__niter_base<int*>(int*)>
+    1420:	48 89 c1             	mov    rcx,rax
+    1423:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    1427:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    142b:	48 89 c6             	mov    rsi,rax
+    142e:	48 89 cf             	mov    rdi,rcx
+    1431:	e8 24 00 00 00       	call   145a <__gnu_cxx::__enable_if<std::__is_scalar<int>::__value, int*>::__type std::__fill_n_a<int*, unsigned long, int>(int*, unsigned long, int const&)>
+    }
+    1436:	c9                   	leave  
+    1437:	c3                   	ret    
+
+0000000000001438 <__gnu_cxx::new_allocator<int>::max_size() const>:
+
+      size_type
+      max_size() const _GLIBCXX_USE_NOEXCEPT
+    1438:	55                   	push   rbp
+    1439:	48 89 e5             	mov    rbp,rsp
+    143c:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+      { return size_t(-1) / sizeof(_Tp); }
+    1440:	48 b8 ff ff ff ff ff 	movabs rax,0x3fffffffffffffff
+    1447:	ff ff 3f 
+    144a:	5d                   	pop    rbp
+    144b:	c3                   	ret    
+
+000000000000144c <int* std::__niter_base<int*>(int*)>:
+    __niter_base(_Iterator __it)
+    144c:	55                   	push   rbp
+    144d:	48 89 e5             	mov    rbp,rsp
+    1450:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    { return __it; }
+    1454:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1458:	5d                   	pop    rbp
+    1459:	c3                   	ret    
+
+000000000000145a <__gnu_cxx::__enable_if<std::__is_scalar<int>::__value, int*>::__type std::__fill_n_a<int*, unsigned long, int>(int*, unsigned long, int const&)>:
+    __fill_n_a(_OutputIterator __first, _Size __n, const _Tp& __value)
+    145a:	55                   	push   rbp
+    145b:	48 89 e5             	mov    rbp,rsp
+    145e:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+    1462:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+    1466:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
+      const _Tp __tmp = __value;
+    146a:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    146e:	8b 00                	mov    eax,DWORD PTR [rax]
+    1470:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
+      for (__decltype(__n + 0) __niter = __n;
+    1473:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    1477:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+	   __niter > 0; --__niter, ++__first)
+    147b:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    1480:	74 15                	je     1497 <__gnu_cxx::__enable_if<std::__is_scalar<int>::__value, int*>::__type std::__fill_n_a<int*, unsigned long, int>(int*, unsigned long, int const&)+0x3d>
+	*__first = __tmp;
+    1482:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    1486:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    1489:	89 10                	mov    DWORD PTR [rax],edx
+      for (__decltype(__n + 0) __niter = __n;
+    148b:	48 83 6d f8 01       	sub    QWORD PTR [rbp-0x8],0x1
+    1490:	48 83 45 e8 04       	add    QWORD PTR [rbp-0x18],0x4
+    1495:	eb e4                	jmp    147b <__gnu_cxx::__enable_if<std::__is_scalar<int>::__value, int*>::__type std::__fill_n_a<int*, unsigned long, int>(int*, unsigned long, int const&)+0x21>
+      return __first;
+    1497:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    }
+    149b:	5d                   	pop    rbp
+    149c:	c3                   	ret    
+    149d:	0f 1f 00             	nop    DWORD PTR [rax]
+
+00000000000014a0 <__libc_csu_init>:
+    14a0:	41 57                	push   r15
+    14a2:	41 56                	push   r14
+    14a4:	49 89 d7             	mov    r15,rdx
+    14a7:	41 55                	push   r13
+    14a9:	41 54                	push   r12
+    14ab:	4c 8d 25 86 18 20 00 	lea    r12,[rip+0x201886]        # 202d38 <__frame_dummy_init_array_entry>
+    14b2:	55                   	push   rbp
+    14b3:	48 8d 2d 8e 18 20 00 	lea    rbp,[rip+0x20188e]        # 202d48 <__init_array_end>
+    14ba:	53                   	push   rbx
+    14bb:	41 89 fd             	mov    r13d,edi
+    14be:	49 89 f6             	mov    r14,rsi
+    14c1:	4c 29 e5             	sub    rbp,r12
+    14c4:	48 83 ec 08          	sub    rsp,0x8
+    14c8:	48 c1 fd 03          	sar    rbp,0x3
+    14cc:	e8 97 f4 ff ff       	call   968 <_init>
+    14d1:	48 85 ed             	test   rbp,rbp
+    14d4:	74 20                	je     14f6 <__libc_csu_init+0x56>
+    14d6:	31 db                	xor    ebx,ebx
+    14d8:	0f 1f 84 00 00 00 00 	nop    DWORD PTR [rax+rax*1+0x0]
+    14df:	00 
+    14e0:	4c 89 fa             	mov    rdx,r15
+    14e3:	4c 89 f6             	mov    rsi,r14
+    14e6:	44 89 ef             	mov    edi,r13d
+    14e9:	41 ff 14 dc          	call   QWORD PTR [r12+rbx*8]
+    14ed:	48 83 c3 01          	add    rbx,0x1
+    14f1:	48 39 dd             	cmp    rbp,rbx
+    14f4:	75 ea                	jne    14e0 <__libc_csu_init+0x40>
+    14f6:	48 83 c4 08          	add    rsp,0x8
+    14fa:	5b                   	pop    rbx
+    14fb:	5d                   	pop    rbp
+    14fc:	41 5c                	pop    r12
+    14fe:	41 5d                	pop    r13
+    1500:	41 5e                	pop    r14
+    1502:	41 5f                	pop    r15
+    1504:	c3                   	ret    
+    1505:	90                   	nop
+    1506:	66 2e 0f 1f 84 00 00 	nop    WORD PTR cs:[rax+rax*1+0x0]
+    150d:	00 00 00 
+
+0000000000001510 <__libc_csu_fini>:
+    1510:	f3 c3                	repz ret 
+
+Disassembly of section .fini:
+
+0000000000001514 <_fini>:
+    1514:	48 83 ec 08          	sub    rsp,0x8
+    1518:	48 83 c4 08          	add    rsp,0x8
+    151c:	c3                   	ret    

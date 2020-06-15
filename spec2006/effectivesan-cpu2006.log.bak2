@@ -1,0 +1,106 @@
+       __  __           _   _           ____
+  ___ / _|/ _| ___  ___| |_(_)_   _____/ ___|  __ _ _ __
+ / _ \ |_| |_ / _ \/ __| __| \ \ / / _ \___ \ / _` | '_ \
+|  __/  _|  _|  __/ (__| |_| |\ V /  __/___) | (_| | | | |
+ \___|_| |_|  \___|\___|\__|_| \_/ \___|____/ \__,_|_| |_|
+
+TYPE ERROR:
+        pointer  = 0xf037be5ca8 (heap)
+        expected = class xercesc_2_5::DOMElementImpl
+        actual   = class xercesc_2_5::DOMDocumentImpl : public class xercesc_2_5::DOMDocument /*0..32*/, public class xercesc_2_5::XMemory /*0..1*/ { class xercesc_2_5::DOMNodeImpl; /*32..48*/ class xercesc_2_5::DOMParentNode; /*48..80*/ class xercesc_2_5::DOMNodeIDMap *; /*80..88*/ int16_t *; /*88..96*/ int16_t *; /*96..104*/ int8_t; /*104..105*/ int16_t *; /*112..120*/ int16_t *; /*120..128*/ class xercesc_2_5::DOMConfiguration *; /*128..136*/ class xercesc_2_5::RefHashTableOf<xercesc_2_5::RefHashTableOf<xercesc_2_5::KeyRefPair<void, xercesc_2_5::DOMUserDataHandler> > > *; /*136..144*/ int8_t *; /*144..152*/ int8_t *; /*152..160*/ int64_t; /*160..168*/ class xercesc_2_5::RefArrayOf<xercesc_2_5::RefStackOf<xercesc_2_5::DOMNode> > *; /*168..176*/ class xercesc_2_5::RefStackOf<xercesc_2_5::DOMBuffer> *; /*176..184*/ class xercesc_2_5::DOMDeepNodeListPool<xercesc_2_5::DOMDeepNodeListImpl> *; /*184..192*/ class xercesc_2_5::DOMDocumentType *; /*192..200*/ class xercesc_2_5::DOMElement *; /*200..208*/ class xercesc_2_5::DOMStringPool *; /*208..216*/ class xercesc_2_5::DOMNormalizer *; /*216..224*/ class xercesc_2_5::RefVectorOf<xercesc_2_5::DOMRangeImpl> *; /*224..232*/ class xercesc_2_5::RefVectorOf<xercesc_2_5::DOMNodeIteratorImpl> *; /*232..240*/ class xercesc_2_5::MemoryManager *; /*240..248*/ int32_t; /*248..252*/ int8_t; /*252..253*/ } [+24]
+                   >class xercesc_2_5::DOMDocument : public class xercesc_2_5::DOMDocumentRange /*0..8*/, public class xercesc_2_5::DOMXPathEvaluator /*8..16*/, public class xercesc_2_5::DOMDocumentTraversal /*16..24*/, public class xercesc_2_5::DOMNode /*24..32*/ { } [+24]
+                   >>class xercesc_2_5::DOMNode { int8_t *; /*0..8*/ } [+0]
+                   >>>int8_t * [+0]
+        trace    = ../run_base_test_test.0000/Xalan_base.test(effective_type_error+0xca) [0x72eeea]
+                 = ../run_base_test_test.0000/Xalan_base.test(effective_type_check+0x1ed) [0x72e8dd]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZNK11xercesc_2_511DOMNodeImpl20callUserDataHandlersENS_18DOMUserDataHandler16DOMOperationTypeEPKNS_7DOMNodeES5_+0x75) [0x8197d5]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_515DOMDocumentImpl7releaseEv+0x5f) [0x7ed2af]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_517AbstractDOMParser7cleanUpEv+0x189) [0x749a19]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_517AbstractDOMParserD2Ev+0x144) [0x749ea4]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner20resolveSchemaGrammarEPKtS2_+0x1744) [0x9434d4]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner19parseSchemaLocationEPKt+0x431) [0x9419c1]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner28scanRawAttrListforNameSpacesEi+0xe7d) [0x940a2d]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner14scanStartTagNSERb+0xe6f) [0x91be8f]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner11scanContentEv+0x622) [0x915e72]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner12scanDocumentERKNS_11InputSourceE+0x1a4) [0x9153c4]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_517SAX2XMLReaderImpl5parseERKNS_11InputSourceE+0xf5) [0x9c6c75]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_828XalanSourceTreeParserLiaison14parseXMLStreamERKN11xercesc_2_511InputSourceERKNS_14XalanDOMStringE+0x516) [0x101a546]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_824XalanDefaultParsedSourceC1ERKN11xercesc_2_511InputSourceEbPNS1_12ErrorHandlerEPNS1_14EntityResolverEPKtSA_+0x168) [0x102be88]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_816XalanTransformer11parseSourceERKNS_15XSLTInputSourceERPKNS_17XalanParsedSourceEb+0x5dd) [0x102e05d]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_816XalanTransformer9transformERKNS_15XSLTInputSourceES3_RKNS_16XSLTResultTargetE+0x98) [0x102e558]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceES7_RKNS_16XSLTResultTargetE+0x1d2) [0x107e082]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceES7_+0x37a) [0x107ddfa]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceE+0x173) [0x107d9e3]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z8xsltMainiPPc+0x336) [0x107d386]
+                 = /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xe7) [0x7f55f71b7b97]
+                 = ../run_base_test_test.0000/Xalan_base.test(_start+0x2a) [0x72e5fa]
+
+TYPE ERROR:
+        pointer  = 0x60fb573710 (heap)
+        expected = class xercesc_2_5::SchemaGrammar
+        actual   = class xercesc_2_5::DTDGrammar : public class xercesc_2_5::Grammar /*0..8*/ { class xercesc_2_5::MemoryManager *; /*8..16*/ class xercesc_2_5::NameIdPool<xercesc_2_5::DTDElementDecl> *; /*16..24*/ class xercesc_2_5::NameIdPool<xercesc_2_5::DTDElementDecl> *; /*24..32*/ class xercesc_2_5::NameIdPool<xercesc_2_5::DTDEntityDecl> *; /*32..40*/ class xercesc_2_5::NameIdPool<xercesc_2_5::XMLNotationDecl> *; /*40..48*/ int32_t; /*48..52*/ int8_t; /*52..53*/ class xercesc_2_5::XMLDTDDescription *; /*56..64*/ } [+0]
+                   >class xercesc_2_5::Grammar : public class xercesc_2_5::XSerializable /*0..8*/, public class xercesc_2_5::XMemory /*0..1*/ { } [+0]
+                   >>class xercesc_2_5::XSerializable { int8_t *; /*0..8*/ } [+0]
+                   >>>int8_t * [+0]
+                   >>class xercesc_2_5::XMemory { } [+0]
+        trace    = ../run_base_test_test.0000/Xalan_base.test(effective_type_error+0xca) [0x72eeea]
+                 = ../run_base_test_test.0000/Xalan_base.test(effective_type_check+0x1ed) [0x72e8dd]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_515SchemaValidator20preContentValidationEbb+0x3cb) [0xa26d4b]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner20resolveSchemaGrammarEPKtS2_+0x16ac) [0x94343c]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner19parseSchemaLocationEPKt+0x431) [0x9419c1]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner28scanRawAttrListforNameSpacesEi+0xe7d) [0x940a2d]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner14scanStartTagNSERb+0xe6f) [0x91be8f]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner11scanContentEv+0x622) [0x915e72]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner12scanDocumentERKNS_11InputSourceE+0x1a4) [0x9153c4]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_517SAX2XMLReaderImpl5parseERKNS_11InputSourceE+0xf5) [0x9c6c75]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_828XalanSourceTreeParserLiaison14parseXMLStreamERKN11xercesc_2_511InputSourceERKNS_14XalanDOMStringE+0x516) [0x101a546]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_824XalanDefaultParsedSourceC1ERKN11xercesc_2_511InputSourceEbPNS1_12ErrorHandlerEPNS1_14EntityResolverEPKtSA_+0x168) [0x102be88]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_816XalanTransformer11parseSourceERKNS_15XSLTInputSourceERPKNS_17XalanParsedSourceEb+0x5dd) [0x102e05d]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_816XalanTransformer9transformERKNS_15XSLTInputSourceES3_RKNS_16XSLTResultTargetE+0x98) [0x102e558]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceES7_RKNS_16XSLTResultTargetE+0x1d2) [0x107e082]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceES7_+0x37a) [0x107ddfa]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceE+0x173) [0x107d9e3]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z8xsltMainiPPc+0x336) [0x107d386]
+                 = /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xe7) [0x7f55f71b7b97]
+                 = ../run_base_test_test.0000/Xalan_base.test(_start+0x2a) [0x72e5fa]
+
+SUBOBJECT BOUNDS ERROR:
+        count    = 10
+        pointer  = 0x2d04ec6ffd8 (heap)
+        type     = int8_t [+0..+65536]
+        bounds   = 0..65536 (0..65536)
+        access   = 65480..65584 (65480..65584)
+        trace    = ../run_base_test_test.0000/Xalan_base.test(effective_bounds_error+0x139) [0x72f359]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZNK11xercesc_2_512DOMChildNode13getParentNodeEPKNS_7DOMNodeE+0x78) [0x7d4e28]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_513DOMParentNode12insertBeforeEPNS_7DOMNodeES2_+0x683) [0x832743]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_511DOMAttrImpl8setValueEPKt+0x48b) [0x7c2bdb]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512XSDDOMParser12startElementERKNS_14XMLElementDeclEjPKtRKNS_11RefVectorOfINS_7XMLAttrEEEjbb+0x13f9) [0xb98c39]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner14scanStartTagNSERb+0x53a4) [0x9203c4]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner11scanContentEv+0x622) [0x915e72]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner12scanDocumentERKNS_11InputSourceE+0x1a4) [0x9153c4]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_517AbstractDOMParser5parseERKNS_11InputSourceE+0xf2) [0x74ccc2]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner20resolveSchemaGrammarEPKtS2_+0xbcd) [0x94295d]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner19parseSchemaLocationEPKt+0x431) [0x9419c1]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner28scanRawAttrListforNameSpacesEi+0xe7d) [0x940a2d]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner14scanStartTagNSERb+0xe6f) [0x91be8f]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner11scanContentEv+0x622) [0x915e72]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_512IGXMLScanner12scanDocumentERKNS_11InputSourceE+0x1a4) [0x9153c4]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN11xercesc_2_517SAX2XMLReaderImpl5parseERKNS_11InputSourceE+0xf5) [0x9c6c75]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_828XalanSourceTreeParserLiaison14parseXMLStreamERKN11xercesc_2_511InputSourceERKNS_14XalanDOMStringE+0x516) [0x101a546]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_824XalanDefaultParsedSourceC1ERKN11xercesc_2_511InputSourceEbPNS1_12ErrorHandlerEPNS1_14EntityResolverEPKtSA_+0x168) [0x102be88]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_816XalanTransformer11parseSourceERKNS_15XSLTInputSourceERPKNS_17XalanParsedSourceEb+0x5dd) [0x102e05d]
+                 = ../run_base_test_test.0000/Xalan_base.test(_ZN10xalanc_1_816XalanTransformer9transformERKNS_15XSLTInputSourceES3_RKNS_16XSLTResultTargetE+0x98) [0x102e558]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceES7_RKNS_16XSLTResultTargetE+0x1d2) [0x107e082]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceES7_+0x37a) [0x107ddfa]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z9transformRN10xalanc_1_816XalanTransformerERK6ParamsRKNS_15XSLTInputSourceE+0x173) [0x107d9e3]
+                 = ../run_base_test_test.0000/Xalan_base.test(_Z8xsltMainiPPc+0x336) [0x107d386]
+                 = /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xe7) [0x7f55f71b7b97]
+                 = ../run_base_test_test.0000/Xalan_base.test(_start+0x2a) [0x72e5fa]
+
+--------------------------------------------------
+program        = /opt/Research/EffectiveSan-0.1.1-alpha/spec2006/cpu2006/benchspec/CPU2006/483.xalancbmk/run/run_base_test_test.0000/Xalan_base.test
+#type errors   = 2
+#bounds errors = 1
+time (ms)      = 530
+memory (KB)    = 55780
+--------------------------------------------------

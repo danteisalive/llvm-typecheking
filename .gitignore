@@ -1,0 +1,14 @@
+*.log
+*.so
+*.exe
+*.com
+*.class
+*.dll
+*.exe
+*.o
+build/
+config/
+effectivesan-0.1.1-alpha/
+LowFat-be90b9106a09dde4e9bf9524f002d7db493643eb/
+spec2006/cpu2006/
+*.zip
