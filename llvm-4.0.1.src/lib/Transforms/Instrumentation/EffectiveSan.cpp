@@ -342,7 +342,7 @@ public:
         child->nodeNo = nodeNumber++;
         q.push(child);
         tmp = "node" + std::to_string(node->nodeNo) + " -> node" +
-              std::to_string(child->nodeNo) + ";\n";
+              std::to_string(child->nodeNo) + ";\n";;
         if (tmp.find_first_of("node") != 0)
           llvm::report_fatal_error("Worng string ", false);
 
@@ -1903,8 +1903,11 @@ static llvm::Constant *buildTypeInfo(llvm::Module &M, llvm::DIType *Ty,
       llvm::ConstantExpr::getBitCast(InfoGV, InfoTy->getPointerTo());
 
   tInfo.infos.insert(std::make_pair(Ty, Info));
+
+  Ty->dump();
   return Info;
 }
+
 
 /*
  * Build a hash value for type `Ty'.
