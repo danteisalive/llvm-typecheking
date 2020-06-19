@@ -9,6 +9,8 @@
 build/
 config/
 effectivesan-0.1.1-alpha/
+llvm-4.0.1.src/lib/Transforms/Instrumentation/CMakeLists.txt
+mytoolchain/
 LowFat-be90b9106a09dde4e9bf9524f002d7db493643eb/
 spec2006/cpu2006/
 *.zip
