@@ -1,3 +1,0 @@
-digraph Test {
-node0 [label="root"];
-}

@@ -111,13 +111,13 @@ missing!"
         https://github.com/GJDuck/LowFat/archive/$LOWFAT_VERSION.zip
 fi
 
-echo -e "${GREEN}$0${OFF}: extracting LowFat files..."
-yes | unzip "$LOWFAT_SRC_ZIP" LowFat-$LOWFAT_VERSION'/config/*' -d .
-yes | unzip "$LOWFAT_SRC_ZIP" \
-    LowFat-$LOWFAT_VERSION'/llvm-4.0.0.src/projects/compiler-rt/lib/lowfat/lowfat*' \
-    -d .
-mv -f LowFat-$LOWFAT_VERSION/config/ config
-mv -f LowFat-$LOWFAT_VERSION/llvm-4.0.0.src/projects/compiler-rt/lib/lowfat/* \
+# echo -e "${GREEN}$0${OFF}: extracting LowFat files..."
+# yes | unzip "$LOWFAT_SRC_ZIP" LowFat-$LOWFAT_VERSION'/config/*' -d .
+# yes | unzip "$LOWFAT_SRC_ZIP" \
+#     LowFat-$LOWFAT_VERSION'/llvm-4.0.0.src/projects/compiler-rt/lib/lowfat/lowfat*' \
+#     -d .
+cp -rf LowFat-$LOWFAT_VERSION/config/ .
+cp -rf LowFat-$LOWFAT_VERSION/llvm-4.0.0.src/projects/compiler-rt/lib/lowfat/* \
     llvm-4.0.1.src/projects/compiler-rt/lib/effective/.
 
 CMAKE=`which cmake`

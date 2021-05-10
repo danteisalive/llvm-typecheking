@@ -14,25 +14,10 @@
  *     https://doi.org/10.1145/3192366.3192388
  */
 
-#define NOINLINE __attribute__((noinline))
+#define NOINLINE    __attribute__((noinline))
 
-struct T
-{
-    int a[3];
-    char *s;
-};
-struct S
-{
-    float f;
-    struct T t;
-};
-
-class MyClass
-{
-public:
-    T *a;
-    double b;
-};
+struct T {int a[3]; char *s;};
+struct S {float f; struct T t;};
 
 /*
  * Get the i^th value of an array pointed to by `ptr'.
@@ -52,26 +37,21 @@ int main(void)
 
     int *p = s[10].t.a;
 
-    getValue<int>(p, 0);  // OK
-    getValue<int>(p, 1);  // OK
-    getValue<int>(p, 2);  // OK
-    getValue<int>(p, 3);  // Bounds error
-    getValue<int>(p, -1); // Bounds error
+    getValue<int>(p, 0);            // OK
+    getValue<int>(p, 1);            // OK
+    getValue<int>(p, 2);            // OK
+    getValue<int>(p, 3);            // Bounds error
+    getValue<int>(p, -1);           // Bounds error
 
     double *q = (double *)p;
 
-    getValue<double>(q, 0); // Type error
+    getValue<double>(q, 0);         // Type error
 
     delete[] s;
 
-    getValue<int>(p, 0); // UAF error
-
-    MyClass *class1 = new MyClass();
-    class1->a = &(s[10].t);
-    class1->a->a[0] = 12;
-
-    double &b = class1->b;
-    b = 12.3;
+    getValue<int>(p, 0);            // UAF error
 
     return 0;
 }
+
+

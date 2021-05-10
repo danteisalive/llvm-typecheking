@@ -1,5 +1,0 @@
-digraph Test {
-	node0 [label="root"];
-	node1 [label="char"];
-	node0 -> node1;
-}
