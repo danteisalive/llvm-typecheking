@@ -239,6 +239,7 @@ struct LayoutEntry {
   intptr_t ub;
   bool priority;
   bool deleted;
+  bool coerced;
 };
 typedef std::multimap<size_t, LayoutEntry> LayoutInfo;
 typedef std::map<size_t, LayoutEntry *> FlattenedLayoutInfo;
@@ -1050,7 +1051,7 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
           offset, lb, ub, hval, (intptr_t)hval);
   Ty->dump();
 #endif
-  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, priority, false};
+  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, priority, false, false};
   layout.insert(std::make_pair(offset, entry));
 
   // Add entry for any type coercion:
@@ -1072,7 +1073,7 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
   fprintf(stderr, "\t+coerced <%.16lX> {%zd}\n", hval, (intptr_t)hval);
 #endif
 
-  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, priority, false};
+  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, priority, false, true};
   layout.insert(std::make_pair(offset, coercedEntry));
 }
 
@@ -1438,34 +1439,53 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
                                                 size_t layoutLen,
                                                 LayoutInfo &layout) {
   
-  // Step (1): Flatten the layout:
-  FlattenedLayoutInfo flattenedLayout;
-  uint64_t mask = layoutLen - 1;
-  for (auto &entries : layout) {
+  for (auto &entries : layout){
     size_t offset = entries.first;
     LayoutEntry &lEntry = entries.second;
-    if (!placeFlattenedLayoutEntry(flattenedLayout, hval, offset, mask,
-                                   lEntry)) {
-      // We have failed to build a suitable layout (too many
-      // collisions), so try again:
-      EFFECTIVE_FATAL_ERROR("Too many collisions!\n");
-      return;
+
+    if (lEntry.deleted)
+    {
+        EFFECTIVE_FATAL_ERROR("Entry is deleted! What does this mean? Explore the situation!\n");
     }
-  }
-
-
-  // Step (2): Print the fllatend layout:
-  for (auto &entries : flattenedLayout) {
-    size_t offset = entries.first;
-    LayoutEntry *lEntry = entries.second;
-    assert(!lEntry->deleted);
+    
     #ifdef TYCHE_LAYOUT_DEBUG
-      fprintf(stderr, "TYCHE(%zu,%zu)(%p) = [%zd..%zd] = ", 
-              lEntry->priority, lEntry->offset, lEntry->type, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
-      lEntry->type->dump();
-      fprintf(stderr, "\n");
+      fprintf(stderr, "TYCHE[%zu](%p)(%zu) = [%zd..%zd] = ", 
+              lEntry.offset, lEntry.type, lEntry.coerced, lEntry.offset + lEntry.lb, lEntry.offset + lEntry.ub);
+      lEntry.type->dump();
+      //fprintf(stderr, "\n");
     #endif
   }
+
+
+  // // Step (1): Flatten the layout:
+  // FlattenedLayoutInfo flattenedLayout;
+  // uint64_t mask = layoutLen - 1;
+  // for (auto &entries : layout) {
+  //   size_t offset = entries.first;
+  //   LayoutEntry &lEntry = entries.second;
+  //   if (!placeFlattenedLayoutEntry(flattenedLayout, hval, offset, mask,
+  //                                  lEntry)) {
+  //     // We have failed to build a suitable layout (too many
+  //     // collisions), so try again:
+  //     EFFECTIVE_FATAL_ERROR("Too many collisions!\n");
+  //     return;
+  //   }
+  // }
+
+
+  // // Step (2): Print the fllatend layout:
+  // //for (auto &entries : flattenedLayout) {
+  // for (auto flattedLayoutIt = flattenedLayout.begin(); flattedLayoutIt != flattenedLayout.end(); flattedLayoutIt++){
+  //   size_t offset = flattedLayoutIt->first;
+  //   LayoutEntry *lEntry = flattedLayoutIt->second;
+  //   assert(!lEntry->deleted);
+  //   #ifdef TYCHE_LAYOUT_DEBUG
+  //     fprintf(stderr, "TYCHE(%zu)(%p) = [%zd..%zd] = ", 
+  //             lEntry->offset, lEntry->type, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
+  //     lEntry->type->dump();
+  //     //fprintf(stderr, "\n");
+  //   #endif
+  // }
 
 
 }

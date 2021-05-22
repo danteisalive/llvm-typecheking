@@ -16,8 +16,15 @@
 
 #define NOINLINE    __attribute__((noinline))
 
+union Union
+{
+    char b[10];
+    double * d_pointer;
+};
+
+
 struct T {int a[3]; char *s;};
-struct S {float f; struct T t;};
+struct S {float f; struct T t; union Union u;};
 
 /*
  * Get the i^th value of an array pointed to by `ptr'.
