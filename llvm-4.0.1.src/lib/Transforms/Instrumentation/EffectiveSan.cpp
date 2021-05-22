@@ -190,6 +190,15 @@ struct TyCheEntry
 
 };
 
+/*
+TyChe Metadata structure
+*/
+
+
+struct TyCheMetadata {
+    uint64_t TypeMetadata[8]; // an aligned 64 Byte CacheLine
+};
+
 
 
 /*
@@ -1388,11 +1397,11 @@ static bool placeFlattenedLayoutEntry(FlattenedLayoutInfo &flattenedLayout,
     auto j = flattenedLayout.find(eidx);
     if (j == flattenedLayout.end()) {
 #ifdef EFFECTIVE_LAYOUT_DEBUG
-      fprintf(stderr,
-              "ADD(0x%.16lX, 0x%.16lX, %zu) = "
-              "0x%.16lX {%zd} [%zd..%zd] index=%zu\n",
-              hval1, hval2, offset, hval, (ssize_t)hval, offset + lEntry.lb,
-              offset + lEntry.ub, eidx);
+      // fprintf(stderr,
+      //         "ADD(0x%.16lX, 0x%.16lX, %zu) = "
+      //         "0x%.16lX {%zd} [%zd..%zd] index=%zu\n",
+      //         hval1, hval2, offset, hval, (ssize_t)hval, offset + lEntry.lb,
+      //         offset + lEntry.ub, eidx);
 #endif
       flattenedLayout.insert(std::make_pair(eidx, &lEntry));
       break;
@@ -1439,54 +1448,91 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
                                                 size_t layoutLen,
                                                 LayoutInfo &layout) {
   
-  for (auto &entries : layout){
-    size_t offset = entries.first;
-    LayoutEntry &lEntry = entries.second;
-
-    if (lEntry.deleted)
-    {
-        EFFECTIVE_FATAL_ERROR("Entry is deleted! What does this mean? Explore the situation!\n");
-    }
-    
-    #ifdef TYCHE_LAYOUT_DEBUG
-      fprintf(stderr, "TYCHE[%zu](%p)(%zu) = [%zd..%zd] = ", 
-              lEntry.offset, lEntry.type, lEntry.coerced, lEntry.offset + lEntry.lb, lEntry.offset + lEntry.ub);
-      lEntry.type->dump();
-      //fprintf(stderr, "\n");
-    #endif
-  }
-
-
-  // // Step (1): Flatten the layout:
-  // FlattenedLayoutInfo flattenedLayout;
-  // uint64_t mask = layoutLen - 1;
-  // for (auto &entries : layout) {
+  // for (auto &entries : layout){
   //   size_t offset = entries.first;
   //   LayoutEntry &lEntry = entries.second;
-  //   if (!placeFlattenedLayoutEntry(flattenedLayout, hval, offset, mask,
-  //                                  lEntry)) {
-  //     // We have failed to build a suitable layout (too many
-  //     // collisions), so try again:
-  //     EFFECTIVE_FATAL_ERROR("Too many collisions!\n");
-  //     return;
+
+  //   if (lEntry.deleted)
+  //   {
+  //       EFFECTIVE_FATAL_ERROR("Entry is deleted! What does this mean? Explore the situation!\n");
   //   }
-  // }
-
-
-  // // Step (2): Print the fllatend layout:
-  // //for (auto &entries : flattenedLayout) {
-  // for (auto flattedLayoutIt = flattenedLayout.begin(); flattedLayoutIt != flattenedLayout.end(); flattedLayoutIt++){
-  //   size_t offset = flattedLayoutIt->first;
-  //   LayoutEntry *lEntry = flattedLayoutIt->second;
-  //   assert(!lEntry->deleted);
+    
   //   #ifdef TYCHE_LAYOUT_DEBUG
-  //     fprintf(stderr, "TYCHE(%zu)(%p) = [%zd..%zd] = ", 
-  //             lEntry->offset, lEntry->type, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
-  //     lEntry->type->dump();
+  //     fprintf(stderr, "TYCHE[%zu](%p)(%zu) = [%zd..%zd] = ", 
+  //             lEntry.offset, lEntry.type, lEntry.coerced, lEntry.offset + lEntry.lb, lEntry.offset + lEntry.ub);
+  //     lEntry.type->dump();
   //     //fprintf(stderr, "\n");
   //   #endif
   // }
 
+
+
+  // Step (1): Flatten the layout:
+  FlattenedLayoutInfo flattenedLayout;
+  uint64_t mask = layoutLen - 1;
+  for (auto &entries : layout) {
+    size_t offset = entries.first;
+    LayoutEntry &lEntry = entries.second;
+    if (!placeFlattenedLayoutEntry(flattenedLayout, hval, offset, mask,
+                                   lEntry)) {
+      // We have failed to build a suitable layout (too many
+      // collisions), so try again:
+      EFFECTIVE_FATAL_ERROR("Too many collisions!\n");
+      return;
+    }
+  }
+
+
+  std::multimap <uint64_t, LayoutEntry *> OffsetSoretedFlattenedLayoutInfo;
+
+  for (auto &entries : flattenedLayout) {
+      OffsetSoretedFlattenedLayoutInfo.insert(std::make_pair(entries.second->offset, entries.second));
+  }
+
+  // Step (2): Print the fllatend layout:
+  for (auto &entries : OffsetSoretedFlattenedLayoutInfo) {
+
+    LayoutEntry *lEntry = entries.second;
+    assert(!lEntry->deleted);
+    assert(entries.first == lEntry->offset);
+    #ifdef TYCHE_LAYOUT_DEBUG
+      fprintf(stderr, "TYCHE[%zu](%p)(%zu) = [%zd..%zd] = ", 
+              entries.first, lEntry->type, lEntry->coerced, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
+      lEntry->type->dump();
+      
+    #endif
+  }
+  fprintf(stderr, "\n");
+
+
+  // // Step (3): build the LLVM representation of the array:
+  // llvm::LLVMContext &Cxt = M.getContext();
+  // std::vector<llvm::Constant *> Entries;
+  // bool done = false;
+  // for (size_t i = 0; !done; i++) {
+  //   auto j = flattenedLayout.find(i);
+  //   if (j == flattenedLayout.end()) {
+  //     Entries.push_back(EmptyEntry);
+  //     done = (i >= layoutLen);
+  //     continue;
+  //   }
+  //   const LayoutEntry &lEntry = *j->second;
+
+  //   std::vector<llvm::Constant *> Elems;
+  //   Elems.push_back(
+  //       llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.finalHash));
+  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
+  //   Elems.push_back(llvm::ConstantVector::get(
+  //       {llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.lb),
+  //        llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.ub)}));
+  //   llvm::Constant *Entry = llvm::ConstantStruct::get(EntryTy, Elems);
+
+  //   Entries.push_back(Entry);
+  // }
+
+  // llvm::ArrayType *LayoutTy = llvm::ArrayType::get(EntryTy, Entries.size());
+  // llvm::Constant *Layout = llvm::ConstantArray::get(LayoutTy, Entries);
+  
 
 }
 
