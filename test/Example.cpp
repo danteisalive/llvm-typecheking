@@ -16,6 +16,13 @@
 
 #define NOINLINE    __attribute__((noinline))
 
+enum Enum
+{
+    TEST1,
+    TEST2,
+    TEST3
+};
+
 union Union
 {
     char b[10];
@@ -23,8 +30,18 @@ union Union
 };
 
 
-struct T {int a[3]; char *s;};
-struct S {float f; struct T t; union Union u;};
+struct T {
+    int a[3]; 
+    char *s; 
+};
+
+struct S {
+    float f; 
+    struct T t; 
+    union Union u; 
+    enum Enum e;
+    float fam_float[];
+};
 
 /*
  * Get the i^th value of an array pointed to by `ptr'.

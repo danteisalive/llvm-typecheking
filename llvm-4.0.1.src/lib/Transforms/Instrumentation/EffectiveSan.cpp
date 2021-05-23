@@ -159,13 +159,6 @@ static HashVal final(HashContext &Cxt) {
   return val;
 }
 
-enum TYCHE_CAPABILITY_TYPES
-{
-  BASIC_TYPE,
-  COMPOSITE_TYPE_ENUM,
-  COMPOSITE_TYPE_STRUCT,
-  COMPOSITE_TYPE_CLASS
-};
 
 
 /*
@@ -174,19 +167,9 @@ TyChe Capabilities
 struct TyCheEntry
 {
 
-  TYCHE_CAPABILITY_TYPES Type;
-  uint64_t Size;
+  unsigned Type;
   llvm::DIType* Parent;
-
-  // offset map for struct, class, and enum types
-  std::map<uint64_t, llvm::DIType* > offset_map;
-
-  TyCheEntry(TYCHE_CAPABILITY_TYPES _type, uint64_t _size)
-  {
-    this->Type = _type;
-    this->Parent = nullptr;
-    this->Size = _size;
-  }
+  bool FAM;
 
 };
 
@@ -249,6 +232,7 @@ struct LayoutEntry {
   bool priority;
   bool deleted;
   bool coerced;
+  TyCheEntry tyche_entry;
 };
 typedef std::multimap<size_t, LayoutEntry> LayoutInfo;
 typedef std::map<size_t, LayoutEntry *> FlattenedLayoutInfo;
@@ -686,6 +670,7 @@ static llvm::DIType *normalizePointerType(llvm::DIType *Ty) {
  * "Normalize" a type.
  */
 static llvm::DIType *normalizeType(llvm::DIType *Ty) {
+
   while (Ty != nullptr) {
     if (isVPtrType(Ty))
       return Int8PtrTy;
@@ -1030,7 +1015,7 @@ static uint64_t getCoercedTypeHash(llvm::DIType *Ty) {
  */
 static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
                            llvm::DIType *Ty, intptr_t lb, intptr_t ub,
-                           bool priority) {
+                           bool priority, TyCheEntry tyche_entry) {
   Ty = normalizeType(Ty);
   // Ty->dump();
   HashVal hash = buildTypeHash(Ty, tInfo);
@@ -1059,8 +1044,9 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
   fprintf(stderr, "\t%s [%+zd] (%zd..%zd) <%.16lX> {%zd} ", name.c_str(),
           offset, lb, ub, hval, (intptr_t)hval);
   Ty->dump();
+  if (tyche_entry.Parent != nullptr) tyche_entry.Parent->dump();
 #endif
-  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, priority, false, false};
+  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, priority, false, false, tyche_entry};
   layout.insert(std::make_pair(offset, entry));
 
   // Add entry for any type coercion:
@@ -1082,7 +1068,7 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
   fprintf(stderr, "\t+coerced <%.16lX> {%zd}\n", hval, (intptr_t)hval);
 #endif
 
-  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, priority, false, true};
+  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, priority, false, true, tyche_entry};
   layout.insert(std::make_pair(offset, coercedEntry));
 }
 
@@ -1218,11 +1204,17 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
                               bool inherited, TypeInfo &tInfo,
                               LayoutInfo &layout) {
   if (offset == fam.offset && Ty == fam.type) {
+    //fam.type->dump();
     // Special handling of the Flexible Array Member (FAM), if any.
     // It is left to effective_type_check() to set the correct lb.
+    TyCheEntry tyCheEntry;
+    tyCheEntry.FAM = true;
+    tyCheEntry.Type = llvm::dwarf::DW_TAG_array_type;
+    tyCheEntry.Parent = fam.type;
+
     Ty = normalizeType(Ty);
     intptr_t lb = -EFFECTIVE_DELTA, ub = EFFECTIVE_DELTA;
-    addLayoutEntry(layout, tInfo, offset, Ty, lb, ub, priority);
+    addLayoutEntry(layout, tInfo, offset, Ty, lb, ub, priority, tyCheEntry);
     auto *CompositeTy = getStructType(Ty);
     if (CompositeTy != nullptr)
       buildLayout(CompositeTy, offset, fam, tInfo, layout,
@@ -1230,26 +1222,30 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
     return;
   }
 
-  // Ty->dump();
+  
   auto *ElemTy = getArrayElementType(Ty);
   if (ElemTy == nullptr) {
     // This is a non-array member; so we just add an entry for Ty:
     Ty = normalizeType(Ty);
 
     auto *CompositeTy = getStructType(Ty);
+
+    TyCheEntry tyCheEntry;
+    tyCheEntry.FAM = false;
+    tyCheEntry.Type = llvm::dwarf::DW_TAG_null;
+    tyCheEntry.Parent = nullptr;
+
     addLayoutEntry(layout, tInfo, offset, Ty, lb, ub,
-                   (priority || CompositeTy != nullptr));
+                   (priority || CompositeTy != nullptr), tyCheEntry);
 
     // If `Ty' is a struct type, then recursively build the layout:
     if (CompositeTy != nullptr) {
-      // Ty->dump();
       buildLayout(CompositeTy, offset, fam, tInfo, layout,
                   /*priority=*/false, inherited);
     }
   } else {
     // This is an array member of type ElemTy[N]; so we must add an
     // entry for each array element.
-    // Ty->dump();
     ElemTy = normalizeType(ElemTy);
     auto arrayRange = getArrayRange(Ty);
     size_t arraySize = getSizeOfType(Ty);
@@ -1447,24 +1443,6 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
                                                 uint64_t hval,
                                                 size_t layoutLen,
                                                 LayoutInfo &layout) {
-  
-  // for (auto &entries : layout){
-  //   size_t offset = entries.first;
-  //   LayoutEntry &lEntry = entries.second;
-
-  //   if (lEntry.deleted)
-  //   {
-  //       EFFECTIVE_FATAL_ERROR("Entry is deleted! What does this mean? Explore the situation!\n");
-  //   }
-    
-  //   #ifdef TYCHE_LAYOUT_DEBUG
-  //     fprintf(stderr, "TYCHE[%zu](%p)(%zu) = [%zd..%zd] = ", 
-  //             lEntry.offset, lEntry.type, lEntry.coerced, lEntry.offset + lEntry.lb, lEntry.offset + lEntry.ub);
-  //     lEntry.type->dump();
-  //     //fprintf(stderr, "\n");
-  //   #endif
-  // }
-
 
 
   // Step (1): Flatten the layout:
@@ -1496,9 +1474,11 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
     assert(!lEntry->deleted);
     assert(entries.first == lEntry->offset);
     #ifdef TYCHE_LAYOUT_DEBUG
-      fprintf(stderr, "TYCHE[%zu](%p)(%zu) = [%zd..%zd] = ", 
-              entries.first, lEntry->type, lEntry->coerced, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
+      fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] = ", 
+              entries.first, lEntry->type, lEntry->coerced, lEntry->tyche_entry.FAM, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
       lEntry->type->dump();
+      if (lEntry->tyche_entry.Parent != nullptr)
+        lEntry->tyche_entry.Parent->dump();
       
     #endif
   }
@@ -2190,87 +2170,13 @@ static void initializeTyCheCapabilityTypes(llvm::Module &M)
 }
 
 
-static void compileTypeForTyChe(llvm::Module &_M, llvm::DIType *_Ty, TyCheInfo& _tyCheInfo)
-{
-    // we already compiled this type for TyChe
-    if (_tyCheInfo.tyCheDAG.find(_Ty) != _tyCheInfo.tyCheDAG.end())
-      return;
-
-    auto *DerivedTy = llvm::dyn_cast<llvm::DIDerivedType>(_Ty);
-    auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(_Ty);
-    auto *FuncTy = llvm::dyn_cast<llvm::DISubroutineType>(_Ty);
-    auto *BasicTy = llvm::dyn_cast<llvm::DIBasicType>(_Ty);
-
-    if (BasicTy != nullptr)
-    {
-      // just insert the basic types into the DAG
-      _tyCheInfo.tyCheDAG.insert(std::make_pair(_Ty, TyCheEntry(TYCHE_CAPABILITY_TYPES::BASIC_TYPE, BasicTy->getSizeInBits())));
-      BasicTy->dump();
-    }
-    else if (CompositeTy != nullptr && CompositeTy->getTag() == llvm::dwarf::DW_TAG_enumeration_type)
-    {
-      
-      // for enums just insert it into the DAG. They are always integers and linear.
-      // They have different capability to capature the size and min amd max 
-      _tyCheInfo.tyCheDAG.insert(std::make_pair(_Ty, TyCheEntry(TYCHE_CAPABILITY_TYPES::COMPOSITE_TYPE_ENUM, CompositeTy->getSizeInBits())));
-      CompositeTy->dump();
-
-    }
-    else if (CompositeTy != nullptr && CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type)
-    {
-      // creat the offset map regardless of the type of elements. Later we will use these offset maps to creat a flattened offset map
-      _tyCheInfo.tyCheDAG.insert(std::make_pair(_Ty, TyCheEntry(TYCHE_CAPABILITY_TYPES::COMPOSITE_TYPE_STRUCT, CompositeTy->getSizeInBits())));
-      CompositeTy->dump();
-      llvm::DINodeArray Elements = CompositeTy->getElements();
-      for (auto Element : Elements) {
-          
-          if (llvm::isa<llvm::DIType>(Element)) {
-            
-            auto *elementDrivedTy = llvm::dyn_cast<llvm::DIDerivedType>(Element);
-            if (elementDrivedTy != nullptr && elementDrivedTy->getTag() == llvm::dwarf::DW_TAG_member)
-            {
-                elementDrivedTy->dump();
-                
-                // add this member to offset_map of the parent
-                llvm::DIType* elementDIType = llvm::dyn_cast<llvm::DIType>(Element); 
-                auto temp = _tyCheInfo.tyCheDAG.find(_Ty);
-                assert (temp != _tyCheInfo.tyCheDAG.end());
-                temp->second.offset_map.insert(std::make_pair(elementDrivedTy->getOffsetInBits(), elementDIType));
-                
-
-                llvm::DIType* baseType = elementDrivedTy->getBaseType().resolve();  
-                if (baseType != nullptr)
-                {
-                  baseType->dump();
-                }
-                else
-                {
-                  EFFECTIVE_FATAL_ERROR("Base Type Null?!\n");
-                }
-            }
-            else 
-            {
-               EFFECTIVE_FATAL_ERROR("Mmeber not Derived Type?!\n");
-            }
-            
-          }
-          else 
-          {
-            EFFECTIVE_FATAL_ERROR("composite type null element?!\n");
-          }
-      }
-    
-    }
-
-}
-
-
 /*
  * Compile the type into the EffectiveSan metadata representation for type
  * checking (i.e., the EFFECTIVE_TYPE metadata).
  */
 static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
                                     TypeInfo &tInfo, unsigned multiplier = 1) {
+  
   Ty = normalizeType(Ty);
 
   auto i = tInfo.cache.find(Ty);
@@ -2324,7 +2230,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   } else
     metaName << std::hex << hash.i64[1] << hash.i64[0];
 
-  //Ty->dump();
+  
   TypeEntry &entry = addTypeEntry(tInfo, Ty, humanName, hash, nullptr, isInt8);
 
   if (auto *MetaGV = M.getGlobalVariable(metaName.str())) {
@@ -2343,7 +2249,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
     msg += ") is a forward declaration; type metadata will be incomplete";
     warning(M, msg);
   }
-
+  //Ty->dump();
   // By default, any type can be coerced into (char[]).
   llvm::LLVMContext &Cxt = M.getContext();
   llvm::Constant *Next = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt),
@@ -2351,7 +2257,11 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
 
   // An object of type T[] is always an object of type T[]:
   //Ty->dump();
-  addLayoutEntry(layout, tInfo, 0, Ty, -EFFECTIVE_DELTA, EFFECTIVE_DELTA, true);
+  TyCheEntry tyCheEntry;
+  tyCheEntry.FAM = false;
+  tyCheEntry.Type = llvm::dwarf::DW_TAG_null;
+  tyCheEntry.Parent = nullptr;
+  addLayoutEntry(layout, tInfo, 0, Ty, -EFFECTIVE_DELTA, EFFECTIVE_DELTA, true, tyCheEntry);
 
   if (isVPtrType(Ty)) {
     // Virtual Function Table pointer.  Can be coerced into (void *):
@@ -2365,8 +2275,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   } else if (DerivedTy != nullptr &&
              (DerivedTy->getTag() == llvm::dwarf::DW_TAG_pointer_type ||
               DerivedTy->getTag() == llvm::dwarf::DW_TAG_reference_type ||
-              DerivedTy->getTag() ==
-                  llvm::dwarf::DW_TAG_rvalue_reference_type)) {
+              DerivedTy->getTag() == llvm::dwarf::DW_TAG_rvalue_reference_type)) {
     // Pointer type (T *)
     // All pointers can be coerced into (void *):
     Next = llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt),
@@ -2375,6 +2284,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
              CompositeTy->getTag() == llvm::dwarf::DW_TAG_enumeration_type) {
     // Enum type.
     // All enums can be coerced to (int):
+    CompositeTy->dump();
     const TypeEntry &intEntry = compileType(M, Int32Ty, tInfo);
     tInfo.cache.erase(Ty);
     tInfo.cache.insert(std::make_pair(Ty, intEntry));
@@ -2385,6 +2295,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
               CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type ||
               CompositeTy->getTag() == llvm::dwarf::DW_TAG_union_type)) 
   {
+    CompositeTy->dump();
     // Struct or class type
     fam = getFlexibleArrayMember(CompositeTy);
 #ifdef EFFECTIVE_LAYOUT_DEBUG
@@ -4608,10 +4519,6 @@ struct EffectiveSan : public llvm::ModulePass {
     // root->PrintPretty("", true, typeTreeOut, false);
     // prone(root);
     // root->printDAG(moduleName, fileName);
-    
-    
-    // for (auto &TypeEntry: tInfo.infos)
-    //     compileTypeForTyChe(M, TypeEntry.first, tycheInfo);
       
 
     /*
