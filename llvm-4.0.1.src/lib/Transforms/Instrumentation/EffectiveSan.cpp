@@ -233,6 +233,7 @@ struct LayoutEntry {
   bool deleted;
   bool coerced;
   TyCheEntry tyche_entry;
+  std::vector<llvm::DIType*> TyCheDependencyTree;
 };
 typedef std::multimap<size_t, LayoutEntry> LayoutInfo;
 typedef std::map<size_t, LayoutEntry *> FlattenedLayoutInfo;
@@ -512,7 +513,9 @@ static llvm::DIType *normalizeType(llvm::DIType *Ty);
 static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
                               intptr_t lb, intptr_t ub, bool priority,
                               bool inherited, TypeInfo &tInfo,
-                              LayoutInfo &layout, TyCheEntry prevTyCheEntry);
+                              LayoutInfo &layout, TyCheEntry prevTyCheEntry,
+                              std::vector<llvm::DIType *>& TyCheDependencyTree);
+
 static void buildTypeHumanName(llvm::DIType *Ty, std::string &humanName,
                                TypeInfo &tInfo);
 static HashVal buildTypeHash(llvm::DIType *Ty, TypeInfo &tInfo);
@@ -1015,7 +1018,8 @@ static uint64_t getCoercedTypeHash(llvm::DIType *Ty) {
  */
 static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
                            llvm::DIType *Ty, intptr_t lb, intptr_t ub,
-                           bool priority, TyCheEntry tyche_entry) {
+                           bool priority, TyCheEntry tyche_entry, 
+                           std::vector<llvm::DIType*>& TyCheDependencyTree) {
   Ty = normalizeType(Ty);
   // Ty->dump();
   HashVal hash = buildTypeHash(Ty, tInfo);
@@ -1046,7 +1050,7 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
   Ty->dump();
   if (tyche_entry.Parent != nullptr) tyche_entry.Parent->dump();
 #endif
-  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, priority, false, false, tyche_entry};
+  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, priority, false, false, tyche_entry, TyCheDependencyTree};
   layout.insert(std::make_pair(offset, entry));
 
   // Add entry for any type coercion:
@@ -1068,7 +1072,7 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
   fprintf(stderr, "\t+coerced <%.16lX> {%zd}\n", hval, (intptr_t)hval);
 #endif
 
-  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, priority, false, true, tyche_entry};
+  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, priority, false, true, tyche_entry, TyCheDependencyTree};
   layout.insert(std::make_pair(offset, coercedEntry));
 }
 
@@ -1150,6 +1154,7 @@ static llvm::DIType *getMemberType(llvm::DIType *Ty, size_t &offset,
  */
 static void buildLayout(llvm::DICompositeType *CompositeTy, size_t offsetBase,
                         const FAM &fam, TypeInfo &tInfo, LayoutInfo &layout,
+                        std::vector<llvm::DIType*>& TyCheDependencyTree,
                         bool priority = true, bool inherited = false) {
   llvm::DINodeArray Elements = CompositeTy->getElements();
   for (auto Element : Elements) {
@@ -1190,12 +1195,16 @@ static void buildLayout(llvm::DICompositeType *CompositeTy, size_t offsetBase,
     tyCheEntry.FAM = false;
     tyCheEntry.Parent = CompositeTy;
     tyCheEntry.Type = CompositeTy->getTag();
-
+    
     size_t size = getSizeOfType(Ty);
     offset = offset / CHAR_BIT;
     intptr_t lb = 0, ub = size;
+
+    TyCheDependencyTree.push_back(llvm::dyn_cast<llvm::DIType>(Element));
     buildMemberLayout(Ty, offset, fam, lb, ub, priority,
-                      (inherited || isInheritance), tInfo, layout, tyCheEntry);
+                      (inherited || isInheritance), tInfo, layout, tyCheEntry, TyCheDependencyTree);
+    
+    TyCheDependencyTree.pop_back();
   }
 }
 
@@ -1207,7 +1216,8 @@ static void buildLayout(llvm::DICompositeType *CompositeTy, size_t offsetBase,
 static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
                               intptr_t lb, intptr_t ub, bool priority,
                               bool inherited, TypeInfo &tInfo,
-                              LayoutInfo &layout, TyCheEntry prevTyCheEntry) {
+                              LayoutInfo &layout, TyCheEntry prevTyCheEntry, 
+                              std::vector<llvm::DIType*>& TyCheDependencyTree) {
   if (offset == fam.offset && Ty == fam.type) {
     //fam.type->dump();
     // Special handling of the Flexible Array Member (FAM), if any.
@@ -1220,11 +1230,17 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
 
     Ty = normalizeType(Ty);
     intptr_t lb = -EFFECTIVE_DELTA, ub = EFFECTIVE_DELTA;
-    addLayoutEntry(layout, tInfo, offset, Ty, lb, ub, priority, famTyCheEntry);
+    addLayoutEntry(layout, tInfo, offset, Ty, lb, ub, priority, famTyCheEntry, TyCheDependencyTree);
     auto *CompositeTy = getStructType(Ty);
     if (CompositeTy != nullptr)
-      buildLayout(CompositeTy, offset, fam, tInfo, layout,
+    {
+      TyCheDependencyTree.push_back(CompositeTy);
+      buildLayout(CompositeTy, offset, fam, tInfo, layout, TyCheDependencyTree,
                   /*priority=*/false, /*inherited=*/false);
+      TyCheDependencyTree.pop_back();
+    }
+
+      
     return;
   }
 
@@ -1237,12 +1253,14 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
     auto *CompositeTy = getStructType(Ty);
 
     addLayoutEntry(layout, tInfo, offset, Ty, lb, ub,
-                   (priority || CompositeTy != nullptr), prevTyCheEntry);
+                   (priority || CompositeTy != nullptr), prevTyCheEntry, TyCheDependencyTree);
 
     // If `Ty' is a struct type, then recursively build the layout:
     if (CompositeTy != nullptr) {
-      buildLayout(CompositeTy, offset, fam, tInfo, layout,
+      TyCheDependencyTree.push_back(CompositeTy);
+      buildLayout(CompositeTy, offset, fam, tInfo, layout, TyCheDependencyTree,
                   /*priority=*/false, inherited);
+      TyCheDependencyTree.pop_back();
     }
   } else {
     // This is an array member of type ElemTy[N]; so we must add an
@@ -1284,9 +1302,11 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
         size_t elemOffset = j * elemSize;
         size_t subArrayOffset = i + j * elemSize;
         bool newPriority = (i == 0 && j == 0);
+        TyCheDependencyTree.push_back(Ty);
         buildMemberLayout(ElemTy, offset + subArrayOffset, fam, lb - elemOffset,
                           ub - elemOffset, newPriority,
-                          /*inherited=*/false, tInfo, layout, tyCheEntry);
+                          /*inherited=*/false, tInfo, layout, tyCheEntry, TyCheDependencyTree);
+        TyCheDependencyTree.pop_back();
       }
     }
   }
@@ -1479,6 +1499,7 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
   }
 
   // Step (2): Print the fllatend layout:
+  fprintf(stderr, "---------------------------------------------------------------------------------------------------\n");
   for (auto &entries : OffsetSoretedFlattenedLayoutInfo) {
 
     LayoutEntry *lEntry = entries.second;
@@ -1488,15 +1509,20 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
       fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] = ", 
               entries.first, lEntry->type, lEntry->coerced, lEntry->tyche_entry.FAM, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
       lEntry->type->dump();
-      if (lEntry->tyche_entry.Parent != nullptr)
+      for (auto &par : lEntry->TyCheDependencyTree)
       {
         fprintf(stderr, "\t");
-        lEntry->tyche_entry.Parent->dump();
+        par->dump();
       }
+      // if (lEntry->tyche_entry.Parent != nullptr)
+      // {
+      //   fprintf(stderr, "\t");
+      //   lEntry->tyche_entry.Parent->dump();
+      // }
       fprintf(stderr, "\n");
     #endif
   }
-  fprintf(stderr, "\n");
+  fprintf(stderr, "---------------------------------------------------------------------------------------------------\n");
 
 
   // // Step (3): build the LLVM representation of the array:
@@ -2275,7 +2301,10 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   tyCheEntry.FAM = false;
   tyCheEntry.Type = llvm::dwarf::DW_TAG_null;
   tyCheEntry.Parent = nullptr;
-  addLayoutEntry(layout, tInfo, 0, Ty, -EFFECTIVE_DELTA, EFFECTIVE_DELTA, true, tyCheEntry);
+  std::vector<llvm::DIType*> type_dependency; 
+  type_dependency.push_back(Ty);
+  addLayoutEntry(layout, tInfo, 0, Ty, -EFFECTIVE_DELTA, EFFECTIVE_DELTA, true, tyCheEntry, type_dependency);
+  type_dependency.pop_back();
 
   if (isVPtrType(Ty)) {
     // Virtual Function Table pointer.  Can be coerced into (void *):
@@ -2298,7 +2327,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
              CompositeTy->getTag() == llvm::dwarf::DW_TAG_enumeration_type) {
     // Enum type.
     // All enums can be coerced to (int):
-    CompositeTy->dump();
+    //CompositeTy->dump();
     const TypeEntry &intEntry = compileType(M, Int32Ty, tInfo);
     tInfo.cache.erase(Ty);
     tInfo.cache.insert(std::make_pair(Ty, intEntry));
@@ -2309,13 +2338,15 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
               CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type ||
               CompositeTy->getTag() == llvm::dwarf::DW_TAG_union_type)) 
   {
-    CompositeTy->dump();
+    // CompositeTy->dump();
     // Struct or class type
     fam = getFlexibleArrayMember(CompositeTy);
 #ifdef EFFECTIVE_LAYOUT_DEBUG
     fprintf(stderr, "%s:\n", humanName.c_str());
 #endif
-    buildLayout(CompositeTy, 0, fam, tInfo, layout);
+    std::vector<llvm::DIType*> type_dependency;
+    type_dependency.push_back(CompositeTy);
+    buildLayout(CompositeTy, 0, fam, tInfo, layout, type_dependency);
 #ifdef EFFECTIVE_LAYOUT_DEBUG
     fprintf(stderr, "\n");
 #endif
