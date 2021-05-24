@@ -182,6 +182,16 @@ struct TyCheMetadata {
     uint64_t TypeMetadata[8]; // an aligned 64 Byte CacheLine
 };
 
+#define TYCHE_NUMBER_OF_TYPES     128
+#define TYCHE_NUMBER_OF_SECTIONS  8
+#define TYCHE_NUMBER_OF_OFFSETS() ((1 * 1024 * 1024)/32) // 1MB objects devided into 32B ofssets   
+
+
+std::vector<std::vector<std::vector<std::vector<llvm::Constant *> > > > TyCheMetaCacheLinesSections;
+
+
+static uint64_t type_id = 0;
+
 
 
 /*
@@ -207,10 +217,7 @@ struct TyCheInfo
   TyCheInfos  tyCheInfos;
 };
 
-static llvm::StructType *TyCheBaiscType = nullptr;
-static llvm::StructType *TyCheDerivedType = nullptr;
-static llvm::StructType *TyCheCompositeType = nullptr;
-static llvm::StructType *TyCheSubroutineType = nullptr;
+
 
 struct TypeInfo {
   TypeCache cache;
@@ -238,6 +245,11 @@ struct LayoutEntry {
 typedef std::multimap<size_t, LayoutEntry> LayoutInfo;
 typedef std::map<size_t, LayoutEntry *> FlattenedLayoutInfo;
 
+static llvm::StructType *TyCheBaiscType = nullptr;
+static llvm::StructType *TyCheDerivedType = nullptr;
+static llvm::StructType *TyCheCompositeType = nullptr;
+static llvm::StructType *TyCheSubroutineType = nullptr;
+static llvm::StructType *TyCheCacheLineEntryTy = nullptr;
 
 
 std::string CurrentDate() {
@@ -261,145 +273,8 @@ bool is_file_exist(const std::string fileName) {
   return false;
 }
 
-// Ahmad
-class TypeNode {
-public:
-  TypeNode(std::string title) { this->title = title; }
 
-  void deepCopy(TypeNode *source) {
-    for (auto child : source->childs) {
-      TypeNode *newChild = new TypeNode(child->title);
-      this->childs.push_back(newChild);
-      newChild->deepCopy(child);
-    }
-  }
 
-  void PrintPretty(std::string indent, bool last,
-                   llvm::raw_fd_ostream &typeTreeOut, bool cerr) {
-
-    if (cerr)
-      std::cerr << indent;
-    else
-      typeTreeOut << indent;
-    if (last) {
-      if (cerr)
-        std::cerr << "\\-";
-      else
-        typeTreeOut << "\\-";
-
-      indent += "  ";
-    } else {
-      if (cerr)
-        std::cerr << ("|-");
-      else
-        typeTreeOut << ("|-");
-      indent += "| ";
-    }
-
-    if (cerr)
-      std::cerr << this->title << '\n';
-    else
-      typeTreeOut << this->title << '\n';
-
-    // for (int i = 0; i < childs.size(); i++)
-    // std::cerr << childs[i]->name << "---";
-    // this->childs[i]->PrintPretty(indent, i == this->childs.size() - 1,
-    //                              typeTreeOut, cerr);
-  }
-
-  void printDAG(std::string moduleName, std::string fileName) {
-    std::ofstream typeTreeOut;
-    typeTreeOut.open(fileName);
-    // std::error_code EC;
-    // llvm::raw_fd_ostream typeTreeOut(fileName, EC, llvm::sys::fs::F_None); 
-
-    int nodeNumber = 0;
-    std::queue<TypeNode *> q;
-    this->nodeNo = nodeNumber++;
-    q.push(this);
-
-    TypeNode *node;
-    std::string s1 = "";
-    std::string s2 = "";
-    std::string tmp = "";
-
-    while (!q.empty()) {
-      node = q.front();
-      q.pop();
-      s1 += "node" + std::to_string(node->nodeNo) + " [label=\"" + node->title +
-            "\"];\n";
-      for (auto child : node->childs) {
-        child->nodeNo = nodeNumber++;
-        q.push(child);
-        tmp = "node" + std::to_string(node->nodeNo) + " -> node" +
-              std::to_string(child->nodeNo) + ";\n";;
-        if (tmp.find_first_of("node") != 0)
-          llvm::report_fatal_error("Worng string ", false);
-
-        s2 += tmp;
-      }
-    }
-
-    typeTreeOut << "digraph Test {\n";
-    typeTreeOut << "label = \"" << moduleName << "\";\n";
-    typeTreeOut << "labelloc = \"t\";\n";
-    typeTreeOut << s1;
-    typeTreeOut << s2;
-    typeTreeOut << "}";
-    // typeTreeOut.flush();
-    // typeTreeOut.close();
-    // std::this_thread::sleep_for(std::chrono::seconds(2));
-
-  }
-  void modifySomePointer() {}
-  // here is to work
-  int nodeNo;
-  std::string title;
-  std::vector<TypeNode *> childs;
-};
-
-// Ahmad
-void prone(TypeNode *root) {
-  std::queue<TypeNode *> q;
-  q.push(root);
-
-  while (!q.empty()) {
-    TypeNode *node = q.front();
-    q.pop();
-    if (node->title.find("Pointer:") == 0) {
-      if (node->childs.size() < 1) {
-        EFFECTIVE_FATAL_ERROR("Ahmad_Error: Pointer node does not have child");
-      }
-      TypeNode *child = node->childs[0];
-      std::string postfix = "*";
-      while (child->title.find("Pinter:") == 0) {
-        postfix += "*";
-        child = child->childs[0];
-      }
-      node->childs.clear();
-      node->title = child->title + postfix;
-      node->deepCopy(child);
-    } else if (node->title.find("Array:") == 0) {
-      TypeNode *child = node->childs[0];
-      std::string postfix = "[]";
-      if (node->childs.size() < 1) {
-        EFFECTIVE_FATAL_ERROR("Ahmad_Error: Pointer node does not have child");
-      }
-      while (child->title.find("Array:") == 0) {
-        postfix += "[]";
-        child = child->childs[0];
-      }
-      node->childs.clear();
-      node->title = child->title + postfix;
-      node->deepCopy(child);
-    }
-    for (auto child : node->childs)
-      q.push(child);
-  }
-}
-
-// Ahmad
-std::map<std::string, TypeNode *> mySet;
 
 
 /*
@@ -525,7 +400,7 @@ static const BoundsEntry &calculateBounds(llvm::Module &M, llvm::Function &F,
                                           llvm::Value *Ptr, TypeInfo &tInfo,
                                           CheckInfo &cInfo, BoundsInfo &bInfo);
 static bool canInstrumentGlobal(llvm::GlobalVariable &GV);
-void dumpTypeTree(llvm::DIType *TypeEntry, TypeNode *root);
+
 /*
  * Test if something is blacklisted or not.
  */
@@ -1525,34 +1400,74 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
   fprintf(stderr, "---------------------------------------------------------------------------------------------------\n");
 
 
-  // // Step (3): build the LLVM representation of the array:
-  // llvm::LLVMContext &Cxt = M.getContext();
-  // std::vector<llvm::Constant *> Entries;
-  // bool done = false;
-  // for (size_t i = 0; !done; i++) {
-  //   auto j = flattenedLayout.find(i);
-  //   if (j == flattenedLayout.end()) {
-  //     Entries.push_back(EmptyEntry);
-  //     done = (i >= layoutLen);
-  //     continue;
-  //   }
-  //   const LayoutEntry &lEntry = *j->second;
+  // Igonore step 3 for basic type. Only do this for composite types like structs, classes, and unions
+  //TODO:: we need to pack all the layputs with one entry into  a cache line and put them into a special section
+  if (OffsetSoretedFlattenedLayoutInfo.size() <= 1) return;
 
-  //   std::vector<llvm::Constant *> Elems;
-  //   Elems.push_back(
-  //       llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.finalHash));
-  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
-  //   Elems.push_back(llvm::ConstantVector::get(
-  //       {llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.lb),
-  //        llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.ub)}));
-  //   llvm::Constant *Entry = llvm::ConstantStruct::get(EntryTy, Elems);
+  // Step (3): build the LLVM representation of the array:
+  llvm::LLVMContext &Cxt = M.getContext();
 
-  //   Entries.push_back(Entry);
-  // }
+  std::vector<llvm::Constant *> Entries;
+  int section_number = 0;
+  int meta_offset = 0;
+  int prev_meta_offset = 0;
+  for (auto &entries : OffsetSoretedFlattenedLayoutInfo)
+  {
 
-  // llvm::ArrayType *LayoutTy = llvm::ArrayType::get(EntryTy, Entries.size());
-  // llvm::Constant *Layout = llvm::ConstantArray::get(LayoutTy, Entries);
+      meta_offset = entries.first / 32;
+      assert(meta_offset < TYCHE_NUMBER_OF_OFFSETS());
+
+      if (prev_meta_offset != meta_offset) 
+      {
+          prev_meta_offset = meta_offset;
+          section_number = 0;
+      }
+
+      llvm::Constant *Entry =  llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), entries.first);
+
+      if (TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() < 8)
+      {
+          TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].push_back(Entry);
+      }
+      else 
+      {
+          assert(TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() == 8);
+          section_number++;
+          assert(section_number < TYCHE_NUMBER_OF_SECTIONS);
+          assert(TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() == 0);
+          TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].push_back(Entry);
+      }
+          
+
+  }
+
+
+  type_id++;
+  assert(type_id < TYCHE_NUMBER_OF_TYPES);
   
+
+}
+
+
+static void emitTyCheMetadata(llvm::Module &M)
+{
+
+    for (size_t tid = 0; tid < type_id; tid++)
+    {
+        
+        for (size_t section = 0; section < TYCHE_NUMBER_OF_SECTIONS; section++)
+        {
+            fprintf(stderr, "-------------------- SECTION[%zu] -------------------\n",section);
+            for (size_t offset = 0; offset < TYCHE_NUMBER_OF_OFFSETS(); offset++)
+            {
+                if (TyCheMetaCacheLinesSections[tid][offset][section].size() > 0)
+                {
+                   fprintf(stderr, "[%zu]= TID(%zu)\n", offset, tid);
+                }
+            }
+            
+        }
+    }
 
 }
 
@@ -2180,32 +2095,55 @@ static bool isFlexibleArrayMember(llvm::StructType *StructTy,
 }
 
 
+
+
 static void initializeTyCheCapabilityTypes(llvm::Module &M)
 {
-    //TyChe Basic Type 
+    //TyChe Basic Types 
     llvm::LLVMContext& Cxt = M.getContext();
-    
-    TyCheBaiscType = llvm::StructType::create(Cxt, "TYCHE_BASIC_TYPE_CAPABILITY");
-    std::vector<llvm::Type *> Fields;
-    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Type */
-    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Size */
-    TyCheBaiscType->setBody(Fields, false);
 
-    llvm::GlobalVariable *TyCheINT32MetaGV = new llvm::GlobalVariable(M, TyCheBaiscType, true, llvm::GlobalValue::WeakAnyLinkage, 0, "TYCHE_BASIC_TYPE_CAPABILITY_INT32");
-    std::vector<llvm::Constant *> TyCheINT32Elems;
-    TyCheINT32Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
-    TyCheINT32Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 32));
-    llvm::Constant *TyCheINT32MetaInit = llvm::ConstantStruct::get(TyCheBaiscType, TyCheINT32Elems);
-    TyCheINT32MetaGV->setInitializer(TyCheINT32MetaInit);
-    TyCheINT32MetaGV->setSection("tyche_symbols");
+
+    std::vector<llvm::Type *> Fields;
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #0 */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #1 */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #2 */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #3 */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #4 */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #5 */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #6 */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Meta #7 */ /* This one could be a pointer to the next CacheLine for type informations for this offset*/       
+    TyCheCacheLineEntryTy = llvm::StructType::create(Cxt, "TYCHE_META_CACHELINE");         
+    TyCheCacheLineEntryTy->setBody(Fields, true);
+    Fields.clear();
+
+    TyCheMetaCacheLinesSections.resize(TYCHE_NUMBER_OF_TYPES);
+    for ( int i = 0 ; i < TYCHE_NUMBER_OF_TYPES ; i++ )
+      TyCheMetaCacheLinesSections[i].resize(TYCHE_NUMBER_OF_OFFSETS());
+
+    for ( int i = 0 ; i < TYCHE_NUMBER_OF_TYPES ; i++ )
+      for ( int j = 0 ; j < TYCHE_NUMBER_OF_OFFSETS() ; j++ )
+        TyCheMetaCacheLinesSections[i][j].resize(TYCHE_NUMBER_OF_SECTIONS); // each section can hold up to 1MB of metadata and each cache balock is 64B, therefore at max 16 * 1024 entries could be hold
+
+    // TyCheBaiscType = llvm::StructType::create(Cxt, "TYCHE_BASIC_TYPE_CAPABILITY");
+    // Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Type */
+    // Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* Size */
+    // TyCheBaiscType->setBody(Fields, false);
+
+    // llvm::GlobalVariable *TyCheINT32MetaGV = new llvm::GlobalVariable(M, TyCheBaiscType, true, llvm::GlobalValue::WeakAnyLinkage, 0, "TYCHE_BASIC_TYPE_CAPABILITY_INT32");
+    // std::vector<llvm::Constant *> TyCheINT32Elems;
+    // TyCheINT32Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
+    // TyCheINT32Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 32));
+    // llvm::Constant *TyCheINT32MetaInit = llvm::ConstantStruct::get(TyCheBaiscType, TyCheINT32Elems);
+    // TyCheINT32MetaGV->setInitializer(TyCheINT32MetaInit);
+    // TyCheINT32MetaGV->setSection("tyche_symbols");
     
-    llvm::GlobalVariable *TyCheINT64MetaGV = new llvm::GlobalVariable(M, TyCheBaiscType, true, llvm::GlobalValue::WeakAnyLinkage, 0, "TYCHE_BASIC_TYPE_CAPABILITY_INT64");
-    std::vector<llvm::Constant *> TyCheINT64Elems;
-    TyCheINT64Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
-    TyCheINT64Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 64));
-    llvm::Constant *TyCheINT64MetaInit = llvm::ConstantStruct::get(TyCheBaiscType, TyCheINT64Elems);
-    TyCheINT64MetaGV->setInitializer(TyCheINT64MetaInit);
-    TyCheINT64MetaGV->setSection("tyche_symbols");
+    // llvm::GlobalVariable *TyCheINT64MetaGV = new llvm::GlobalVariable(M, TyCheBaiscType, true, llvm::GlobalValue::WeakAnyLinkage, 0, "TYCHE_BASIC_TYPE_CAPABILITY_INT64");
+    // std::vector<llvm::Constant *> TyCheINT64Elems;
+    // TyCheINT64Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
+    // TyCheINT64Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 64));
+    // llvm::Constant *TyCheINT64MetaInit = llvm::ConstantStruct::get(TyCheBaiscType, TyCheINT64Elems);
+    // TyCheINT64MetaGV->setInitializer(TyCheINT64MetaInit);
+    // TyCheINT64MetaGV->setSection("tyche_symbols");
 
 }
 
@@ -4473,98 +4411,11 @@ struct EffectiveSan : public llvm::ModulePass {
           }
         }
     }
-
-    //  for (auto &F: M){
-    //      if (F.isDeclaration())
-    //          continue;
-    //      if (isBlacklisted("fun", F.getName()))
-    //          continue;
-    //      CheckInfo cInfo;
-    //      std::set<llvm::Instruction *> Ignore;
-    //      //F.dump();
-    //      llvm::Function::arg_iterator AI = F.arg_begin();
-    //      fprintf(stderr, "%s\n", F.getName());
-    //
-    //      for (; AI != F.arg_end(); AI++) {
-    //          AI->dump();
-    //          llvm::Argument &Ptr = *AI;
-    //          if (llvm::isa<llvm::Argument>(&Ptr))
-    //              fprintf(stderr, "YES!\n" );
-    //          llvm::DIType *t_type = llvm::getEffectiveSanType(&Ptr);
-    //          if (t_type != nullptr)
-    //            t_type->dump();
-    //          // if (Meta == nullptr)
-    //          // {
-    //          //     // Fall back on type inference.
-    //          //     Meta = inferMallocType(M, F, &I, tInfo, &AllocTy);
-    //          // }
-    //          // Meta = (Meta == nullptr? Int8TyMeta: Meta);
-    //
-    //      }
-    // }
-
-    // Ahmad
-    // for (auto &TypeEntry: tInfo.infos)
-    //   TypeEntry.first->dump();
-    // std::srand(std::time(nullptr));
-    // unsigned int random_variable = std::rand() % 1000;
-    // using namespace std::chrono_literals;
-    // // std::this_thread::sleep_for(2s);
-    // std::string moduleName = M.getName().str();
-    // std::string fileName =
-    //     "/home/ahmad/Desktop/TypeTree/" + moduleName + ".dot";
-    // while (is_file_exist(fileName)) {
-    //   fileName = "/home/ahmad/Desktop/TypeTree/"  + CurrentDate() + ".dot";
-    // }
-
-    // std::cerr << ansi::foreground_blue
-    //           << "*************************************  FileName =" << fileName
-    //           << "******************************" << ansi::reset << '\n';
-
-    // llvm::raw_fd_ostream typeTreeOut(fileName, EC, llvm::sys::fs::F_None);
-
-    // Ahmad
-    // typeTreeOut << "tInfo.infos\n";
-    // for (auto entry : tInfo.names) {
-    //   typeTreeOut << "TypeName = " << entry.second << '\n';
-    //   typeTreeOut << "======================================\n";
-    // }
-    // fprintf(stderr, "--------------------------------------------\n");
-    // for (auto entry : tInfo.hashes) {
-    //   fprintf(stderr, entry.second);
-    // }
-    // fprintf(stderr, "--------------------------------------------\n");
-
-    // typeTreeOut << "tInfo cache size = " << tInfo.cache.size() << '\n';
-    // typeTreeOut << "tInfo names size = " << tInfo.names.size() << '\n';
-    // typeTreeOut << "tInfo infos size = " << tInfo.infos.size() << '\n';
-    // typeTreeOut << "tInfo hashes size = " << tInfo.hashes.size() << '\n';
-    // fprintf(stderr, "--------------------------------------------\n");
-
-    // class TypeNode {
-
-    //   TypeNode(std::string name) {
-    //     this.name = name;
-    //   }
-    //   std::string name;
-    //   std::vector<TypeNode *> childs;
-    // }
-
-    //TypeNode *root = new TypeNode("root");
-
-    // for (auto &TypeEntry : tInfo.infos) {
-    //   dumpTypeTree(llvm::dyn_cast<llvm::DIType>(TypeEntry.first), root);
-    //   std::cerr << ansi::foreground_green
-    //             << "-----------------------------------------------------------"
-    //                "------------------"
-    //             << ansi::reset << '\n';
-    // }
-
-    // Ahmad
-    // root->PrintPretty("", true, typeTreeOut, false);
-    // prone(root);
-    // root->printDAG(moduleName, fileName);
-      
+    
+    /*
+    emit TyChe metadata into the defined sections in global sections
+    */
+    emitTyCheMetadata(M);
 
     /*
      * Step #4: Replace globals with typed version:
@@ -4602,245 +4453,6 @@ struct EffectiveSan : public llvm::ModulePass {
 } // namespace
 
 
-void dumpTypeTree(llvm::DIType *TypeEntry, TypeNode *parent) {
-
-  if (TypeEntry == nullptr)
-    return;
-
-  if (llvm::isa<llvm::DICompositeType>(TypeEntry)) {
-    llvm::DICompositeType *CompositeTy =
-        llvm::dyn_cast<llvm::DICompositeType>(TypeEntry);
-
-    switch (CompositeTy->getTag()) {
-
-    case llvm::dwarf::DW_TAG_structure_type: {
-      std::string title = CompositeTy->getIdentifier().str();
-      if (title.empty()) {
-        title = "Struct_in_" + CompositeTy->getFilename().str() + " " +
-                std::to_string(CompositeTy->getLine());
-      }
-      TypeNode *compositeNode = new TypeNode(title);
-      parent->childs.push_back(compositeNode);
-      if (mySet.find(title) == mySet.end()) {
-        mySet[compositeNode->title] = compositeNode;
-        llvm::DINodeArray Elements = CompositeTy->getElements();
-        for (auto Element : Elements) {
-          if (llvm::isa<llvm::DIType>(Element)) {
-            llvm::DIType *elementTy = llvm::dyn_cast<llvm::DIType>(Element);
-            dumpTypeTree(elementTy, compositeNode);
-          }
-        }
-      }
-      break;
-    }
-
-    case llvm::dwarf::DW_TAG_class_type: {
-
-      std::string title = CompositeTy->getIdentifier().str();
-      if (title.empty()) {
-        title = "Class_in_" + CompositeTy->getFilename().str() + " " +
-                std::to_string(CompositeTy->getLine());
-      }
-      TypeNode *compositeNode = new TypeNode(title);
-      parent->childs.push_back(compositeNode);
-      if (mySet.find(title) == mySet.end()) {
-        mySet[compositeNode->title] = compositeNode;
-        llvm::DINodeArray Elements = CompositeTy->getElements();
-        for (auto Element : Elements) {
-          if (llvm::isa<llvm::DIType>(Element)) {
-            llvm::DIType *elementTy = llvm::dyn_cast<llvm::DIType>(Element);
-            dumpTypeTree(elementTy, compositeNode);
-          }
-        }
-      }
-      break;
-    }
-    case llvm::dwarf::DW_TAG_union_type: {
-      std::string title = CompositeTy->getIdentifier().str();
-      if (!title.empty()) {
-        TypeNode *compositeNode = new TypeNode(title);
-        parent->childs.push_back(compositeNode);
-        if (mySet.find(title) == mySet.end() ) {
-          mySet[compositeNode->title] = compositeNode;
-          llvm::DINodeArray Elements = CompositeTy->getElements();
-          for (auto Element : Elements) {
-            if (llvm::isa<llvm::DIType>(Element)) {
-              llvm::DIType *elementTy = llvm::dyn_cast<llvm::DIType>(Element);
-
-              if (llvm::dyn_cast<llvm::DIDerivedType>(elementTy)) {
-                dumpTypeTree(elementTy, compositeNode);
-              }
-            }
-          }
-        }
-      } else {
-        title = "Union";
-        TypeNode *compositeNode = new TypeNode(title);
-        (parent->childs).push_back(compositeNode);
-        llvm::DINodeArray Elements = CompositeTy->getElements();
-        for (auto Element : Elements) {
-          if (llvm::isa<llvm::DIType>(Element)) {
-            llvm::DIType *elementTy = llvm::dyn_cast<llvm::DIType>(Element);
-
-            if (llvm::dyn_cast<llvm::DIDerivedType>(elementTy)) {
-              dumpTypeTree(elementTy, compositeNode);
-            }
-          }
-        }
-      }
-      break;
-    }
-    case llvm::dwarf::DW_TAG_array_type: {
-      std::string title = "Array:";
-      TypeNode *compositeNode = new TypeNode(title);
-      parent->childs.push_back(compositeNode);
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(CompositeTy->getBaseType());
-
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, compositeNode);
-      }
-
-      break;
-    }
-    case llvm::dwarf::DW_TAG_enumeration_type: {
-      std::string title = "Enumeration";
-      TypeNode *compositeNode = new TypeNode(title);
-      parent->childs.push_back(compositeNode);
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(CompositeTy->getBaseType());
-
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, compositeNode);
-      }
-      break;
-    }
-    default: {
-      llvm::report_fatal_error("Ahmad - unknown composite type", false);
-      break;
-    }
-    }
-
-    // Derived Tye
-  } else if (llvm::isa<llvm::DIDerivedType>(TypeEntry)) {
-
-    llvm::DIDerivedType *DerivedTy =
-        llvm::dyn_cast<llvm::DIDerivedType>(TypeEntry);
-
-    switch (DerivedTy->getTag()) {
-
-    case llvm::dwarf::DW_TAG_pointer_type: {
-
-      TypeNode *pointerNode = new TypeNode("Pointer: ");
-      (parent->childs).push_back(pointerNode);
-      // parent->PrintPretty("", true, typeTreeOut, true);
-
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, pointerNode);
-      } else {
-        pointerNode->childs.push_back(new TypeNode("void"));
-      }
-      break;
-    }
-    case llvm::dwarf::DW_TAG_member: {
-      TypeNode *derivedNode = new TypeNode(DerivedTy->getName().str());
-      // (parent->childs).push_back(derivedNode);
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, parent);
-      }
-      break;
-    }
-    case llvm::dwarf::DW_TAG_typedef: {
-      // TypeNode *typeDefNode = new TypeNode(DerivedTy->getName().str());
-      // (parent->childs).push_back(typeDefNode);
-
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, parent);
-      }
-      break;
-    }
-
-    case llvm::dwarf::DW_TAG_inheritance: {
-      // TypeNode *pointerNode = new TypeNode("Inherited: ");
-      // (parent->childs).push_back(pointerNode);
-
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, parent);
-      }
-      break;
-    }
-    case llvm::dwarf::DW_TAG_const_type: {
-
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, parent);
-      }
-      break;
-    }
-
-    case llvm::dwarf::DW_TAG_reference_type: {
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-      if (baseType != nullptr) {
-        dumpTypeTree(baseType, parent);
-      }
-      break;
-    }
-    case llvm::dwarf::DW_TAG_ptr_to_member_type: {
-      DerivedTy->dump();
-      TypeNode *pointerToMemberNode = new TypeNode("MemberPointer: ");
-      parent->childs.push_back(pointerToMemberNode);
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-      if (baseType == nullptr)
-        EFFECTIVE_FATAL_ERROR("ptr to member points to null");
-      dumpTypeTree(baseType, pointerToMemberNode);
-      break;
-    }
-
-    case llvm::dwarf::DW_TAG_volatile_type: {
-      auto *baseType = llvm::dyn_cast<llvm::DIType>(DerivedTy->getBaseType());
-      dumpTypeTree(baseType, parent);
-      break;
-    }
-    case llvm::dwarf::DW_TAG_friend:
-    case llvm::dwarf::DW_TAG_restrict_type:
-    case llvm::dwarf::DW_TAG_atomic_type:
-    default:
-      DerivedTy->dump();
-      EFFECTIVE_FATAL_ERROR("Ahmad_ error, Unknown Tag for DIDerivedType!");
-    }
-  } else if (llvm::isa<llvm::DIBasicType>(TypeEntry)) {
-
-    llvm::DIBasicType *basicType = llvm::dyn_cast<llvm::DIBasicType>(TypeEntry);
-    TypeNode *basicNode;
-    switch (basicType->getTag()) {
-    case llvm::dwarf::DW_TAG_base_type:
-      basicNode = new TypeNode(basicType->getName().str());
-      (parent->childs).push_back(basicNode);
-      break;
-    case llvm::dwarf::DW_TAG_unspecified_type:
-      basicType->dump();
-      llvm::report_fatal_error("DIBasicType with DW_TAG_unspecified_type Tag!",
-                               false);
-      break;
-    default:
-      llvm::report_fatal_error("DIBasicType with Unknown Tag!", false);
-    }
-  } else if (llvm::isa<llvm::DISubroutineType>(TypeEntry)) {
-    llvm::DISubroutineType *subroutineType =
-        llvm::dyn_cast<llvm::DISubroutineType>(TypeEntry);
-    subroutineType->dump();
-    TypeNode *subroutineNode = new TypeNode("subroutine");
-    parent->childs.push_back(subroutineNode);
-
-  } else {
-    TypeEntry->dump();
-    EFFECTIVE_FATAL_ERROR("Unknown Type in Type Tree!");
-  }
-
-}
 
 /*
  * LLVM pass boilerplate.
