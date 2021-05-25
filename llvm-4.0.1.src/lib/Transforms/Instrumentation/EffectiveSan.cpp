@@ -177,15 +177,27 @@ struct TyCheEntry
 TyChe Metadata structure
 */
 
-
-struct TyCheMetadata {
-    uint64_t TypeMetadata[8]; // an aligned 64 Byte CacheLine
-};
-
+#define NUMBER_OF_ENTRIES_IN_EACH_CACHELINE 8
+#define TYCHE_OFFSETS_DEVIDER     32
 #define TYCHE_NUMBER_OF_TYPES     128
 #define TYCHE_NUMBER_OF_SECTIONS  8
-#define TYCHE_NUMBER_OF_OFFSETS() ((1 * 1024 * 1024)/32) // 1MB objects devided into 32B ofssets   
+#define TYCHE_NUMBER_OF_OFFSETS() ((1 * 8 * 32)/TYCHE_OFFSETS_DEVIDER) // 1MB objects devided into 32B ofssets   
 
+
+struct TyCheMetadataCacheLine {
+    uint64_t CacheLine_0;
+    uint64_t CacheLine_1;
+    uint64_t CacheLine_2;
+    uint64_t CacheLine_3;
+    uint64_t CacheLine_4;
+    uint64_t CacheLine_5;
+    uint64_t CacheLine_6;
+    uint64_t CacheLine_7;
+};
+
+struct TyCheSectionMetadata {
+    TyCheMetadataCacheLine TypeMetadata[TYCHE_NUMBER_OF_OFFSETS()]; // an aligned 64 Byte CacheLine
+};
 
 std::vector<std::vector<std::vector<std::vector<llvm::Constant *> > > > TyCheMetaCacheLinesSections;
 
@@ -250,6 +262,7 @@ static llvm::StructType *TyCheDerivedType = nullptr;
 static llvm::StructType *TyCheCompositeType = nullptr;
 static llvm::StructType *TyCheSubroutineType = nullptr;
 static llvm::StructType *TyCheCacheLineEntryTy = nullptr;
+static llvm::StructType *TyCheSectionEntryTy = nullptr;
 
 
 std::string CurrentDate() {
@@ -1407,7 +1420,7 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
   // Step (3): build the LLVM representation of the array:
   llvm::LLVMContext &Cxt = M.getContext();
 
-  std::vector<llvm::Constant *> Entries;
+  //std::vector<llvm::Constant *> Entries;
   int section_number = 0;
   int meta_offset = 0;
   int prev_meta_offset = 0;
@@ -1425,13 +1438,13 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
 
       llvm::Constant *Entry =  llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), entries.first);
 
-      if (TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() < 8)
+      if (TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() < NUMBER_OF_ENTRIES_IN_EACH_CACHELINE)
       {
           TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].push_back(Entry);
       }
       else 
       {
-          assert(TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() == 8);
+          assert(TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() == NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
           section_number++;
           assert(section_number < TYCHE_NUMBER_OF_SECTIONS);
           assert(TyCheMetaCacheLinesSections[type_id][meta_offset][section_number].size() == 0);
@@ -1452,19 +1465,65 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
 static void emitTyCheMetadata(llvm::Module &M)
 {
 
+      llvm::LLVMContext &Cxt = M.getContext();
+
     for (size_t tid = 0; tid < type_id; tid++)
     {
         
         for (size_t section = 0; section < TYCHE_NUMBER_OF_SECTIONS; section++)
         {
+
             fprintf(stderr, "-------------------- SECTION[%zu] -------------------\n",section);
+            std::vector<llvm::Constant *> SectionEntries;
             for (size_t offset = 0; offset < TYCHE_NUMBER_OF_OFFSETS(); offset++)
             {
+                // if the cacheline is not empty proceed
                 if (TyCheMetaCacheLinesSections[tid][offset][section].size() > 0)
                 {
-                   fprintf(stderr, "[%zu]= TID(%zu)\n", offset, tid);
+                    fprintf(stderr, "[%zu] = TID(%zu)Size(%zu)\n", offset, tid, TyCheMetaCacheLinesSections[tid][offset][section].size() );
+                    assert(TyCheMetaCacheLinesSections[tid][offset][section].size() <= NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
+
+                    // fill the remaning blocks with null entries
+                    while (TyCheMetaCacheLinesSections[tid][offset][section].size() < NUMBER_OF_ENTRIES_IN_EACH_CACHELINE)
+                    {
+                        llvm::Constant *Entry =  llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), -1);
+                        TyCheMetaCacheLinesSections[tid][offset][section].push_back(Entry);
+                    }
+
+
                 }
+                // fill the cacheline with null metadata and add it to the SectionEntries
+                else 
+                {
+                    fprintf(stderr, "[%zu] = TID(-1)Size(%zu)\n", offset, TyCheMetaCacheLinesSections[tid][offset][section].size() );
+                    while (TyCheMetaCacheLinesSections[tid][offset][section].size() < NUMBER_OF_ENTRIES_IN_EACH_CACHELINE)
+                    {
+                        llvm::Constant *Entry =  llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), -1);
+                        TyCheMetaCacheLinesSections[tid][offset][section].push_back(Entry);
+                    }
+
+                }
+
+                assert(TyCheMetaCacheLinesSections[tid][offset][section].size() == 8);
+                llvm::Constant * CacheLineEntryStruct = llvm::ConstantStruct::get(TyCheCacheLineEntryTy, TyCheMetaCacheLinesSections[tid][offset][section]);
+                SectionEntries.push_back(CacheLineEntryStruct); // an array of cachelines in this section
+
             }
+
+            assert(SectionEntries.size() == TYCHE_NUMBER_OF_OFFSETS());
+            llvm::ArrayType *TyCheSectionLayoutTy = llvm::ArrayType::get(TyCheCacheLineEntryTy, SectionEntries.size());
+            llvm::Constant *SectionArrayEntry = llvm::ConstantArray::get(TyCheSectionLayoutTy, SectionEntries);
+
+            // now we have an array of all cachelines in a section, creat the global variable and insert it into the module
+            std::string meta_gv_name = "TYCHE_META_SECTION_";
+            std::string meta_section_name = "tyche_symbols_section_";
+            meta_gv_name += std::to_string(section);
+            meta_section_name += std::to_string(section);
+            llvm::GlobalVariable *TyCheSectionMetaGV = new llvm::GlobalVariable(M, TyCheSectionLayoutTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
+            TyCheSectionMetaGV->setInitializer(SectionArrayEntry);
+            TyCheSectionMetaGV->setSection(meta_section_name);
+
+            SectionEntries.clear(); // clear all entries
             
         }
     }
@@ -2115,6 +2174,15 @@ static void initializeTyCheCapabilityTypes(llvm::Module &M)
     TyCheCacheLineEntryTy = llvm::StructType::create(Cxt, "TYCHE_META_CACHELINE");         
     TyCheCacheLineEntryTy->setBody(Fields, true);
     Fields.clear();
+
+    // for (size_t i = 0; i < TYCHE_NUMBER_OF_OFFSETS(); i++)
+    // {
+    //   Fields.push_back(llvm::StructType::get(TyCheCacheLineEntryTy, /*isPacked*/ true)); /* Meta #0 */
+    // }
+    // TyCheSectionEntryTy = llvm::StructType::create(Cxt, "TYCHE_META_SECTION");         
+    // TyCheSectionEntryTy->setBody(Fields, true);
+    // Fields.clear();    
+
 
     TyCheMetaCacheLinesSections.resize(TYCHE_NUMBER_OF_TYPES);
     for ( int i = 0 ; i < TYCHE_NUMBER_OF_TYPES ; i++ )
@@ -4345,6 +4413,8 @@ struct EffectiveSan : public llvm::ModulePass {
 
 
     initializeTyCheCapabilityTypes(M);
+
+    
     
 
     llvm::DebugInfoFinder DI;
