@@ -1462,7 +1462,7 @@ static void compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
 
   // Igonore step 3 for basic type. Only do this for composite types like structs, classes, and unions
   //TODO:: we need to pack all the layputs with one entry into  a cache line and put them into a special section
-  if (OffsetSoretedFlattenedLayoutInfo.size() <= 1) return;
+  //if (OffsetSoretedFlattenedLayoutInfo.size() <= 1) return;
 
   // Step (3): build the LLVM representation of the array:
   llvm::LLVMContext &Cxt = M.getContext();
@@ -1598,7 +1598,7 @@ static void emitTyCheMetadata(llvm::Module &M)
               llvm::GlobalVariable * TyCheCacheLineGV = new llvm::GlobalVariable(M, TyCheTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
               llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
               TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
-
+              TyCheCacheLineGV->setAlignment(64);
               PrevSectionTyCheCacheLineGV =  TyCheCacheLineGV;
               llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
               SectionEntries[section].push_back(TyCheCL);
@@ -1618,7 +1618,7 @@ static void emitTyCheMetadata(llvm::Module &M)
 
               llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
               TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);
-
+              TyCheCacheLineGV->setAlignment(64);
               PrevSectionTyCheCacheLineGV =  TyCheCacheLineGV;
               llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
               SectionEntries[section].push_back(TyCheCL);
@@ -1654,7 +1654,8 @@ static void emitTyCheMetadata(llvm::Module &M)
           llvm::GlobalVariable * TyCheCacheLineGV = new llvm::GlobalVariable(M, TyCheTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
           llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
           TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
-
+          TyCheCacheLineGV->setAlignment(64);
+          
           PrevSectionTyCheCacheLineGV =  nullptr;
           llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
           SectionEntries[section].push_back(TyCheCL);
@@ -1684,6 +1685,7 @@ static void emitTyCheMetadata(llvm::Module &M)
         llvm::GlobalVariable *TyCheSectionMetaGV = new llvm::GlobalVariable(M, TyCheSectionLayoutTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
         TyCheSectionMetaGV->setInitializer(SectionArrayEntry);
         TyCheSectionMetaGV->setSection(meta_section_name);
+        TyCheSectionMetaGV->setAlignment(64);
     }
 
 
