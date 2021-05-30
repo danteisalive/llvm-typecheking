@@ -1576,10 +1576,6 @@ static void emitTyCheMetadata(llvm::Module &M)
           assert(TyCheMetaCacheLinesSections[tid][offset].find(section) != TyCheMetaCacheLinesSections[tid][offset].end());
           assert(TyCheMetaCacheLinesSections[tid][offset][section].size() <= NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
           assert(TyCheMetaCacheLinesSections[tid][offset][section].size() > 0);
-
-          #ifdef TYCHE_LAYOUT_DEBUG
-            fprintf(stderr, "[%zu] = TID(%zu)Size(%zu)\n", offset, tid, TyCheMetaCacheLinesSections[tid][offset][section].size() );
-          #endif
           
           // fill the remaning blocks with null entries
           while (TyCheMetaCacheLinesSections[tid][offset][section].size() < NUMBER_OF_ENTRIES_IN_EACH_CACHELINE)
@@ -1594,10 +1590,8 @@ static void emitTyCheMetadata(llvm::Module &M)
           if (section == (int)TyCheMetaCacheLinesSections[tid][offset].size() - 1)
           {
               assert(PrevSectionTyCheCacheLineGV == nullptr);
-              fprintf(stderr, "here\n");
               llvm::StructType * TyCheTy =  makeTyCheCacheLineType(M, int64_t(tid), offset, section);
               llvm::Constant *Entry =  llvm::ConstantPointerNull::get(TyCheTy->getPointerTo());
-              fprintf(stderr, "here1\n");
               TyCheMetaCacheLinesSections[tid][offset][section].push_back(Entry);
               
               std::string meta_gv_name = "TYCHE_CACHELINE_" + std::to_string(tid) + std::to_string(offset) + "_" + std::to_string(section);
@@ -1606,8 +1600,9 @@ static void emitTyCheMetadata(llvm::Module &M)
               TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
 
               PrevSectionTyCheCacheLineGV =  TyCheCacheLineGV;
-              // TODO::
-              //SectionEntries[section].push_back(TyCheCacheLineGV);
+              llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
+              SectionEntries[section].push_back(TyCheCL);
+
           }
           else 
           {
@@ -1625,11 +1620,15 @@ static void emitTyCheMetadata(llvm::Module &M)
               TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);
 
               PrevSectionTyCheCacheLineGV =  TyCheCacheLineGV;
+              llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
+              SectionEntries[section].push_back(TyCheCL);
 
-              //SectionEntries[section].push_back(TyCheCacheLineGV);
           }
 
           assert(TyCheMetaCacheLinesSections[tid][offset][section].size() == (NUMBER_OF_ENTRIES_IN_EACH_CACHELINE + 1));
+          #ifdef TYCHE_LAYOUT_DEBUG
+            fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Filled\n", section, offset, tid, TyCheMetaCacheLinesSections[tid][offset][section].size() );
+          #endif
 
         }
 
@@ -1657,19 +1656,21 @@ static void emitTyCheMetadata(llvm::Module &M)
           TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
 
           PrevSectionTyCheCacheLineGV =  nullptr;
-          //SectionEntries[section].push_back(TyCheCacheLineGV);
+          llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
+          SectionEntries[section].push_back(TyCheCL);
 
           #ifdef TYCHE_LAYOUT_DEBUG
-            fprintf(stderr, "[%zu] = TID(-1)Size(%zu)\n", offset, cacheline.size() );
+            fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Empty\n", section, offset, tid, cacheline.size() );
           #endif
 
         }        
 
       }
-      
+      #ifdef TYCHE_LAYOUT_DEBUG
+        fprintf(stderr, "------------------------------------------------------------------------------------------\n" );
+      #endif    
     }
 
-/*
    // Final Step: Emit array of cachelines into their respective sessions
     assert(SectionEntries.size() == TYCHE_NUMBER_OF_SECTIONS);
     for (size_t sec = 0; sec < SectionEntries.size(); sec++)
@@ -1685,7 +1686,7 @@ static void emitTyCheMetadata(llvm::Module &M)
         TyCheSectionMetaGV->setSection(meta_section_name);
     }
 
-*/
+
 }
 
 /*
