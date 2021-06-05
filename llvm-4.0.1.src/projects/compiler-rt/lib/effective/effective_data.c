@@ -142,6 +142,7 @@ const EFFECTIVE_INFO EFFECTIVE_INFO_FLOAT128 =
 
 const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_FREE =
 {
+    .tyche_meta = NULL,
 	.hash       = 0xAB63C4D0EB0A6EC4ull,
 	.hash2      = 0xAB63C4D0EB0A6EC4ull,
 	.size       = sizeof(int8_t),
@@ -157,6 +158,7 @@ const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_FREE =
 
 const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_INT8 =
 {
+    .tyche_meta = NULL, // change this
     .hash       = EFFECTIVE_TYPE_INT8_HASH,
     .hash2      = EFFECTIVE_TYPE_INT8_HASH,
     .size       = sizeof(int8_t),

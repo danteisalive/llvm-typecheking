@@ -185,30 +185,6 @@ TyChe Metadata structure
 
 
 
-/** If a meta type capability ness more than 32 bits, we can use multiple entry in the cacheline. 
- * It is still better than having 64 bits type capabilities which is too much for most type. */
-struct TyCheMetadataCacheLine {
-    uint32_t CacheLine_0;
-    uint32_t CacheLine_1;
-    uint32_t CacheLine_2;
-    uint32_t CacheLine_3;
-    uint32_t CacheLine_4;
-    uint32_t CacheLine_5;
-    uint32_t CacheLine_6;
-    uint32_t CacheLine_7;
-    uint32_t CacheLine_8;
-    uint32_t CacheLine_9;
-    uint32_t CacheLine_10;
-    uint32_t CacheLine_11;
-    uint32_t CacheLine_12;
-    uint32_t CacheLine_13;
-    TyCheMetadataCacheLine * next_cacheline;
-};
-
-struct TyCheSectionMetadata {
-    TyCheMetadataCacheLine TypeMetadata[TYCHE_NUMBER_OF_OFFSETS()]; // an aligned 64 Byte CacheLine
-};
-
         // TID            // OFFSET          //SECTION
 std::map<uint64_t, std::map<uint64_t, std::map<uint64_t, std::vector<llvm::Constant *> > > > TyCheMetaCacheLinesSections;
 std::map<uint64_t, uint64_t> TypeIDNames;
@@ -817,7 +793,10 @@ static void warning(llvm::Module &M, const std::string &msg) {
  * speed, whereas the "INFO" version is designed for error messages.
  */
 
-static llvm::StructType *makeTypeMetaType(llvm::Module &M, size_t len) {
+static llvm::StructType *makeTypeMetaType(llvm::Module &M, size_t len, llvm::StructType * tyche_cl_type) {
+
+  assert(tyche_cl_type != nullptr);
+  
   auto i = metaCache.find(len);
   if (i != metaCache.end())
     return i->second;
@@ -832,6 +811,7 @@ static llvm::StructType *makeTypeMetaType(llvm::Module &M, size_t len) {
   if (len == 0)
     TypeTy = Ty;
   std::vector<llvm::Type *> Fields;
+  Fields.push_back(tyche_cl_type->getPointerTo());
   Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* hash */
   Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* hash2 */
   Fields.push_back(llvm::Type::getInt32Ty(Cxt)); /* size */
@@ -1512,7 +1492,7 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
 }
 
 
-static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid)
+static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::StructType* tyche_cl_meta_type)
 {
       llvm::LLVMContext &Cxt = M.getContext();
       
@@ -1600,6 +1580,8 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid)
               llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
               SectionEntries[section].push_back(TyCheCL);
 
+              if (section == 0 && offset == 0) tyche_cl_meta_type = TyCheTy;
+
           }
           else 
           {
@@ -1620,12 +1602,15 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid)
               llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
               SectionEntries[section].push_back(TyCheCL);
 
+              if (section == 0 && offset == 0) tyche_cl_meta_type = TyCheTy;
+
           }
 
           assert(TyCheMetaCacheLinesSections[tid][offset][section].size() == (NUMBER_OF_ENTRIES_IN_EACH_CACHELINE + 1));
           #ifdef TYCHE_LAYOUT_DEBUG
             fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Filled\n", section, offset, tid, TyCheMetaCacheLinesSections[tid][offset][section].size() );
           #endif
+          
 
         }
 
@@ -1661,6 +1646,8 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid)
             fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Empty\n", section, offset, tid, cacheline.size() );
           #endif
 
+          if (section == 0 && offset == 0) tyche_cl_meta_type = TyCheTy;
+
         }        
 
       }
@@ -1682,6 +1669,7 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid)
       }
 
       // return the section 0, offset 0 ptr
+      assert(tyche_cl_meta_type != nullptr);
       return SectionEntries[0][0];
 
 }
@@ -2357,7 +2345,7 @@ static void initializeTyCheCapabilityTypes(llvm::Module &M)
    
     llvm::LLVMContext& Cxt = M.getContext();
 
-    makeTyCheCacheLineType(M, -1, 0,0);
+    makeTyCheCacheLineType(M, -1, 0, 0);
 
     // std::vector<llvm::Type *> Fields;
     // llvm::StructType *TyCheCacheLineEntryTy = llvm::StructType::create(Cxt, "TYCHE_META_CACHELINE");
@@ -2642,10 +2630,10 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   }
 
    // TODO:: Initilize all the basic types too
+  llvm::StructType* tyche_cl_meta_type = nullptr;
+  llvm::Constant* TyCheMeta = getTyCheMeta(M, tid_number, tyche_cl_meta_type);
 
-  llvm::Constant* TyCheMeta = getTyCheMeta(M, tid_number);
-
-  llvm::StructType *MetaTy = makeTypeMetaType(M, finalLen);
+  llvm::StructType *MetaTy = makeTypeMetaType(M, finalLen, tyche_cl_meta_type);
   llvm::GlobalVariable *MetaGV = new llvm::GlobalVariable(
       M, MetaTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, metaName.str());
   llvm::Constant *Meta =
@@ -2653,6 +2641,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   entry.typeMeta = Meta;
 
   std::vector<llvm::Constant *> Elems;
+  Elems.push_back(TyCheMeta);
   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), hval));
   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), hval2));
   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), size));
@@ -4581,11 +4570,13 @@ struct EffectiveSan : public llvm::ModulePass {
     /*
      * Generate EffectiveSan meta data types and constants.
      */
+    initializeTyCheCapabilityTypes(M);
+
     BoundsTy = llvm::VectorType::get(llvm::Type::getInt64Ty(Cxt), 2);
     InfoEntryTy = llvm::StructType::create(Cxt, "EFFECTIVE_INFO_ENTRY");
     InfoTy = makeTypeInfoType(M, 0);
     EntryTy = llvm::StructType::create(Cxt, "EFFECTIVE_ENTRY");
-    TypeTy = makeTypeMetaType(M, 0);
+    TypeTy = makeTypeMetaType(M, 0, TyCheCacheLineEntryTy);
     std::vector<llvm::Type *> Fields;
     Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* type */
     Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* _pad */
@@ -4613,7 +4604,6 @@ struct EffectiveSan : public llvm::ModulePass {
     ObjMetaTy->setBody(Fields, false);
 
 
-    initializeTyCheCapabilityTypes(M);
 
     
     
