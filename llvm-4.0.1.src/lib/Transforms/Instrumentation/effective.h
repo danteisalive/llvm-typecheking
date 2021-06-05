@@ -82,6 +82,12 @@
 #define EFFECTIVE_COERCED_INT32_HASH    0x51A0B9BF4F692902ull   // Random
 #define EFFECTIVE_COERCED_INT8_PTR_HASH 0x2317E969C295951Dull   // Random
 
+#define NUMBER_OF_ENTRIES_IN_EACH_CACHELINE 14
+#define TYCHE_OFFSETS_DEVIDER     32
+#define TYCHE_NUMBER_OF_TYPES     128
+#define TYCHE_NUMBER_OF_SECTIONS  8
+#define TYCHE_NUMBER_OF_OFFSETS() ((1 * 16384 * 32)/TYCHE_OFFSETS_DEVIDER) // 1MB objects devided into 32B ofssets   
+
 /*
  * Forward decls.
  */
@@ -124,11 +130,11 @@ struct TYCHE_METADATA_CACHELINE {
     uint32_t CacheLine_11;
     uint32_t CacheLine_12;
     uint32_t CacheLine_13;
-    TYCHE_METADATA_CACHELINE * next_cacheline;
+    struct TYCHE_METADATA_CACHELINE * next_cacheline;
 };
 
 struct TyCheSectionMetadata {
-    TYCHE_METADATA_CACHELINE TypeMetadata[TYCHE_NUMBER_OF_OFFSETS()]; // an aligned 64 Byte CacheLine
+    struct TYCHE_METADATA_CACHELINE TypeMetadata[TYCHE_NUMBER_OF_OFFSETS()]; // an aligned 64 Byte CacheLine
 };
 
 /*

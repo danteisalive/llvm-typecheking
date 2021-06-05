@@ -177,14 +177,6 @@ struct TyCheEntry
 TyChe Metadata structure
 */
 
-#define NUMBER_OF_ENTRIES_IN_EACH_CACHELINE 14
-#define TYCHE_OFFSETS_DEVIDER     32
-#define TYCHE_NUMBER_OF_TYPES     128
-#define TYCHE_NUMBER_OF_SECTIONS  8
-#define TYCHE_NUMBER_OF_OFFSETS() ((1 * 16384 * 32)/TYCHE_OFFSETS_DEVIDER) // 1MB objects devided into 32B ofssets   
-
-
-
         // TID            // OFFSET          //SECTION
 std::map<uint64_t, std::map<uint64_t, std::map<uint64_t, std::vector<llvm::Constant *> > > > TyCheMetaCacheLinesSections;
 std::map<uint64_t, uint64_t> TypeIDNames;
@@ -796,7 +788,6 @@ static void warning(llvm::Module &M, const std::string &msg) {
 static llvm::StructType *makeTypeMetaType(llvm::Module &M, size_t len, llvm::StructType * tyche_cl_type) {
 
   assert(tyche_cl_type != nullptr);
-  
   auto i = metaCache.find(len);
   if (i != metaCache.end())
     return i->second;
@@ -1492,7 +1483,7 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
 }
 
 
-static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::StructType* tyche_cl_meta_type)
+static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::StructType* &tyche_cl_meta_type)
 {
       llvm::LLVMContext &Cxt = M.getContext();
       
@@ -2632,7 +2623,6 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
    // TODO:: Initilize all the basic types too
   llvm::StructType* tyche_cl_meta_type = nullptr;
   llvm::Constant* TyCheMeta = getTyCheMeta(M, tid_number, tyche_cl_meta_type);
-
   llvm::StructType *MetaTy = makeTypeMetaType(M, finalLen, tyche_cl_meta_type);
   llvm::GlobalVariable *MetaGV = new llvm::GlobalVariable(
       M, MetaTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, metaName.str());
