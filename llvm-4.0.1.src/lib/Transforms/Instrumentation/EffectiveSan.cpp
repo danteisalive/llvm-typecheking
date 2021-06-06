@@ -1530,7 +1530,9 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
           assert(TyCheMetaCacheLinesSections[tid][offset].find(section) != TyCheMetaCacheLinesSections[tid][offset].end());
           assert(TyCheMetaCacheLinesSections[tid][offset][section].size() <= NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
           assert(TyCheMetaCacheLinesSections[tid][offset][section].size() > 0);
-          
+          #ifdef TYCHE_LAYOUT_DEBUG
+            fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Filled (%d)\n", section, offset, tid, TyCheMetaCacheLinesSections[tid][offset][section].size(), SectionStates[section][offset]);
+          #endif
           // fill the remaning blocks with null entries
           while (TyCheMetaCacheLinesSections[tid][offset][section].size() < NUMBER_OF_ENTRIES_IN_EACH_CACHELINE)
           {
@@ -1591,9 +1593,7 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
           }
 
           // assert(TyCheMetaCacheLinesSections[tid][offset][section].size() == (NUMBER_OF_ENTRIES_IN_EACH_CACHELINE + 1));
-          #ifdef TYCHE_LAYOUT_DEBUG
-            fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Filled (%d)\n", section, offset, tid, TyCheMetaCacheLinesSections[tid][offset][section].size(), SectionStates[section][offset]);
-          #endif
+
           
 
         }
@@ -1604,6 +1604,10 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
 
           assert(TyCheMetaCacheLinesSections[tid][offset].find(section) == TyCheMetaCacheLinesSections[tid][offset].end());
           std::vector<llvm::Constant*> cacheline;
+          #ifdef TYCHE_LAYOUT_DEBUG
+            fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Empty (%d)\n", section, offset, tid, cacheline.size(), SectionStates[section][offset] );
+          #endif
+
           while (cacheline.size() < NUMBER_OF_ENTRIES_IN_EACH_CACHELINE)
           {
             llvm::Constant *Entry =  llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), -1);
@@ -1628,9 +1632,7 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
           // //llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
           // SectionEntries[section].push_back(TyCheCacheLineInit);
 
-          #ifdef TYCHE_LAYOUT_DEBUG
-            fprintf(stderr, "SECTION[%zu] OFFSET[%zu] = TID(%zu) Size(%zu) <== Empty (%d)\n", section, offset, tid, cacheline.size(), SectionStates[section][offset] );
-          #endif
+
 
           //if (section == 0 && offset == 0) tyche_cl_meta_type = TyCheTy;
 

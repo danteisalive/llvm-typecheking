@@ -140,6 +140,163 @@ const EFFECTIVE_INFO EFFECTIVE_INFO_FLOAT128 =
     .entries = {}
 };
 
+__attribute__((__section__("tyche_symbols_section_0"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC0_CL_INT8 =
+{
+    .CacheLine_0 = 0,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+
+__attribute__((__section__("tyche_symbols_section_1"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC1_CL_INT8 =
+{
+    .CacheLine_0 = -1,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+__attribute__((__section__("tyche_symbols_section_2"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC2_CL_INT8 =
+{
+    .CacheLine_0 = -1,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+__attribute__((__section__("tyche_symbols_section_3"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC3_CL_INT8 =
+{
+    .CacheLine_0 = 0,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+__attribute__((__section__("tyche_symbols_section_4"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC4_CL_INT8 =
+{
+    .CacheLine_0 = -1,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+
+__attribute__((__section__("tyche_symbols_section_5"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC5_CL_INT8 =
+{
+    .CacheLine_0 = -1,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+
+__attribute__((__section__("tyche_symbols_section_6"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC6_CL_INT8 =
+{
+    .CacheLine_0 = -1,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+
+__attribute__((__section__("tyche_symbols_section_7"))) EFFECTIVE_ALIGNED(64) struct TYCHE_METADATA_CACHELINE EFFECTIVE_SEC7_CL_INT8 =
+{
+    .CacheLine_0 = -1,
+    .CacheLine_1 = -1,
+    .CacheLine_2 = -1,
+    .CacheLine_3 = -1,
+    .CacheLine_4 = -1,
+    .CacheLine_5 = -1,
+    .CacheLine_6 = -1,
+    .CacheLine_7 = -1,
+    .CacheLine_8 = -1,
+    .CacheLine_9 = -1,
+    .CacheLine_10 = -1,
+    .CacheLine_11 = -1,
+    .CacheLine_12 = -1,
+    .CacheLine_13 = -1,
+    .next_cacheline = NULL
+
+};
+
 const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_FREE =
 {
     .tyche_meta = NULL,
@@ -158,7 +315,7 @@ const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_FREE =
 
 const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_INT8 =
 {
-    .tyche_meta = NULL, // change this
+    .tyche_meta = &EFFECTIVE_SEC0_CL_INT8, // change this
     .hash       = EFFECTIVE_TYPE_INT8_HASH,
     .hash2      = EFFECTIVE_TYPE_INT8_HASH,
     .size       = sizeof(int8_t),
