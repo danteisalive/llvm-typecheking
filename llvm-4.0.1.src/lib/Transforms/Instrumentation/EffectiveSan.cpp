@@ -89,7 +89,7 @@ extern "C" {
 }
 
 //#define EFFECTIVE_INSTRUMENTATION_DEBUG 0
-//#define EFFECTIVE_LAYOUT_DEBUG  1
+#define EFFECTIVE_LAYOUT_DEBUG  1
 #define TYCHE_LAYOUT_DEBUG      1
 
 #ifndef EFFECTIVE_INSTRUMENTATION_DEBUG
@@ -1547,49 +1547,10 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
           if (section == (int)TyCheMetaCacheLinesSections[tid][offset].size() - 1)
           {
               SectionStates[section].push_back(false);
-          //     assert(PrevSectionTyCheCacheLineGV == nullptr);
-          //     llvm::StructType * TyCheTy =  makeTyCheCacheLineType(M, int64_t(tid), offset, section);
-          //     llvm::Constant *Entry =  llvm::ConstantPointerNull::get(TyCheTy->getPointerTo());
-          //     TyCheMetaCacheLinesSections[tid][offset][section].push_back(Entry);
-              
-          //     //std::string meta_gv_name = "TYCHE_CACHELINE_" + std::to_string(tid) + std::to_string(offset) + "_" + std::to_string(section);
-          //     //llvm::GlobalVariable * TyCheCacheLineGV = new llvm::GlobalVariable(M, TyCheTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
-          //     llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
-          //     //TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
-          //     //TyCheCacheLineGV->setAlignment(64);
-          //     PrevSectionTyCheCacheLineGV =  TyCheCacheLineInit;
-          //     //std::string meta_section_name = "tyche_symbols_section_" + std::to_string(section);
-          //     //TyCheCacheLineGV->setSection(meta_section_name);
-          //     //llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
-          //     SectionEntries[section].push_back(TyCheCacheLineInit);
-              
-          //     //if (section == 0 && offset == 0) tyche_cl_meta_type = TyCheTy;
-
           }
           else 
           {
               SectionStates[section].push_back(true);
-          //     // otherwise creat a MetaGV and get the pointer to it
-          //     // get a pointer to previous cacheline and push it
-          //     assert(PrevSectionTyCheCacheLineGV != nullptr);
-          //     llvm::StructType * TyCheTy =  makeTyCheCacheLineType(M, int64_t(tid), offset, section);
-          //     llvm::Constant *TyCheGVConstant = llvm::ConstantExpr::getBitCast(PrevSectionTyCheCacheLineGV, TyCheTy->getPointerTo());
-          //     TyCheMetaCacheLinesSections[tid][offset][section].push_back(TyCheGVConstant);
-              
-          //     //std::string meta_gv_name = "TYCHE_CACHELINE_" + std::to_string(tid) + std::to_string(offset) + "_" + std::to_string(section); 
-          //     //llvm::GlobalVariable * TyCheCacheLineGV = new llvm::GlobalVariable(M, TyCheTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
-
-          //     llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
-          //     //TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);
-          //     //TyCheCacheLineGV->setAlignment(64);
-          //     //std::string meta_section_name = "tyche_symbols_section_" + std::to_string(section);
-          //     //TyCheCacheLineGV->setSection(meta_section_name);
-          //     PrevSectionTyCheCacheLineGV =  TyCheCacheLineInit;
-          //     //llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
-          //     SectionEntries[section].push_back(TyCheCacheLineInit);
-
-          //     //if (section == 0 && offset == 0) tyche_cl_meta_type = TyCheTy;
-
           }
 
           // assert(TyCheMetaCacheLinesSections[tid][offset][section].size() == (NUMBER_OF_ENTRIES_IN_EACH_CACHELINE + 1));
@@ -1613,28 +1574,10 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
             llvm::Constant *Entry =  llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), -1);
             cacheline.push_back(Entry);
           }
-          // llvm::StructType * TyCheTy =  makeTyCheCacheLineType(M, int64_t(tid), offset, section);
-          // llvm::Constant *Entry =  llvm::ConstantPointerNull::get(TyCheTy->getPointerTo());
-          // cacheline.push_back(Entry);
 
           assert(cacheline.size() == NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
           SectionEntries[section].push_back(cacheline);
           SectionStates[section].push_back(false);
-
-          // //std::string meta_gv_name = "TYCHE_CACHELINE_" + std::to_string(tid) + std::to_string(offset) + "_" + std::to_string(section);
-          // //llvm::GlobalVariable * TyCheCacheLineGV = new llvm::GlobalVariable(M, TyCheTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
-          // llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
-          // //TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
-          // //TyCheCacheLineGV->setAlignment(64);
-          // //std::string meta_section_name = "tyche_symbols_section_" + std::to_string(section);
-          // //TyCheCacheLineGV->setSection(meta_section_name);
-          // PrevSectionTyCheCacheLineGV =  nullptr;
-          // //llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
-          // SectionEntries[section].push_back(TyCheCacheLineInit);
-
-
-
-          //if (section == 0 && offset == 0) tyche_cl_meta_type = TyCheTy;
 
         }        
 
@@ -1724,7 +1667,8 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
               llvm::ArrayType *TyCheSectionLayoutTy = llvm::ArrayType::get(TyCheCacheLineEntryTy, SectionConstants.size());
               llvm::Constant *SectionArrayEntry = llvm::ConstantArray::get(TyCheSectionLayoutTy, SectionConstants);
               // now we have an array of all cachelines in a section, creat the global variable and insert it into the module
-              std::string meta_gv_name = "TYCHE_META_SECTION_TID_" + std::to_string(tid) /*+ "_" + std::to_string(sec)*/;
+              std::string meta_gv_name = "TYCHE_META_SECTION_TID_" + std::to_string(tid) + "_SEC_" + std::to_string(sec) + "_FILE_" + M.getSourceFileName();
+              fprintf(stderr, "Global Variable Name: %s\n", meta_gv_name.c_str());
               std::string meta_section_name = "tyche_symbols_section_" + std::to_string(sec);
               llvm::GlobalVariable *TyCheSectionMetaGV = new llvm::GlobalVariable(M, TyCheSectionLayoutTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
               TyCheSectionMetaGV->setInitializer(SectionArrayEntry);
@@ -1735,6 +1679,7 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
               PrevSectionTyCheCacheLineType = TyCheSectionLayoutTy;
 
               if (sec == 0) {
+                fprintf(stderr, "Returning Section %zu!\n", sec);
                 tyche_cl_meta_type = TyCheSectionLayoutTy; // a pointer to array?
                 TyCheSection_0 = llvm::ConstantExpr::getBitCast(TyCheSectionMetaGV, TyCheSectionLayoutTy->getPointerTo());
               }

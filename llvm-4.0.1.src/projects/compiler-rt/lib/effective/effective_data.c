@@ -299,7 +299,7 @@ __attribute__((__section__("tyche_symbols_section_7"))) EFFECTIVE_ALIGNED(64) st
 
 const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_FREE =
 {
-    .tyche_meta = NULL,
+    .tyche_meta = &EFFECTIVE_SEC0_CL_INT8,
 	.hash       = 0xAB63C4D0EB0A6EC4ull,
 	.hash2      = 0xAB63C4D0EB0A6EC4ull,
 	.size       = sizeof(int8_t),
