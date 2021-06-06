@@ -113,6 +113,7 @@ typedef struct EFFECTIVE_ENTRY EFFECTIVE_ENTRY;
 
 #define EFFECTIVE_ENTRY_EMPTY_HASH  EFFECTIVE_TYPE_NIL_HASH
 
+typedef struct TYCHE_METADATA_CACHELINE TYCHE_METADATA_CACHELINE;
 /** If a meta type capability needs more than 32 bits, we can use multiple entry in the cacheline. 
  * It is still better than having 64 bits type capabilities which is too much for most type. */
 struct TYCHE_METADATA_CACHELINE {
@@ -130,7 +131,7 @@ struct TYCHE_METADATA_CACHELINE {
     uint32_t CacheLine_11;
     uint32_t CacheLine_12;
     uint32_t CacheLine_13;
-    struct TYCHE_METADATA_CACHELINE * next_cacheline;
+    TYCHE_METADATA_CACHELINE * next_cacheline;
 };
 
 struct TyCheSectionMetadata {
@@ -141,7 +142,7 @@ struct TyCheSectionMetadata {
  * Type meta-data representation.
  */
 typedef struct EFFECTIVE_INFO EFFECTIVE_INFO;
-typedef struct TYCHE_METADATA_CACHELINE TYCHE_METADATA_CACHELINE;
+
 struct EFFECTIVE_TYPE
 {
     TYCHE_METADATA_CACHELINE *tyche_meta; // TyCHE metadata
