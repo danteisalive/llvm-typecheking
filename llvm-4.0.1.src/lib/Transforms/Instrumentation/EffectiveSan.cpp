@@ -1568,6 +1568,8 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::StructT
               TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
               TyCheCacheLineGV->setAlignment(64);
               PrevSectionTyCheCacheLineGV =  TyCheCacheLineGV;
+              std::string meta_section_name = "tyche_symbols_section_" + std::to_string(section);
+              TyCheCacheLineGV->setSection(meta_section_name);
               llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
               SectionEntries[section].push_back(TyCheCL);
 
@@ -1589,6 +1591,8 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::StructT
               llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
               TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);
               TyCheCacheLineGV->setAlignment(64);
+              std::string meta_section_name = "tyche_symbols_section_" + std::to_string(section);
+              TyCheCacheLineGV->setSection(meta_section_name);
               PrevSectionTyCheCacheLineGV =  TyCheCacheLineGV;
               llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
               SectionEntries[section].push_back(TyCheCL);
@@ -1628,7 +1632,8 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::StructT
           llvm::Constant *TyCheCacheLineInit = llvm::ConstantStruct::get(TyCheTy, TyCheMetaCacheLinesSections[tid][offset][section]);
           TyCheCacheLineGV->setInitializer(TyCheCacheLineInit);         
           TyCheCacheLineGV->setAlignment(64);
-          
+          std::string meta_section_name = "tyche_symbols_section_" + std::to_string(section);
+          TyCheCacheLineGV->setSection(meta_section_name);
           PrevSectionTyCheCacheLineGV =  nullptr;
           llvm::Constant *TyCheCL = llvm::ConstantExpr::getBitCast(TyCheCacheLineGV, TyCheTy->getPointerTo());
           SectionEntries[section].push_back(TyCheCL);
@@ -1652,6 +1657,7 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::StructT
       for (int sec = 0; sec < TYCHE_NUMBER_OF_SECTIONS; sec++)
       {
         assert(SectionEntries[sec].size() == SectionEntries[0].size());
+        fprintf(stderr, "SectionEntries Size: %zu\n", SectionEntries[sec].size());
         for (int off = 0; off < SectionEntries[sec].size(); off++)
         {
           assert(SectionEntries[sec][off] != nullptr);
@@ -1688,6 +1694,7 @@ static void emitTyCheMetadata(llvm::Module &M)
       for (size_t sec = 0; sec < TyCheSectionsEntries.size(); sec++)
       {
           assert(TyCheSectionsEntries[sec].size() <= TYCHE_NUMBER_OF_OFFSETS());
+          fprintf(stderr, "TyCheSectionsEntries Size: %zu\n", TyCheSectionsEntries[sec].size());
           llvm::ArrayType *TyCheSectionLayoutTy = llvm::ArrayType::get(TyCheCacheLineEntryTy, TyCheSectionsEntries[sec].size());
           llvm::Constant *SectionArrayEntry = llvm::ConstantArray::get(TyCheSectionLayoutTy, TyCheSectionsEntries[sec]);
           // now we have an array of all cachelines in a section, creat the global variable and insert it into the module
@@ -4663,10 +4670,7 @@ struct EffectiveSan : public llvm::ModulePass {
         }
     }
     
-    /*
-    emit TyChe metadata into the defined sections in global sections
-    */
-    emitTyCheMetadata(M);
+
 
     /*
      * Step #4: Replace globals with typed version:
@@ -4677,6 +4681,11 @@ struct EffectiveSan : public llvm::ModulePass {
      * Strip metadata.
      */
     stripMetaData(M);
+
+    /*
+    emit TyChe metadata into the defined sections in global sections
+    */
+    //emitTyCheMetadata(M);
 
     /*
      * Step #6: Emit instrumentation functions.

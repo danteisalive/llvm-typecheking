@@ -58,7 +58,7 @@ static NOINLINE U getValue(U *ptr, int idx)
 int main(void)
 {
     S *s = new S[100];
-
+    s[10].t.a[1] = 10;
     int *p = s[10].t.a;
 
     getValue<int>(p, 0);            // OK
