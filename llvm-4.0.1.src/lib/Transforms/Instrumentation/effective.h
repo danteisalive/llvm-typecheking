@@ -48,7 +48,7 @@
 
 #define EFFECTIVE_SANITY            0x4FEBF99B      // Random
 
-// #define EFFECTIVE_FLAG_DEBUG        1
+//#define EFFECTIVE_FLAG_DEBUG        1
 // #define EFFECTIVE_FLAG_PROFILE      1
 // #define EFFECTIVE_FLAG_COUNT        1
 // #define EFFECTIVE_FLAG_FATAL        1

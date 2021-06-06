@@ -4687,21 +4687,21 @@ struct EffectiveSan : public llvm::ModulePass {
         /*
         * Step #2: Replace allocas with typed version:
         */
-        replaceAllocas(M, F, tInfo, cInfo, Ignore);
+        //replaceAllocas(M, F, tInfo, cInfo, Ignore);
 
         /*
         * Step #3: Do bounds-check/type-check instrumentation:
         */
-        BoundsCheckInfo bcInfo;
-        findPointersForBoundsCheck(M, F, bcInfo, cInfo, Ignore);
-        optimizeBoundsChecks(M, F, cInfo, bcInfo);
-        BoundsInfo bInfo;
-        for (auto &Entry : bcInfo) {
-          std::vector<BoundsCheckEntry> Checks = Entry.second;
-          for (auto &Check : Checks) {
-            instrumentBoundsCheck(M, F, Check, tInfo, cInfo, bInfo);
-          }
-        }
+        // BoundsCheckInfo bcInfo;
+        // findPointersForBoundsCheck(M, F, bcInfo, cInfo, Ignore);
+        // optimizeBoundsChecks(M, F, cInfo, bcInfo);
+        // BoundsInfo bInfo;
+        // for (auto &Entry : bcInfo) {
+        //   std::vector<BoundsCheckEntry> Checks = Entry.second;
+        //   for (auto &Check : Checks) {
+        //     instrumentBoundsCheck(M, F, Check, tInfo, cInfo, bInfo);
+        //   }
+        // }
     }
     
 
@@ -4709,7 +4709,7 @@ struct EffectiveSan : public llvm::ModulePass {
     /*
      * Step #4: Replace globals with typed version:
      */
-    replaceGlobals(M, tInfo);
+    //replaceGlobals(M, tInfo);
 
     /*
      * Strip metadata.
@@ -4724,7 +4724,7 @@ struct EffectiveSan : public llvm::ModulePass {
     /*
      * Step #6: Emit instrumentation functions.
      */
-    emitInstrumentationFunctions(M);
+    //emitInstrumentationFunctions(M);
 
     /*
      * Clean-up

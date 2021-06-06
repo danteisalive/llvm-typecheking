@@ -16,32 +16,8 @@
 
 #define NOINLINE    __attribute__((noinline))
 
-enum Enum
-{
-    TEST1,
-    TEST2,
-    TEST3
-};
-
-union Union
-{
-    char b[10];
-    double * d_pointer;
-};
-
-
-struct T {
-    int a[3]; 
-    char *s; 
-};
-
-struct S {
-    float f; 
-    struct T t; 
-    union Union u; 
-    enum Enum e;
-    float fam_float[];
-};
+struct T {int a[3]; char *s;};
+struct S {float f; struct T t;};
 
 /*
  * Get the i^th value of an array pointed to by `ptr'.
@@ -58,7 +34,7 @@ static NOINLINE U getValue(U *ptr, int idx)
 int main(void)
 {
     S *s = new S[100];
-    s[10].t.a[1] = 10;
+    s[10].t.a[1] = 1;
     int *p = s[10].t.a;
 
     getValue<int>(p, 0);            // OK
@@ -77,5 +53,3 @@ int main(void)
 
     return 0;
 }
-
-
