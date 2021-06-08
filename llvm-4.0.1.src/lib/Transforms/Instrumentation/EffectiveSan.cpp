@@ -90,7 +90,8 @@ extern "C" {
 
 //#define EFFECTIVE_INSTRUMENTATION_DEBUG 0
 #define EFFECTIVE_LAYOUT_DEBUG  1
-#define TYCHE_LAYOUT_DEBUG      1
+//#define TYCHE_LAYOUT_DEBUG      1
+#define TYCHE_TEMP_DUMP_LAYOUT
 
 #ifndef EFFECTIVE_INSTRUMENTATION_DEBUG
 #define EFFECTIVE_DEBUG_PRINT(...) /* NOP */
@@ -953,7 +954,7 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
   Ty->dump();
   if (tyche_entry.Parent != nullptr) tyche_entry.Parent->dump();
 #endif
-  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, priority, false, false, tyche_entry, TyCheDependencyTree, name};
+  LayoutEntry entry = {offset, Ty, hval, 0, lb, ub, /*priority*/ false, false, false, tyche_entry, TyCheDependencyTree, name};
   layout.insert(std::make_pair(offset, entry));
 
   // Add entry for any type coercion:
@@ -975,7 +976,7 @@ static void addLayoutEntry(LayoutInfo &layout, TypeInfo &tInfo, size_t offset,
   fprintf(stderr, "\t+coerced <%.16lX> {%zd}\n", hval, (intptr_t)hval);
 #endif
 
-  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, priority, false, true, tyche_entry, TyCheDependencyTree, "coerced"};
+  LayoutEntry coercedEntry = {offset, Ty, hval, 0, lb, ub, /*priority*/ false, false, true, tyche_entry, TyCheDependencyTree, "coerced"};
   layout.insert(std::make_pair(offset, coercedEntry));
 }
 
@@ -1058,7 +1059,7 @@ static llvm::DIType *getMemberType(llvm::DIType *Ty, size_t &offset,
 static void buildLayout(llvm::DICompositeType *CompositeTy, size_t offsetBase,
                         const FAM &fam, TypeInfo &tInfo, LayoutInfo &layout,
                         std::vector<llvm::DIType*>& TyCheDependencyTree,
-                        bool priority = true, bool inherited = false) {
+                        bool priority = false, bool inherited = false) {
   llvm::DINodeArray Elements = CompositeTy->getElements();
   for (auto Element : Elements) {
     if (llvm::isa<llvm::DISubprogram>(Element) ||
@@ -1121,6 +1122,7 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
                               bool inherited, TypeInfo &tInfo,
                               LayoutInfo &layout, TyCheEntry prevTyCheEntry, 
                               std::vector<llvm::DIType*>& TyCheDependencyTree) {
+
   if (offset == fam.offset && Ty == fam.type) {
     //fam.type->dump();
     // Special handling of the Flexible Array Member (FAM), if any.
@@ -1133,7 +1135,7 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
 
     Ty = normalizeType(Ty);
     intptr_t lb = -EFFECTIVE_DELTA, ub = EFFECTIVE_DELTA;
-    addLayoutEntry(layout, tInfo, offset, Ty, lb, ub, priority, famTyCheEntry, TyCheDependencyTree);
+    addLayoutEntry(layout, tInfo, offset, Ty, lb, ub, /*priority*/ false, famTyCheEntry, TyCheDependencyTree);
     auto *CompositeTy = getStructType(Ty);
     if (CompositeTy != nullptr)
     {
@@ -1156,7 +1158,7 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
     auto *CompositeTy = getStructType(Ty);
 
     addLayoutEntry(layout, tInfo, offset, Ty, lb, ub,
-                   (priority || CompositeTy != nullptr), prevTyCheEntry, TyCheDependencyTree);
+                   (/*priority*/false || CompositeTy != nullptr), prevTyCheEntry, TyCheDependencyTree);
 
     // If `Ty' is a struct type, then recursively build the layout:
     if (CompositeTy != nullptr) {
@@ -1207,7 +1209,7 @@ static void buildMemberLayout(llvm::DIType *Ty, size_t offset, const FAM &fam,
         bool newPriority = (i == 0 && j == 0);
         TyCheDependencyTree.push_back(Ty);
         buildMemberLayout(ElemTy, offset + subArrayOffset, fam, lb - elemOffset,
-                          ub - elemOffset, newPriority,
+                          ub - elemOffset, /*newPriority*/ false,
                           /*inherited=*/false, tInfo, layout, tyCheEntry, TyCheDependencyTree);
         TyCheDependencyTree.pop_back();
       }
@@ -1327,11 +1329,11 @@ static bool placeFlattenedLayoutEntry(FlattenedLayoutInfo &flattenedLayout,
     auto j = flattenedLayout.find(eidx);
     if (j == flattenedLayout.end()) {
 #ifdef EFFECTIVE_LAYOUT_DEBUG
-      // fprintf(stderr,
-      //         "ADD(0x%.16lX, 0x%.16lX, %zu) = "
-      //         "0x%.16lX {%zd} [%zd..%zd] index=%zu\n",
-      //         hval1, hval2, offset, hval, (ssize_t)hval, offset + lEntry.lb,
-      //         offset + lEntry.ub, eidx);
+      fprintf(stderr,
+              "ADD(0x%.16lX, 0x%.16lX, %zu) = "
+              "0x%.16lX {%zd} [%zd..%zd] index=%zu name: %s\n",
+              hval1, hval2, offset, hval, (ssize_t)hval, offset + lEntry.lb,
+              offset + lEntry.ub, eidx, lEntry.humanName.c_str());
 #endif
       flattenedLayout.insert(std::make_pair(eidx, &lEntry));
       break;
