@@ -310,7 +310,8 @@ const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_FREE =
     .mask       = 0,
     .info       = &EFFECTIVE_INFO_FREE,
     .next       = EFFECTIVE_TYPE_NIL_HASH,
-    .layout     = {{-1, 0, {0, 0}}}
+    .length     = 1,
+    .layout     = {{"", UINT64_MAX, -1, 0, {0, 0}}}
 };
 
 const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_INT8 =
@@ -326,9 +327,10 @@ const EFFECTIVE_ALIGNED(64) struct EFFECTIVE_TYPE EFFECTIVE_TYPE_INT8 =
     .mask       = 1,
     .info       = &EFFECTIVE_INFO_INT8,
     .next       = EFFECTIVE_TYPE_INT8_HASH,
+    .length     = 2,
     .layout     = {
-        {0x00000000B79F915Eull, 0, {-EFFECTIVE_DELTA, EFFECTIVE_DELTA}},
-        {-1, 0, {0, 0}}
+        {"int8_t", 0, 0x00000000B79F915Eull, 0, {-EFFECTIVE_DELTA, EFFECTIVE_DELTA}},
+        {"", UINT64_MAX, -1, 0, {0, 0}}
     }
 };
 

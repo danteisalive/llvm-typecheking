@@ -106,11 +106,11 @@ typedef intptr_t EFFECTIVE_BOUNDS EFFECTIVE_VECTOR_SIZE(16);
 struct EFFECTIVE_ENTRY
 {
     const char *name;
-    uint32_t offset;
+    uint64_t offset;
     uint64_t hash;              // Layout entry type.
     uint64_t _pad;              // Padding.
     EFFECTIVE_BOUNDS bounds;    // Sub-object bounds.
-} EFFECTIVE_PACKED;
+} ;
 typedef struct EFFECTIVE_ENTRY EFFECTIVE_ENTRY;
 
 #define EFFECTIVE_ENTRY_EMPTY_HASH  EFFECTIVE_TYPE_NIL_HASH
@@ -158,6 +158,7 @@ struct EFFECTIVE_TYPE
     size_t mask;                // Mask for layout[]
     const EFFECTIVE_INFO *info; // Type info
     uint64_t next;              // Hash of next type coercion
+    uint32_t length;            // length of layout
     EFFECTIVE_ENTRY layout[];   // The layout hash table.
 };
 

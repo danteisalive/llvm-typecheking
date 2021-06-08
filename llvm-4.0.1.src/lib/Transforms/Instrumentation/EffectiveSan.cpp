@@ -814,6 +814,7 @@ static llvm::StructType *makeTypeMetaType(llvm::Module &M, size_t len, llvm::Arr
   Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* mask */
   Fields.push_back(InfoTy->getPointerTo());      /* info */
   Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* next */
+  Fields.push_back(llvm::Type::getInt32Ty(Cxt)); /* length */
   llvm::ArrayType *LayoutTy = llvm::ArrayType::get(EntryTy, len);
   Fields.push_back(LayoutTy); /* layout */
   Ty->setBody(Fields);
@@ -1789,28 +1790,57 @@ static std::pair<llvm::Constant *, size_t> compileLayout(llvm::Module &M,
   // Step (3): build the LLVM representation of the array:
   llvm::LLVMContext &Cxt = M.getContext();
   std::vector<llvm::Constant *> Entries;
-  bool done = false;
-  for (size_t i = 0; !done; i++) {
-    auto j = flattenedLayout.find(i);
-    if (j == flattenedLayout.end()) {
-      Entries.push_back(EmptyEntry);
-      done = (i >= layoutLen);
-      continue;
-    }
-    const LayoutEntry &lEntry = *j->second;
+  // bool done = false;
+  // for (size_t i = 0; !done; i++) {
+  //   auto j = flattenedLayout.find(i);
+  //   if (j == flattenedLayout.end()) {
+  //     Entries.push_back(EmptyEntry);
+  //     done = (i >= layoutLen);
+  //     continue;
+  //   }
+  //   const LayoutEntry &lEntry = *j->second;
 
 
+  //   fprintf(stderr,"ADD_TYCHE: [%zu][%s]\n",lEntry.offset, lEntry.humanName.c_str());
+  //   std::vector<llvm::Constant *> Elems;
+  
+  //   llvm::Constant *TypeEntryNameInit = llvm::ConstantDataArray::getString(Cxt, lEntry.humanName);
+  //   std::string type_entry_gv_name = "TYCHE_TYPE_ENTRY_" + lEntry.humanName + "_" + std::to_string(lEntry.finalHash) + "_FILE_" + M.getSourceFileName();
+
+  //   // assert(M.getGlobalVariable(type_entry_gv_name) == nullptr);
+  //   llvm::GlobalVariable *TypeEntryNameGV = new llvm::GlobalVariable(
+  //     M, TypeEntryNameInit->getType(), true, llvm::GlobalValue::PrivateLinkage, TypeEntryNameInit, type_entry_gv_name);
+  //   TypeEntryNameGV->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+  //   llvm::Constant *TypeEntryName = llvm::ConstantExpr::getPointerCast(TypeEntryNameGV, llvm::Type::getInt8PtrTy(Cxt));
+  //   Elems.push_back(TypeEntryName);
+  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), lEntry.offset));
+  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.finalHash));
+  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
+  //   Elems.push_back(llvm::ConstantVector::get(
+  //       {llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.lb),
+  //        llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.ub)}));
+  //   llvm::Constant *Entry = llvm::ConstantStruct::get(EntryTy, Elems);
+
+  //   Entries.push_back(Entry);
+  // }
+
+
+
+  for (auto entries: flattenedLayout ) {
+    const LayoutEntry &lEntry = *(entries.second);
     fprintf(stderr,"ADD_TYCHE: [%zu][%s]\n",lEntry.offset, lEntry.humanName.c_str());
     std::vector<llvm::Constant *> Elems;
   
     llvm::Constant *TypeEntryNameInit = llvm::ConstantDataArray::getString(Cxt, lEntry.humanName);
     std::string type_entry_gv_name = "TYCHE_TYPE_ENTRY_" + lEntry.humanName + "_" + std::to_string(lEntry.finalHash) + "_FILE_" + M.getSourceFileName();
+
+    // assert(M.getGlobalVariable(type_entry_gv_name) == nullptr);
     llvm::GlobalVariable *TypeEntryNameGV = new llvm::GlobalVariable(
       M, TypeEntryNameInit->getType(), true, llvm::GlobalValue::PrivateLinkage, TypeEntryNameInit, type_entry_gv_name);
     TypeEntryNameGV->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
     llvm::Constant *TypeEntryName = llvm::ConstantExpr::getPointerCast(TypeEntryNameGV, llvm::Type::getInt8PtrTy(Cxt));
     Elems.push_back(TypeEntryName);
-    Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), lEntry.offset));
+    Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.offset));
     Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.finalHash));
     Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
     Elems.push_back(llvm::ConstantVector::get(
@@ -1821,9 +1851,12 @@ static std::pair<llvm::Constant *, size_t> compileLayout(llvm::Module &M,
     Entries.push_back(Entry);
   }
 
+  Entries.push_back(EmptyEntry);
+
   llvm::ArrayType *LayoutTy = llvm::ArrayType::get(EntryTy, Entries.size());
   llvm::Constant *Layout = llvm::ConstantArray::get(LayoutTy, Entries);
 
+  fprintf(stderr,"FINAL LENGTH: %zu\n", Entries.size());
   return std::make_pair(Layout, Entries.size());
 }
 
@@ -2641,6 +2674,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), mask));
   Elems.push_back(Info);
   Elems.push_back(Next);
+  Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), finalLen));
   Elems.push_back(Layout);
   llvm::Constant *MetaInit = llvm::ConstantStruct::get(MetaTy, Elems);
   MetaGV->setInitializer(MetaInit);
@@ -4569,7 +4603,7 @@ struct EffectiveSan : public llvm::ModulePass {
 
     std::vector<llvm::Type *> Fields;
     Fields.push_back(llvm::Type::getInt8PtrTy(Cxt)); /* name */
-    Fields.push_back(llvm::Type::getInt32Ty(Cxt)); /* offset */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* offset */
     Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* type */
     Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* _pad */
     Fields.push_back(BoundsTy);                    /* bounds */
@@ -4590,7 +4624,7 @@ struct EffectiveSan : public llvm::ModulePass {
     TypeEntryNameGV->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
     llvm::Constant *TypeEntryName = llvm::ConstantExpr::getPointerCast(TypeEntryNameGV, llvm::Type::getInt8PtrTy(Cxt));
     Elems.push_back(TypeEntryName);
-    Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), -1));
+    Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), UINT64_MAX));
     Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), EFFECTIVE_ENTRY_EMPTY_HASH));
     Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
     Elems.push_back(llvm::ConstantVector::get(
