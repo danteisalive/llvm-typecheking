@@ -4639,6 +4639,7 @@ struct EffectiveSan : public llvm::ModulePass {
     Fields.clear();
     Fields.push_back(TypeTy->getPointerTo());      /* type */
     Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* size */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* pid */
     ObjMetaTy->setBody(Fields, false);
 
 
@@ -4665,8 +4666,6 @@ struct EffectiveSan : public llvm::ModulePass {
     Int128Ty = builder.createBasicType("__int128", 16 * CHAR_BIT,
                                        llvm::dwarf::DW_ATE_signed);
 
-    
-    // This line: <0x16ef898> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
     
     Int8TyMeta = compileType(M, nullptr, tInfo).typeMeta;
 

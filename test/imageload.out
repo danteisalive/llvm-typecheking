@@ -1,0 +1,23 @@
+Tool loading /home/dante/EffectiveSan/test/Example.out at 0
+Tool loading /lib64/ld-linux-x86-64.so.2 at 0x7f2397854000
+Tool loading [vdso] at 0x7fff3486f000
+Tool loading /usr/lib/x86_64-linux-gnu/libstdc++.so.6 at 0x7f23832af000
+Tool loading /lib/x86_64-linux-gnu/libm.so.6 at 0x7f2382ef0000
+Tool loading /lib/x86_64-linux-gnu/libpthread.so.0 at 0x7f2382cd1000
+Tool loading /lib/x86_64-linux-gnu/librt.so.1 at 0x7f2382ac9000
+Tool loading /lib/x86_64-linux-gnu/libdl.so.2 at 0x7f23828c5000
+Tool loading /lib/x86_64-linux-gnu/libgcc_s.so.1 at 0x7f23826ad000
+Tool loading /lib/x86_64-linux-gnu/libc.so.6 at 0x7f23822bc000
+Tool unloading /home/dante/EffectiveSan/test/Example.out at 0
+Tool unloading /lib64/ld-linux-x86-64.so.2 at 0x7f2397854000
+Tool unloading [vdso] at 0x7fff3486f000
+Tool unloading /usr/lib/x86_64-linux-gnu/libstdc++.so.6 at 0x7f23832af000
+Tool unloading /lib/x86_64-linux-gnu/libm.so.6 at 0x7f2382ef0000
+Tool unloading /lib/x86_64-linux-gnu/libpthread.so.0 at 0x7f2382cd1000
+Tool unloading /lib/x86_64-linux-gnu/librt.so.1 at 0x7f2382ac9000
+Tool unloading /lib/x86_64-linux-gnu/libdl.so.2 at 0x7f23828c5000
+Tool unloading /lib/x86_64-linux-gnu/libgcc_s.so.1 at 0x7f23826ad000
+Tool unloading /lib/x86_64-linux-gnu/libc.so.6 at 0x7f23822bc000
+struct S(1)
+
+------------------------------------------------------------------------

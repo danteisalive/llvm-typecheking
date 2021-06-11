@@ -28,6 +28,8 @@
 extern void *__libc_realloc(void *ptr, size_t size);
 extern void __libc_free(void *ptr);
 
+size_t tyche_allocation_id = 0;
+
 /*
  * Typed memory allocation.
  */
@@ -45,6 +47,7 @@ EFFECTIVE_BOUNDS effective_malloc(size_t size, const EFFECTIVE_TYPE *t)
     EFFECTIVE_META *meta = (EFFECTIVE_META *)ptr;
     meta->size = size;
     meta->type = t;
+    meta->PID = tyche_allocation_id++;
 
     ptr = (void *)(meta + 1);
     EFFECTIVE_BOUNDS bounds = {(intptr_t)ptr, (intptr_t)ptr + size};
@@ -93,6 +96,8 @@ EFFECTIVE_BOUNDS effective_realloc(void *ptr, size_t new_size)
     const EFFECTIVE_TYPE *t = meta->type;
     size_t old_size = meta->size;
     void *old_ptr = (void *)(meta + 1);
+
+    meta->PID = tyche_allocation_id++;
 
     EFFECTIVE_BOUNDS new_bounds = effective_malloc(new_size, t);
     void *new_ptr = (void *)new_bounds[0];

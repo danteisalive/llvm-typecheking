@@ -1,44 +1,45 @@
-	int8_t [+0] (-17179869184..17179869184) <703EDF97BC60677D> {8088147823597479805} <0x242c748> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+	int8_t [+0] (-17179869184..17179869184) <703EDF97BC60677D> {8088147823597479805} <0x91a748> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
 ADD(0x703EDF97BC60677D, 0x703EDF97BC60677D, 0) = 0x00000000B79F915E {3080687966} [-17179869184..17179869184] index=0 name: int8_t
 ADD_TYCHE: [0][int8_t]
-SectionState[7][0]: 38393296 (False)
+FINAL LENGTH: 2
+SectionState[7][0]: 10008016 (False)
 SectionEntries Size: 1
-SectionState[6][0]: 38393856 (False)
+SectionState[6][0]: 10008576 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_0_SEC_6_FILE_Example.cpp
-SectionState[5][0]: 38864384 (False)
+SectionState[5][0]: 10479472 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_0_SEC_5_FILE_Example.cpp
-SectionState[4][0]: 38399808 (False)
+SectionState[4][0]: 10014528 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_0_SEC_4_FILE_Example.cpp
-SectionState[3][0]: 38374080 (False)
+SectionState[3][0]: 9988800 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_0_SEC_3_FILE_Example.cpp
-SectionState[2][0]: 38398672 (False)
+SectionState[2][0]: 10013392 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_0_SEC_2_FILE_Example.cpp
-SectionState[1][0]: 38851728 (False)
+SectionState[1][0]: 10467840 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_0_SEC_1_FILE_Example.cpp
-SectionState[0][0]: 38861648 (False)
+SectionState[0][0]: 10476736 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_0_SEC_0_FILE_Example.cpp
 Returning Section 0!
-	struct S [+0] (-17179869184..17179869184) <9F98FFE3513D7C10> {-6946521073433347056} <0x2498100> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "S", file: <0x2419158>, line: 20, size: 256, elements: <0x242c7d0>, identifier: "_ZTS1S")
+	struct S [+0] (-17179869184..17179869184) <9F98FFE3513D7C10> {-6946521073433347056} <0x986100> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "S", file: <0x907158>, line: 20, size: 256, elements: <0x91a7d0>, identifier: "_ZTS1S")
 struct S:
-	float32_t [+0] (0..4) <2DC2E09F79C2D46B> {3297444852735857771} <0x24981d8> = !DIBasicType(name: "float", size: 32, encoding: DW_ATE_float)
-<0x2498100> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "S", file: <0x2419158>, line: 20, size: 256, elements: <0x242c7d0>, identifier: "_ZTS1S")
-	struct T [+8] (0..24) <8561340DB8E3F160> {-8835723760383037088} <0x2498180> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "T", file: <0x2419158>, line: 19, size: 192, elements: <0x242c7a0>, identifier: "_ZTS1T")
-<0x2498100> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "S", file: <0x2419158>, line: 20, size: 256, elements: <0x242c7d0>, identifier: "_ZTS1S")
-	int32_t [+8] (0..12) <6AF442D6B0174042> {7706858352182509634} <0x24071f8> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-<0x2498260> = !DICompositeType(tag: DW_TAG_array_type, baseType: <0x24071f8>, size: 96, elements: <0x2498518>)
-	int32_t [+12] (-4..8) <6AF442D6B0174042> {7706858352182509634} <0x24071f8> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-<0x2498260> = !DICompositeType(tag: DW_TAG_array_type, baseType: <0x24071f8>, size: 96, elements: <0x2498518>)
-	int32_t [+16] (-8..4) <6AF442D6B0174042> {7706858352182509634} <0x24071f8> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-<0x2498260> = !DICompositeType(tag: DW_TAG_array_type, baseType: <0x24071f8>, size: 96, elements: <0x2498518>)
-	int8_t * [+24] (0..8) <8D0DECDF6C6A8711> {-8282703695323691247} <0x2490ab8> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x242c748>, size: 64)
-<0x2498180> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "T", file: <0x2419158>, line: 19, size: 192, elements: <0x242c7a0>, identifier: "_ZTS1T")
+	float32_t [+0] (0..4) <2DC2E09F79C2D46B> {3297444852735857771} <0x9861d8> = !DIBasicType(name: "float", size: 32, encoding: DW_ATE_float)
+<0x986100> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "S", file: <0x907158>, line: 20, size: 256, elements: <0x91a7d0>, identifier: "_ZTS1S")
+	struct T [+8] (0..24) <8561340DB8E3F160> {-8835723760383037088} <0x986180> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "T", file: <0x907158>, line: 19, size: 192, elements: <0x91a7a0>, identifier: "_ZTS1T")
+<0x986100> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "S", file: <0x907158>, line: 20, size: 256, elements: <0x91a7d0>, identifier: "_ZTS1S")
+	int32_t [+8] (0..12) <6AF442D6B0174042> {7706858352182509634} <0x8f51f8> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+<0x986260> = !DICompositeType(tag: DW_TAG_array_type, baseType: <0x8f51f8>, size: 96, elements: <0x986518>)
+	int32_t [+12] (-4..8) <6AF442D6B0174042> {7706858352182509634} <0x8f51f8> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+<0x986260> = !DICompositeType(tag: DW_TAG_array_type, baseType: <0x8f51f8>, size: 96, elements: <0x986518>)
+	int32_t [+16] (-8..4) <6AF442D6B0174042> {7706858352182509634} <0x8f51f8> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+<0x986260> = !DICompositeType(tag: DW_TAG_array_type, baseType: <0x8f51f8>, size: 96, elements: <0x986518>)
+	int8_t * [+24] (0..8) <8D0DECDF6C6A8711> {-8282703695323691247} <0x97eab8> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x91a748>, size: 64)
+<0x986180> = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "T", file: <0x907158>, line: 19, size: 192, elements: <0x91a7a0>, identifier: "_ZTS1T")
 	+coerced <2317E969C295951D> {2528746356237243677}
 
 ADD(0x9F98FFE3513D7C10, 0x9F98FFE3513D7C10, 0) = 0x000000004C554944 {1280657732} [-17179869184..17179869184] index=4 name: struct S
@@ -57,27 +58,28 @@ ADD_TYCHE: [12][int32_t]
 ADD_TYCHE: [16][int32_t]
 ADD_TYCHE: [0][float32_t]
 ADD_TYCHE: [8][struct T]
-SectionState[7][0]: 38809008 (False)
+FINAL LENGTH: 9
+SectionState[7][0]: 10477264 (False)
 SectionEntries Size: 1
-SectionState[6][0]: 38404976 (False)
+SectionState[6][0]: 10479472 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_1_SEC_6_FILE_Example.cpp
-SectionState[5][0]: 38393296 (False)
+SectionState[5][0]: 10016656 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_1_SEC_5_FILE_Example.cpp
-SectionState[4][0]: 38393856 (False)
+SectionState[4][0]: 9988800 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_1_SEC_4_FILE_Example.cpp
-SectionState[3][0]: 38852848 (False)
+SectionState[3][0]: 10425120 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_1_SEC_3_FILE_Example.cpp
-SectionState[2][0]: 38393264 (False)
+SectionState[2][0]: 9996656 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_1_SEC_2_FILE_Example.cpp
-SectionState[1][0]: 38424608 (False)
+SectionState[1][0]: 10467840 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_1_SEC_1_FILE_Example.cpp
-SectionState[0][0]: 38402192 (False)
+SectionState[0][0]: 10039328 (False)
 SectionEntries Size: 1
 Global Variable Name: TYCHE_META_SECTION_TID_1_SEC_0_FILE_Example.cpp
 Returning Section 0!
