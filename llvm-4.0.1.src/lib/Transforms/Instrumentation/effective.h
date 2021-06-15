@@ -170,6 +170,8 @@ struct EFFECTIVE_META
     const EFFECTIVE_TYPE *type; // Object's effective type sans bounds.
     size_t size;                // Object's allocation size.
     size_t PID;
+    size_t ALIVE_ALLOCATION;
+    size_t FREED_ALLOCATIONS;
 };
 typedef struct EFFECTIVE_META EFFECTIVE_META;
 
@@ -230,6 +232,7 @@ extern size_t effective_num_bounds_errors;
 extern size_t effective_num_double_free_errors;
 extern size_t effective_num_bad_free_errors;
 extern size_t tyche_allocation_id;
+extern size_t tyche_freed_allocations;
 
 /*
  * Type checking.

@@ -4640,6 +4640,8 @@ struct EffectiveSan : public llvm::ModulePass {
     Fields.push_back(TypeTy->getPointerTo());      /* type */
     Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* size */
     Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* pid */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* number of allocations */
+    Fields.push_back(llvm::Type::getInt64Ty(Cxt)); /* number of freed allocations */
     ObjMetaTy->setBody(Fields, false);
 
 
