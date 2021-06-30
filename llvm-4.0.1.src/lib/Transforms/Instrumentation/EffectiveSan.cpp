@@ -89,7 +89,7 @@ extern "C" {
 }
 
 //#define EFFECTIVE_INSTRUMENTATION_DEBUG 0
-#define EFFECTIVE_LAYOUT_DEBUG  1
+//#define EFFECTIVE_LAYOUT_DEBUG  1
 //#define TYCHE_LAYOUT_DEBUG      1
 #define TYCHE_TEMP_DUMP_LAYOUT
 
@@ -1608,7 +1608,9 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
               std::vector<llvm::Constant*> SectionConstants;
               for (size_t off = 0; off < SectionEntries[sec].size(); off++)
               {
-                  fprintf(stderr, "SectionState[%zu][%zu]: %d (False)\n", sec, off, SectionStates[sec][off]);
+                  #ifdef TYCHE_LAYOUT_DEBUG
+                    fprintf(stderr, "SectionState[%zu][%zu]: %d (False)\n", sec, off, SectionStates[sec][off]);
+                  #endif
                   assert(SectionEntries[sec][off].size() == NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
                   llvm::StructType * TyCheTy =  makeTyCheCacheLineType(M, int64_t(tid), off, sec);
                   llvm::Constant *Entry =  llvm::ConstantPointerNull::get(TyCheTy->getPointerTo());
@@ -1620,7 +1622,9 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
               
 
               // now make the section array and Global Variable
-              fprintf(stderr, "SectionEntries Size: %zu\n", SectionConstants.size());
+              #ifdef TYCHE_LAYOUT_DEBUG
+                fprintf(stderr, "SectionEntries Size: %zu\n", SectionConstants.size());
+              #endif
               llvm::ArrayType *TyCheSectionLayoutTy = llvm::ArrayType::get(TyCheCacheLineEntryTy, SectionConstants.size());
               llvm::Constant *SectionArrayEntry = llvm::ConstantArray::get(TyCheSectionLayoutTy, SectionConstants);
               // now we have an array of all cachelines in a section, creat the global variable and insert it into the module
@@ -1643,7 +1647,9 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
                   
                   if (SectionStates[sec][off])
                   {
+                    #ifdef TYCHE_LAYOUT_DEBUG
                       fprintf(stderr, "SectionState[%zu][%zu]: %d (True)\n", sec, off, SectionStates[sec][off]);
+                    #endif
                       assert(SectionEntries[sec][off].size() == NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
                       llvm::StructType * TyCheTy =  makeTyCheCacheLineType(M, int64_t(tid), off, sec);
                       llvm::Constant * Entry = llvm::ConstantExpr::getBitCast(PrevSectionTyCheCacheLineGV, PrevSectionTyCheCacheLineType->getPointerTo());
@@ -1654,7 +1660,9 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
                   }
                   else 
                   {
+                    #ifdef TYCHE_LAYOUT_DEBUG
                       fprintf(stderr, "SectionState[%zu][%zu]: %d (False)\n", sec, off, SectionStates[sec][off]);
+                    #endif
                       assert(SectionEntries[sec][off].size() == NUMBER_OF_ENTRIES_IN_EACH_CACHELINE);
                       llvm::StructType * TyCheTy =  makeTyCheCacheLineType(M, int64_t(tid), off, sec);
                       llvm::Constant *Entry =  llvm::ConstantPointerNull::get(TyCheTy->getPointerTo());
@@ -1666,12 +1674,16 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
               }
 
               // now make the section array and Global Variable
-              fprintf(stderr, "SectionEntries Size: %zu\n", SectionConstants.size());
+              #ifdef TYCHE_LAYOUT_DEBUG
+                fprintf(stderr, "SectionEntries Size: %zu\n", SectionConstants.size());
+              #endif
               llvm::ArrayType *TyCheSectionLayoutTy = llvm::ArrayType::get(TyCheCacheLineEntryTy, SectionConstants.size());
               llvm::Constant *SectionArrayEntry = llvm::ConstantArray::get(TyCheSectionLayoutTy, SectionConstants);
               // now we have an array of all cachelines in a section, creat the global variable and insert it into the module
               std::string meta_gv_name = "TYCHE_META_SECTION_TID_" + std::to_string(tid) + "_SEC_" + std::to_string(sec) + "_FILE_" + M.getSourceFileName();
-              fprintf(stderr, "Global Variable Name: %s\n", meta_gv_name.c_str());
+              #ifdef TYCHE_LAYOUT_DEBUG
+                fprintf(stderr, "Global Variable Name: %s\n", meta_gv_name.c_str());
+              #endif
               std::string meta_section_name = "tyche_symbols_section_" + std::to_string(sec);
               llvm::GlobalVariable *TyCheSectionMetaGV = new llvm::GlobalVariable(M, TyCheSectionLayoutTy, true, llvm::GlobalValue::WeakAnyLinkage, 0, meta_gv_name);
               TyCheSectionMetaGV->setInitializer(SectionArrayEntry);
@@ -1682,7 +1694,9 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
               PrevSectionTyCheCacheLineType = TyCheSectionLayoutTy;
 
               if (sec == 0) {
-                fprintf(stderr, "Returning Section %zu!\n", sec);
+                #ifdef TYCHE_LAYOUT_DEBUG
+                  fprintf(stderr, "Returning Section %zu!\n", sec);
+                #endif
                 tyche_cl_meta_type = TyCheSectionLayoutTy; // a pointer to array?
                 TyCheSection_0 = llvm::ConstantExpr::getBitCast(TyCheSectionMetaGV, TyCheSectionLayoutTy->getPointerTo());
               }
@@ -1721,7 +1735,9 @@ static void emitTyCheMetadata(llvm::Module &M)
       for (size_t sec = 0; sec < TyCheSectionsEntries.size(); sec++)
       {
           assert(TyCheSectionsEntries[sec].size() <= TYCHE_NUMBER_OF_OFFSETS());
-          fprintf(stderr, "TyCheSectionsEntries Size: %zu\n", TyCheSectionsEntries[sec].size());
+          #ifdef TYCHE_LAYOUT_DEBUG
+            fprintf(stderr, "TyCheSectionsEntries Size: %zu\n", TyCheSectionsEntries[sec].size());
+          #endif
           llvm::ArrayType *TyCheSectionLayoutTy = llvm::ArrayType::get(TyCheCacheLineEntryTy, TyCheSectionsEntries[sec].size());
           llvm::Constant *SectionArrayEntry = llvm::ConstantArray::get(TyCheSectionLayoutTy, TyCheSectionsEntries[sec]);
           // now we have an array of all cachelines in a section, creat the global variable and insert it into the module
@@ -1790,45 +1806,14 @@ static std::pair<llvm::Constant *, size_t> compileLayout(llvm::Module &M,
   // Step (3): build the LLVM representation of the array:
   llvm::LLVMContext &Cxt = M.getContext();
   std::vector<llvm::Constant *> Entries;
-  // bool done = false;
-  // for (size_t i = 0; !done; i++) {
-  //   auto j = flattenedLayout.find(i);
-  //   if (j == flattenedLayout.end()) {
-  //     Entries.push_back(EmptyEntry);
-  //     done = (i >= layoutLen);
-  //     continue;
-  //   }
-  //   const LayoutEntry &lEntry = *j->second;
-
-
-  //   fprintf(stderr,"ADD_TYCHE: [%zu][%s]\n",lEntry.offset, lEntry.humanName.c_str());
-  //   std::vector<llvm::Constant *> Elems;
-  
-  //   llvm::Constant *TypeEntryNameInit = llvm::ConstantDataArray::getString(Cxt, lEntry.humanName);
-  //   std::string type_entry_gv_name = "TYCHE_TYPE_ENTRY_" + lEntry.humanName + "_" + std::to_string(lEntry.finalHash) + "_FILE_" + M.getSourceFileName();
-
-  //   // assert(M.getGlobalVariable(type_entry_gv_name) == nullptr);
-  //   llvm::GlobalVariable *TypeEntryNameGV = new llvm::GlobalVariable(
-  //     M, TypeEntryNameInit->getType(), true, llvm::GlobalValue::PrivateLinkage, TypeEntryNameInit, type_entry_gv_name);
-  //   TypeEntryNameGV->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
-  //   llvm::Constant *TypeEntryName = llvm::ConstantExpr::getPointerCast(TypeEntryNameGV, llvm::Type::getInt8PtrTy(Cxt));
-  //   Elems.push_back(TypeEntryName);
-  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt32Ty(Cxt), lEntry.offset));
-  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.finalHash));
-  //   Elems.push_back(llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0));
-  //   Elems.push_back(llvm::ConstantVector::get(
-  //       {llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.lb),
-  //        llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), lEntry.ub)}));
-  //   llvm::Constant *Entry = llvm::ConstantStruct::get(EntryTy, Elems);
-
-  //   Entries.push_back(Entry);
-  // }
 
 
 
   for (auto entries: flattenedLayout ) {
     const LayoutEntry &lEntry = *(entries.second);
-    fprintf(stderr,"ADD_TYCHE: [%zu][%s]\n",lEntry.offset, lEntry.humanName.c_str());
+    #ifdef TYCHE_LAYOUT_DEBUG
+      fprintf(stderr,"ADD_TYCHE: [%zu][%s]\n",lEntry.offset, lEntry.humanName.c_str());
+    #endif
     std::vector<llvm::Constant *> Elems;
   
     llvm::Constant *TypeEntryNameInit = llvm::ConstantDataArray::getString(Cxt, lEntry.humanName);
@@ -1855,8 +1840,9 @@ static std::pair<llvm::Constant *, size_t> compileLayout(llvm::Module &M,
 
   llvm::ArrayType *LayoutTy = llvm::ArrayType::get(EntryTy, Entries.size());
   llvm::Constant *Layout = llvm::ConstantArray::get(LayoutTy, Entries);
-
-  fprintf(stderr,"FINAL LENGTH: %zu\n", Entries.size());
+  #ifdef TYCHE_LAYOUT_DEBUG
+    fprintf(stderr,"FINAL LENGTH: %zu\n", Entries.size());
+  #endif
   return std::make_pair(Layout, Entries.size());
 }
 
