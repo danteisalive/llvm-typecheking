@@ -224,6 +224,7 @@ bool AsmPrinter::doInitialization(Module &M) {
   if (MAI->hasSingleParameterDotFile()) {
     // .file "foo.c"
     OutStreamer->EmitFileDirective(M.getModuleIdentifier());
+    setModuleIdentifier(M.getModuleIdentifier());
   }
 
   GCModuleInfo *MI = getAnalysisIfAvailable<GCModuleInfo>();
@@ -887,6 +888,36 @@ void AsmPrinter::EmitFunctionBody() {
     // Print a label for the basic block.
     EmitBasicBlockStart(MBB);
     for (auto &MI : MBB) {
+
+      if (MI.getDesc().isCall()) {
+
+        for (const MachineOperand &MO : MI.operands())
+        {
+            if (MO.isGlobal())
+            {
+                StringRef name = MO.getGlobal()->getName();
+                if (name == "malloc" || 
+                    name == "_Znwm" || // new
+                    name == "_Znam" ||                   // new[]
+                    name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+                    name == "_ZnamRKSt9nothrow_t" || 
+                    name == "calloc" ||
+                    name == "realloc" ||
+                    name == "free" || 
+                    name == "_ZdlPv" || // delete
+                    name == "_ZdaPv") // delete[] (nothrow)
+                {
+                  fprintf(stdout, "%s\n", name);
+                  MCSymbol *CSLabel = getTempSymbol(getModuleIdentifier() + "_" + std::string(name));
+                  OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Global);
+                  OutStreamer->EmitLabel(CSLabel);
+                }
+            }
+        }     
+            
+      }
+
+      
 
       // Print the assembly for the instruction.
       if (!MI.isPosition() && !MI.isImplicitDef() && !MI.isKill() &&
@@ -2373,6 +2404,19 @@ void AsmPrinter::printOffset(int64_t Offset, raw_ostream &OS) const {
 //===----------------------------------------------------------------------===//
 // Symbol Lowering Routines.
 //===----------------------------------------------------------------------===//
+
+/// getTempSymbol - Return the MCSymbol corresponding to the assembler
+/// temporary label with the specified stem and unique ID.
+MCSymbol *AsmPrinter::getTempSymbol(StringRef Name, unsigned ID) const {
+  return OutContext.getOrCreateSymbol(".TYCHE_" + Name + Twine(ID));
+}
+
+/// getTempSymbol - Return an assembler temporary label with the specified
+/// stem.
+MCSymbol *AsmPrinter::getTempSymbol(StringRef Name) const {
+  return OutContext.getOrCreateSymbol(".TYCHE_" + Name);
+}
+
 
 MCSymbol *AsmPrinter::createTempSymbol(const Twine &Name) const {
   return OutContext.createTempSymbol(Name, true);

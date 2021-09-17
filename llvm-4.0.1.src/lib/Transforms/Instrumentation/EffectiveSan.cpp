@@ -91,7 +91,7 @@ extern "C" {
 //#define EFFECTIVE_INSTRUMENTATION_DEBUG 0
 //#define EFFECTIVE_LAYOUT_DEBUG  1
 //#define TYCHE_LAYOUT_DEBUG      1
-#define TYCHE_TEMP_DUMP_LAYOUT
+//#define TYCHE_TEMP_DUMP_LAYOUT
 
 #ifndef EFFECTIVE_INSTRUMENTATION_DEBUG
 #define EFFECTIVE_DEBUG_PRINT(...) /* NOP */
@@ -1375,6 +1375,123 @@ static bool placeFlattenedLayoutEntry(FlattenedLayoutInfo &flattenedLayout,
   return false;
 }
 
+static std::string getTypeName(llvm::DIType* Ty)
+{
+
+  if (Ty == nullptr)
+    return "";
+
+  else if (isVPtrType(Ty)) 
+  {
+    // std::string name = "";
+    // auto *DerivedTy = llvm::dyn_cast<llvm::DIDerivedType>(Ty);
+    // std::string tempName(DerivedTy->getName().str());
+    // tempName.erase(0, 6); // strlen("_vptr$") == 6
+    // name += "<vptr ";
+    // name += tempName;
+    // name += '>';
+    return "VPTR";
+  } 
+
+  else if (auto *BasicTy = llvm::dyn_cast<llvm::DIBasicType>(Ty)) 
+  {
+      std::string name = "";
+      switch (BasicTy->getEncoding()) 
+      {
+          case llvm::dwarf::DW_ATE_signed_char:
+            return "SCHAR";
+          case llvm::dwarf::DW_ATE_unsigned_char:
+            return "UCHAR";
+          case llvm::dwarf::DW_ATE_boolean:
+            return "BOOL";
+          case llvm::dwarf::DW_ATE_signed:
+            name += "INT";
+            name += std::to_string(BasicTy->getSizeInBits());
+            return name;
+          case llvm::dwarf::DW_ATE_unsigned:
+            name += "UINT";
+            name += std::to_string(BasicTy->getSizeInBits());
+            return name;
+          case llvm::dwarf::DW_ATE_UTF:
+            name += "UTF";
+            name += std::to_string(BasicTy->getSizeInBits());
+            return name;
+          case llvm::dwarf::DW_ATE_float:
+            name += "FLOAT";
+            name += std::to_string(BasicTy->getSizeInBits());
+            return name;
+          case llvm::dwarf::DW_ATE_complex_float:
+            name += "CFLOAT";
+            name += std::to_string(BasicTy->getSizeInBits() / 2);
+            return name;
+          case 128:
+            name += "CINT";
+            name += std::to_string(BasicTy->getSizeInBits() / 2);
+            return name;
+          default:
+            EFFECTIVE_DEBUG_PRINT("buildTypeHumanName: unknown basic\n");
+            return  "UNKBASIC";
+      }
+  } 
+  else if (auto *DerivedTy = llvm::dyn_cast<llvm::DIDerivedType>(Ty)) 
+  {
+      switch (DerivedTy->getTag()) {
+        case llvm::dwarf::DW_TAG_pointer_type:
+        case llvm::dwarf::DW_TAG_reference_type:
+        case llvm::dwarf::DW_TAG_rvalue_reference_type:
+          return "POINTER";
+        case llvm::dwarf::DW_TAG_member:
+          return "";
+        default:
+          return "UNKDERIVED";
+      }
+
+  } 
+  else if (auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(Ty)) 
+  {
+      switch (CompositeTy->getTag()) {
+        case llvm::dwarf::DW_TAG_structure_type:
+        case llvm::dwarf::DW_TAG_class_type:
+          return CompositeTy->getName().str();
+        case llvm::dwarf::DW_TAG_union_type:
+          return "UNION";
+        case llvm::dwarf::DW_TAG_enumeration_type:
+          return "ENUM";
+        case llvm::dwarf::DW_TAG_array_type:
+          return "ARRAY";
+        default:
+          return "UNKCOMPOSITE";
+      }
+  } 
+  else if (auto *FuncTy = llvm::dyn_cast<llvm::DISubroutineType>(Ty)) 
+  {
+    // llvm::DITypeRefArray Types = FuncTy->getTypeArray();
+    // llvm::DIType *RetTy = Types[0].resolve();
+    // buildTypeHumanName(RetTy, name, tInfo);
+    // name += " (*)(";
+    // unsigned argNum = 0;
+    // for (auto Arg : Types) {
+    //   switch (argNum) {
+    //   case 0:
+    //     argNum++;
+    //     continue;
+    //   case 1:
+    //     break;
+    //   default:
+    //     name += ", ";
+    //     break;
+    //   }
+    //   llvm::DIType *ArgTy = Arg.resolve();
+    //   buildTypeHumanName(ArgTy, name, tInfo);
+    //   argNum++;
+    // }
+    // name += ")";
+    return "SUBROUTINE";
+  } 
+  else
+    return "UNK";
+}
+
 
 static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
                                                 FlattenedLayoutInfo flattenedLayout,
@@ -1397,14 +1514,30 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
       assert(!lEntry->deleted);
       assert(entries.first == lEntry->offset);
 
-        fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] = ", 
-                entries.first, lEntry->type, lEntry->coerced, lEntry->tyche_entry.FAM, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub);
-        lEntry->type->dump();
+        std::string typeHierarchy = "";
         for (auto &par : lEntry->TyCheDependencyTree)
         {
-          fprintf(stderr, "\t");
-          par->dump();
+            fprintf(stderr, "\t");
+            par->dump();
+            if (getTypeName(par) != "")
+            {
+              typeHierarchy.append(getTypeName(par));
+              typeHierarchy.append("::");
+            }
+
+          
         }
+        typeHierarchy.append(getTypeName(lEntry->type));
+        lEntry->type->dump();
+
+        fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] =  Filename: %s Type Hierarchy: %s\n", 
+                entries.first, lEntry->type, lEntry->coerced, lEntry->tyche_entry.FAM, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub, M.getSourceFileName().c_str(), typeHierarchy.c_str());
+        
+        // for (auto &par : lEntry->TyCheDependencyTree)
+        // {
+        //   fprintf(stderr, "\t");
+        //   par->dump();
+        // }
         // if (lEntry->tyche_entry.Parent != nullptr)
         // {
         //   fprintf(stderr, "\t");
@@ -1507,9 +1640,9 @@ static llvm::Constant* getTyCheMeta(llvm::Module &M, uint64_t tid, llvm::ArrayTy
       }
       avg_num_req_sections /= TyCheMetaCacheLinesSections[tid].size();
       size_t obj_size = TyCheMetaCacheLinesSections[tid].rbegin()->first;
-      #ifdef TYCHE_LAYOUT_DEBUG
+      //#ifdef TYCHE_LAYOUT_DEBUG
         fprintf(stderr, "%f %zu %zu %zu\n", avg_num_req_sections, obj_size, TypeIDNames[tid], num_of_elements);
-      #endif
+      //#endif
         
       
 
@@ -2624,8 +2757,8 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
       EFFECTIVE_DEBUG_PRINT("warning: failed to build layout hash "
                             "table; trying larger size [%zu -> %zu]\n",
                             layoutLen, 2 * layoutLen);
-      EFFECTIVE_FATAL_ERROR("warning: failed to build layout hash "
-                            "table!\n");
+      // EFFECTIVE_FATAL_ERROR("warning: failed to build layout hash "
+      //                       "table!\n");
       tInfo.cache.erase(Ty);
       multiplier *= 2;
       return compileType(M, Ty, tInfo, multiplier);

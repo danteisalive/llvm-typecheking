@@ -94,6 +94,9 @@ public:
   ///
   MCSymbol *CurrentFnSym;
 
+  /// File name
+  std::string ModuleIdentifier;
+
   /// The symbol used to represent the start of the current function for the
   /// purpose of calculating its size (e.g. using the .size directive). By
   /// default, this is equal to CurrentFnSym.
@@ -157,6 +160,15 @@ public:
 
   bool isPositionIndependent() const;
 
+  /// setModuleIdentifier - sets the file name
+  void setModuleIdentifier(std::string FileName) {
+    ModuleIdentifier = FileName;
+    std::replace(ModuleIdentifier.begin(), ModuleIdentifier.end(), '-', '_');
+    std::replace(ModuleIdentifier.begin(), ModuleIdentifier.end(), '/', '_');
+  }
+  std::string getModuleIdentifier() const {
+    return ModuleIdentifier;
+  }
   /// Return true if assembly output should contain comments.
   ///
   bool isVerbose() const { return VerboseAsm; }
@@ -382,6 +394,9 @@ public:
   // Symbol Lowering Routines.
   //===------------------------------------------------------------------===//
 public:
+
+  MCSymbol *getTempSymbol(StringRef Name, unsigned ID) const;
+  MCSymbol *getTempSymbol(StringRef Name) const;
   MCSymbol *createTempSymbol(const Twine &Name) const;
 
   /// Return the MCSymbol for a private symbol with global value name as its
