@@ -718,6 +718,8 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MCInstrDesc &tid,
 
   if (!NoImp)
     addImplicitDefUseOperands(MF);
+
+  MITypeID = -1;
 }
 
 /// MachineInstr ctor - Copies MachineInstr arg exactly
@@ -737,6 +739,8 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MachineInstr &MI)
 
   // Copy all the sensible flags.
   setFlags(MI.Flags);
+  
+  MITypeID = -1;
 }
 
 /// getRegInfo - If this instruction is embedded into a MachineFunction,

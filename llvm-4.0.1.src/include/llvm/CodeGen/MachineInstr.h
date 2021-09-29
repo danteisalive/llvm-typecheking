@@ -104,6 +104,8 @@ private:
 
   DebugLoc debugLoc;                    // Source line information.
 
+  int64_t MITypeID;
+
   MachineInstr(const MachineInstr&) = delete;
   void operator=(const MachineInstr&) = delete;
   // Use MachineFunction::DeleteMachineInstr() instead.
@@ -128,6 +130,10 @@ private:
   friend class MachineFunction;
 
 public:
+
+  void setMITypeID(int64_t tid) { MITypeID = tid;}
+  int64_t getMITypeID() const {return MITypeID;}
+
   const MachineBasicBlock* getParent() const { return Parent; }
   MachineBasicBlock* getParent() { return Parent; }
 

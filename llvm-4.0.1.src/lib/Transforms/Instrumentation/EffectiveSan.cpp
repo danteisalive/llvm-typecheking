@@ -4080,60 +4080,68 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     if (Meta == nullptr)
       Meta = inferMallocType(M, F, &I, tInfo, &Ty);
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
-    std::string newName = "effective_";
-    newName += Name.str();
-    llvm::Constant *NewFn =
-        M.getOrInsertFunction(newName, BoundsTy, builder.getInt64Ty(),
-                              TypeTy->getPointerTo(), nullptr);
-    size = getSize(I.getOperand(0));
-    Bounds = builder.CreateCall(NewFn, {I.getOperand(0), Meta});
+    // std::string newName = "effective_";
+    // newName += Name.str();
+    // llvm::Constant *NewFn =
+    //     M.getOrInsertFunction(newName, BoundsTy, builder.getInt64Ty(),
+    //                           TypeTy->getPointerTo(), nullptr);
+    // size = getSize(I.getOperand(0));
+    // Bounds = builder.CreateCall(NewFn, {I.getOperand(0), Meta});
   } else if (Call.getNumArgOperands() == 2 && Name == "calloc") {
     // calloc:
     Meta = inferMallocType(M, F, &I, tInfo, &Ty);
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
-    llvm::Constant *NewFn = M.getOrInsertFunction(
-        "effective_calloc", BoundsTy, builder.getInt64Ty(),
-        builder.getInt64Ty(), TypeTy->getPointerTo(), nullptr);
-    size = getSize(I.getOperand(0)) * getSize(I.getOperand(1));
-    Bounds =
-        builder.CreateCall(NewFn, {I.getOperand(0), I.getOperand(1), Meta});
+    // llvm::Constant *NewFn = M.getOrInsertFunction(
+    //     "effective_calloc", BoundsTy, builder.getInt64Ty(),
+    //     builder.getInt64Ty(), TypeTy->getPointerTo(), nullptr);
+    // size = getSize(I.getOperand(0)) * getSize(I.getOperand(1));
+    // Bounds =
+    //     builder.CreateCall(NewFn, {I.getOperand(0), I.getOperand(1), Meta});
   } else if (Call.getNumArgOperands() == 2 && Name == "realloc") {
     // realloc:
-    llvm::Constant *NewFn = M.getOrInsertFunction(
-        "effective_realloc", BoundsTy, builder.getInt8PtrTy(),
-        builder.getInt64Ty(), nullptr);
-    size = getSize(I.getOperand(1));
-    Bounds = builder.CreateCall(NewFn, {I.getOperand(0), I.getOperand(1)});
+    // llvm::Constant *NewFn = M.getOrInsertFunction(
+    //     "effective_realloc", BoundsTy, builder.getInt8PtrTy(),
+    //     builder.getInt64Ty(), nullptr);
+    // size = getSize(I.getOperand(1));
+    // Bounds = builder.CreateCall(NewFn, {I.getOperand(0), I.getOperand(1)});
   } else if (Call.getNumArgOperands() == 1 &&
              (Name == "free" || Name == "_ZdlPv" || // delete
               Name == "_ZdaPv"))                    // delete[]
   {
     // free, delete, delete[]:
-    std::string newName = "effective_";
-    newName += Name.str();
-    llvm::Constant *NewFn = M.getOrInsertFunction(
-        newName, builder.getVoidTy(), builder.getInt8PtrTy(), nullptr);
-    builder.CreateCall(NewFn, {I.getOperand(0)});
-    Dels.push_back(&I);
-    return;
+    // std::string newName = "effective_";
+    // newName += Name.str();
+    // llvm::Constant *NewFn = M.getOrInsertFunction(
+    //     newName, builder.getVoidTy(), builder.getInt8PtrTy(), nullptr);
+    // builder.CreateCall(NewFn, {I.getOperand(0)});
+    // Dels.push_back(&I);
+    // return;
   } else
     return;
 
   // EffectiveSan's heap allocator returns object bounds.
   // The allocated pointer is the first element.
-  llvm::Value *NewPtr =
-      builder.CreateExtractElement(Bounds, builder.getInt32(0));
-  NewPtr = builder.CreateIntToPtr(NewPtr, builder.getInt8PtrTy());
-  Ty = (Ty == nullptr ? Int8Ty : Ty);
-  CheckEntry Entry = {Bounds, Ty, size};
-  cInfo.insert(std::make_pair(NewPtr, Entry));
-  I.replaceAllUsesWith(NewPtr);
-  if (auto *Invoke = llvm::dyn_cast<llvm::InvokeInst>(&I)) {
-    // EffectiveSan's "new" will never throw; so we just jump to the
-    // normal destination.
-    builder.CreateBr(Invoke->getNormalDest());
-  }
-  Dels.push_back(&I);
+  // llvm::Value *NewPtr =
+  //     builder.CreateExtractElement(Bounds, builder.getInt32(0));
+  // NewPtr = builder.CreateIntToPtr(NewPtr, builder.getInt8PtrTy());
+  // Ty = (Ty == nullptr ? Int8Ty : Ty);
+  // CheckEntry Entry = {Bounds, Ty, size};
+  // cInfo.insert(std::make_pair(NewPtr, Entry));
+  // I.replaceAllUsesWith(NewPtr);
+  // if (auto *Invoke = llvm::dyn_cast<llvm::InvokeInst>(&I)) {
+  //   // EffectiveSan's "new" will never throw; so we just jump to the
+  //   // normal destination.
+  //   builder.CreateBr(Invoke->getNormalDest());
+  // }
+  // Dels.push_back(&I);
+
+
+  //if (Meta == nullptr) return;
+  
+  llvm::LLVMContext& C = I.getContext();
+  llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, "123456789"));
+  I.setMetadata("TYCHE_MD", N);
+
 }
 
 static EFFECTIVE_NOINLINE void replaceMallocs(llvm::Module &M,
@@ -4145,8 +4153,8 @@ static EFFECTIVE_NOINLINE void replaceMallocs(llvm::Module &M,
     for (auto &I : BB)
       replaceMalloc(M, F, I, tInfo, cInfo, Dels);
   }
-  for (auto I : Dels)
-    I->eraseFromParent();
+  // for (auto I : Dels)
+  //   I->eraseFromParent();
 }
 
 /*
@@ -4841,7 +4849,7 @@ struct EffectiveSan : public llvm::ModulePass {
     /*
      * Strip metadata.
      */
-    stripMetaData(M);
+    //stripMetaData(M);
 
     /*
     emit TyChe metadata into the defined sections in global sections

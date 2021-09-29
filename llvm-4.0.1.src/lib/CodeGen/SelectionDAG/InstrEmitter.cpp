@@ -747,6 +747,20 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
                 DenseMap<SDValue, unsigned> &VRBaseMap) {
   unsigned Opc = Node->getMachineOpcode();
 
+
+  // Node->print(outs());
+  // outs() << "\n";
+
+  // if (const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Node))
+  // {
+
+  //     outs() << "Here!\n";
+  //     if (GADN->getGlobal()->hasName())
+  //     {
+  //         outs() << GADN->getGlobal()->getName() << " CATCHED YOU BITCH!\n";
+  //     }
+  // }
+
   // Handle subreg insert/extract specially
   if (Opc == TargetOpcode::EXTRACT_SUBREG ||
       Opc == TargetOpcode::INSERT_SUBREG ||
@@ -899,6 +913,37 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
   // Run post-isel target hook to adjust this instruction if needed.
   if (II.hasPostISelHook())
     TLI->AdjustInstrPostInstrSelection(*MIB, Node);
+
+
+
+  if (MIB.getInstr()->getDesc().isCall()) {
+
+        for (const MachineOperand &MO : MIB.getInstr()->operands())
+        {
+            if (MO.isGlobal())
+            {
+                StringRef name = MO.getGlobal()->getName();
+                if (name == "malloc" || 
+                    name == "_Znwm" || // new
+                    name == "_Znam" ||                   // new[]
+                    name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+                    name == "_ZnamRKSt9nothrow_t" || 
+                    name == "calloc" ||
+                    name == "realloc" ||
+                    name == "free" || 
+                    name == "_ZdlPv" || // delete
+                    name == "_ZdaPv") // delete[] (nothrow)
+                {
+                  
+                  MIB.getInstr()->setMITypeID(123456789);
+                  // MIB.getInstr()->print(outs());
+                  // outs() << "\n";
+                  
+                }
+            }
+        }     
+            
+  }
 }
 
 /// EmitSpecialNode - Generate machine code for a target-independent node and

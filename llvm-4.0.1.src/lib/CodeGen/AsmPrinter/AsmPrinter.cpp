@@ -907,7 +907,10 @@ void AsmPrinter::EmitFunctionBody() {
                     name == "_ZdlPv" || // delete
                     name == "_ZdaPv") // delete[] (nothrow)
                 {
-                  fprintf(stdout, "%s\n", name);
+
+                  // outs() << name << "\n";
+                  // MI.print(outs());
+                  // outs() << "MI Type ID: " << MI.getMITypeID() << "\n";
                   MCSymbol *CSLabel = getTempSymbol(getModuleIdentifier() + "_" + std::string(name));
                   OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Global);
                   OutStreamer->EmitLabel(CSLabel);

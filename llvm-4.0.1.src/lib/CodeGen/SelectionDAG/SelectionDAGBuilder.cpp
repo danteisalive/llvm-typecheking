@@ -5840,7 +5840,8 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
     isTailCall = false;
 
   for (ImmutableCallSite::arg_iterator i = CS.arg_begin(), e = CS.arg_end();
-       i != e; ++i) {
+       i != e; ++i) 
+  {
     const Value *V = *i;
 
     // Skip empty types
@@ -5889,11 +5890,66 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
       .setConvergent(CS.isConvergent());
   std::pair<SDValue, SDValue> Result = lowerInvokable(CLI, EHPadBB);
 
+
   if (Result.first.getNode()) {
+
+
+
     const Instruction *Inst = CS.getInstruction();
+
+   
+
+      // get Tyche Metadata and pass it to the SDNode for allocations sites
+      llvm::MDNode *Metadata = Inst->getMetadata("TYCHE_MD");
+      if (Metadata != nullptr) {
+          
+          assert(const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode()));
+          const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode());
+          StringRef name =  GADN->getGlobal()->getName();
+          assert (name == "malloc" || 
+                    name == "_Znwm" || // new
+                    name == "_Znam" ||                   // new[]
+                    name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+                    name == "_ZnamRKSt9nothrow_t" || 
+                    name == "calloc" ||
+                    name == "realloc" ||
+                    name == "free" || 
+                    name == "_ZdlPv" || // delete
+                    name == "_ZdaPv"); // delete[] (nothrow)
+                
+
+          outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "TailCall: " << isTailCall << "\n";
+
+          Inst->print(outs()); outs() << "\n"; 
+          assert(Metadata->getOperand(0).get() == 1);
+          llvm::Metadata *MD = Metadata->getOperand(0).get();
+          //MD->print(outs());
+          //outs() << "\n";
+          MDString *MDS = dyn_cast<MDString>(MD);
+          MDS->getString();
+
+          Result.first.getNode()->setTypeID(1234);
+
+          // outs() << MDS->getString() << "\n";
+          // outs() << "NumOfOperands: " <<  Callee.getNode()->getNumOperands() << " NumOfValues: " << Callee.getNode()->getNumValues() << "\n";
+          // const Instruction *Inst = CS.getInstruction();
+          //llvm::SDValue val = getValue(&I);
+          // assert (val && "Null Pointer for Allocation Call Site\n");
+          // val.getNode()->setTypeID(123);
+          //Result.first.getNode()->printrFull(outs());
+          outs() << "\n";
+
+      }
+
+
+
     Result.first = lowerRangeToAssertZExt(DAG, *Inst, Result.first);
     setValue(Inst, Result.first);
   }
+
+
+
+  
 
   // The last element of CLI.InVals has the SDValue for swifterror return.
   // Here we copy it to a virtual register and update SwiftErrorMap for
@@ -6486,11 +6542,59 @@ void SelectionDAGBuilder::visitCall(const CallInst &I) {
         RenameFn,
         DAG.getTargetLoweringInfo().getPointerTy(DAG.getDataLayout()));
 
+
+
   // Deopt bundles are lowered in LowerCallSiteWithDeoptBundle, and we don't
   // have to do anything here to lower funclet bundles.
   assert(!I.hasOperandBundlesOtherThan(
              {LLVMContext::OB_deopt, LLVMContext::OB_funclet}) &&
          "Cannot lower calls with arbitrary operand bundles!");
+
+
+      // // get Tyche Metadata and pass it to the SDNode for allocations sites
+      // llvm::MDNode *Metadata = I.getMetadata("TYCHE_MD");
+      // if (Metadata != nullptr) {
+          
+      //     assert(const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode()));
+      //     const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode());
+      //     StringRef name =  GADN->getGlobal()->getName();
+      //     assert(!I.countOperandBundlesOfType(LLVMContext::OB_deopt));
+      //     outs() << "Global Name: " << name << " OperandBundlesOfType: " << I.countOperandBundlesOfType(LLVMContext::OB_deopt) << "\n";
+      //     assert (name == "malloc" || 
+      //               name == "_Znwm" || // new
+      //               name == "_Znam" ||                   // new[]
+      //               name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+      //               name == "_ZnamRKSt9nothrow_t" || 
+      //               name == "calloc" ||
+      //               name == "realloc" ||
+      //               name == "free" || 
+      //               name == "_ZdlPv" || // delete
+      //               name == "_ZdaPv"); // delete[] (nothrow)
+                
+
+      //     outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "\n";
+
+      //     I.print(outs()); outs() << "\n"; 
+      //     assert(Metadata->getOperand(0).get() == 1);
+      //     llvm::Metadata *MD = Metadata->getOperand(0).get();
+      //     //MD->print(outs());
+      //     //outs() << "\n";
+      //     MDString *MDS = dyn_cast<MDString>(MD);
+      //     MDS->getString();
+
+      //     // outs() << MDS->getString() << "\n";
+      //     // outs() << "NumOfOperands: " <<  Callee.getNode()->getNumOperands() << " NumOfValues: " << Callee.getNode()->getNumValues() << "\n";
+      //     // const Instruction *Inst = CS.getInstruction();
+      //     //llvm::SDValue val = getValue(&I);
+      //     // assert (val && "Null Pointer for Allocation Call Site\n");
+      //     // val.getNode()->setTypeID(123);
+      //     // Result.first.getNode()->printrFull(outs());
+      //     outs() << "\n";
+
+          
+
+      // }
+
 
   if (I.countOperandBundlesOfType(LLVMContext::OB_deopt))
     LowerCallSiteWithDeoptBundle(&I, Callee, nullptr);
@@ -6499,6 +6603,11 @@ void SelectionDAGBuilder::visitCall(const CallInst &I) {
     // is be done within LowerCallTo, after more information about the call is
     // known.
     LowerCallTo(&I, Callee, I.isTailCall());
+
+
+
+
+
 }
 
 namespace {

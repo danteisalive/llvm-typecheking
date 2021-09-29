@@ -130,9 +130,11 @@ public:
 
   /// get the SDNode which holds the desired result
   SDNode *getNode() const { return Node; }
+  SDNode *getNode() {return Node;}
 
   /// set the SDNode
   void setNode(SDNode *N) { Node = N; }
+
 
   inline SDNode *operator->() const { return Node; }
 
@@ -407,6 +409,7 @@ private:
   /// The operation that this node performs.
   int16_t NodeType;
 
+
 protected:
   // We define a set of mini-helper classes to help us interpret the bits in our
   // SubclassData.  These are designed to fit within a uint16_t so they pack
@@ -495,6 +498,7 @@ protected:
 private:
   /// Unique id per SDNode in the DAG.
   int NodeId;
+  int64_t NodeTypeID;
 
   /// The values that are used by this operation.
   SDUse *OperandList;
@@ -534,6 +538,9 @@ public:
   //===--------------------------------------------------------------------===//
   //  Accessors
   //
+  // set TID
+  void setTypeID(int64_t tid) {NodeTypeID = tid;}
+  int64_t getTypeID() const {return NodeTypeID;}
 
   /// Return the SelectionDAG opcode value for this node. For
   /// pre-isel nodes (those for which isMachineOpcode returns false), these
@@ -896,7 +903,7 @@ protected:
   /// SDNodes are created without any operands, and never own the operand
   /// storage. To add operands, see SelectionDAG::createOperands.
   SDNode(unsigned Opc, unsigned Order, DebugLoc dl, SDVTList VTs)
-      : NodeType(Opc), NodeId(-1), OperandList(nullptr), ValueList(VTs.VTs),
+      : NodeType(Opc), NodeId(-1), NodeTypeID(-1), OperandList(nullptr), ValueList(VTs.VTs),
         UseList(nullptr), NumOperands(0), NumValues(VTs.NumVTs), IROrder(Order),
         debugLoc(std::move(dl)) {
     memset(&RawSDNodeBits, 0, sizeof(RawSDNodeBits));
