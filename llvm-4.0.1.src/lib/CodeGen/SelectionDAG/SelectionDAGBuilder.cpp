@@ -5917,10 +5917,10 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
                     name == "_ZdlPv" || // delete
                     name == "_ZdaPv"); // delete[] (nothrow)
                 
+          outs() << "SelectionDAG Phase: ";
+          //outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << " TailCall: " << isTailCall << "\n";
 
-          outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "TailCall: " << isTailCall << "\n";
-
-          Inst->print(outs()); outs() << "\n"; 
+          //Inst->print(outs()); outs() << "\n"; 
           assert(Metadata->getOperand(0).get() == 1);
           llvm::Metadata *MD = Metadata->getOperand(0).get();
           //MD->print(outs());
@@ -5936,7 +5936,7 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           //llvm::SDValue val = getValue(&I);
           // assert (val && "Null Pointer for Allocation Call Site\n");
           // val.getNode()->setTypeID(123);
-          //Result.first.getNode()->printrFull(outs());
+          Result.first.getNode()->print(outs());
           outs() << "\n";
 
       }

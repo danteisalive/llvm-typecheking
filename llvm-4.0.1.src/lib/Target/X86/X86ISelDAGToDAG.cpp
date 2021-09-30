@@ -1988,6 +1988,15 @@ bool X86DAGToDAGISel::tryGather(SDNode *Node, unsigned Opc) {
 }
 
 void X86DAGToDAGISel::Select(SDNode *Node) {
+
+  if (Node->getTypeID() != -1)
+  {
+    outs() << "X86DAGToDAGISel Phase! ";
+    Node->print(outs());
+    outs() << "\n\n";
+
+  }
+
   MVT NVT = Node->getSimpleValueType(0);
   unsigned Opc, MOpc;
   unsigned Opcode = Node->getOpcode();

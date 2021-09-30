@@ -1998,6 +1998,8 @@ void MachineInstr::print(raw_ostream &OS, ModuleSlotTracker &MST,
     debugLoc.print(OS);
   }
 
+  OS << " Node Type ID: " << MITypeID; 
+
   OS << '\n';
 }
 

@@ -6336,6 +6336,19 @@ MachineSDNode *SelectionDAG::getMachineNode(unsigned Opcode, const SDLoc &dl,
 MachineSDNode *SelectionDAG::getMachineNode(unsigned Opcode, const SDLoc &DL,
                                             SDVTList VTs,
                                             ArrayRef<SDValue> Ops) {
+
+                                                  
+  // for (auto it = Ops.begin(); it != Ops.end(); it++)
+  // {
+  //     
+  //     if (it->getNode()->getTypeID() != -1)
+  //     {
+  //         outs() << "getMachineNode Phase! ";
+  //       outs() << "CATHCED YOU BITCH!\n";
+
+  //     }
+  // }
+
   bool DoCSE = VTs.VTs[VTs.NumVTs-1] != MVT::Glue;
   MachineSDNode *N;
   void *IP = nullptr;

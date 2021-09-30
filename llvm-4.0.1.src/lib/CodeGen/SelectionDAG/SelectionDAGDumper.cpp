@@ -703,4 +703,5 @@ void SDNode::print(raw_ostream &OS, const SelectionDAG *G) const {
     if (i) OS << ", "; else OS << " ";
     printOperand(OS, G, getOperand(i));
   }
+  OS << " Node TypeID: " << NodeTypeID;
 }

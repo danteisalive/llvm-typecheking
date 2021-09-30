@@ -889,36 +889,36 @@ void AsmPrinter::EmitFunctionBody() {
     EmitBasicBlockStart(MBB);
     for (auto &MI : MBB) {
 
-      if (MI.getDesc().isCall()) {
+      // if (MI.getDesc().isCall()) {
 
-        for (const MachineOperand &MO : MI.operands())
-        {
-            if (MO.isGlobal())
-            {
-                StringRef name = MO.getGlobal()->getName();
-                if (name == "malloc" || 
-                    name == "_Znwm" || // new
-                    name == "_Znam" ||                   // new[]
-                    name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
-                    name == "_ZnamRKSt9nothrow_t" || 
-                    name == "calloc" ||
-                    name == "realloc" ||
-                    name == "free" || 
-                    name == "_ZdlPv" || // delete
-                    name == "_ZdaPv") // delete[] (nothrow)
-                {
-
-                  // outs() << name << "\n";
-                  // MI.print(outs());
-                  // outs() << "MI Type ID: " << MI.getMITypeID() << "\n";
-                  MCSymbol *CSLabel = getTempSymbol(getModuleIdentifier() + "_" + std::string(name));
-                  OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Global);
-                  OutStreamer->EmitLabel(CSLabel);
-                }
-            }
-        }     
+      //   for (const MachineOperand &MO : MI.operands())
+      //   {
+      //       if (MO.isGlobal())
+      //       {
+      //           StringRef name = MO.getGlobal()->getName();
+      //           if (name == "malloc" || 
+      //               name == "_Znwm" || // new
+      //               name == "_Znam" ||                   // new[]
+      //               name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+      //               name == "_ZnamRKSt9nothrow_t" || 
+      //               name == "calloc" ||
+      //               name == "realloc" ||
+      //               name == "free" || 
+      //               name == "_ZdlPv" || // delete
+      //               name == "_ZdaPv") // delete[] (nothrow)
+      //           {
+      //             outs() << "ASM Printer Phase: " << "\n";
+      //             outs() << name << "\n";
+      //             MI.print(outs());
+      //             outs() << "MI Type ID: " << MI.getMITypeID() << "\n";
+      //             MCSymbol *CSLabel = getTempSymbol(getModuleIdentifier() + "_" + std::string(name));
+      //             OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Global);
+      //             OutStreamer->EmitLabel(CSLabel);
+      //           }
+      //       }
+      //   }     
             
-      }
+      // }
 
       
 
