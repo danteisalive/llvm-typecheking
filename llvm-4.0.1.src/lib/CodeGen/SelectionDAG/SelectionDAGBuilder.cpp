@@ -5892,9 +5892,6 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
 
 
   if (Result.first.getNode()) {
-
-
-
     const Instruction *Inst = CS.getInstruction();
 
    
@@ -5928,7 +5925,7 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           MDString *MDS = dyn_cast<MDString>(MD);
           MDS->getString();
 
-          Result.first.getNode()->setTypeID(1234);
+          Result.first.getNode()->setTypeID(std::stoi(MDS->getString()));
 
           // outs() << MDS->getString() << "\n";
           // outs() << "NumOfOperands: " <<  Callee.getNode()->getNumOperands() << " NumOfValues: " << Callee.getNode()->getNumValues() << "\n";
@@ -6551,49 +6548,7 @@ void SelectionDAGBuilder::visitCall(const CallInst &I) {
          "Cannot lower calls with arbitrary operand bundles!");
 
 
-      // // get Tyche Metadata and pass it to the SDNode for allocations sites
-      // llvm::MDNode *Metadata = I.getMetadata("TYCHE_MD");
-      // if (Metadata != nullptr) {
-          
-      //     assert(const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode()));
-      //     const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode());
-      //     StringRef name =  GADN->getGlobal()->getName();
-      //     assert(!I.countOperandBundlesOfType(LLVMContext::OB_deopt));
-      //     outs() << "Global Name: " << name << " OperandBundlesOfType: " << I.countOperandBundlesOfType(LLVMContext::OB_deopt) << "\n";
-      //     assert (name == "malloc" || 
-      //               name == "_Znwm" || // new
-      //               name == "_Znam" ||                   // new[]
-      //               name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
-      //               name == "_ZnamRKSt9nothrow_t" || 
-      //               name == "calloc" ||
-      //               name == "realloc" ||
-      //               name == "free" || 
-      //               name == "_ZdlPv" || // delete
-      //               name == "_ZdaPv"); // delete[] (nothrow)
-                
-
-      //     outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "\n";
-
-      //     I.print(outs()); outs() << "\n"; 
-      //     assert(Metadata->getOperand(0).get() == 1);
-      //     llvm::Metadata *MD = Metadata->getOperand(0).get();
-      //     //MD->print(outs());
-      //     //outs() << "\n";
-      //     MDString *MDS = dyn_cast<MDString>(MD);
-      //     MDS->getString();
-
-      //     // outs() << MDS->getString() << "\n";
-      //     // outs() << "NumOfOperands: " <<  Callee.getNode()->getNumOperands() << " NumOfValues: " << Callee.getNode()->getNumValues() << "\n";
-      //     // const Instruction *Inst = CS.getInstruction();
-      //     //llvm::SDValue val = getValue(&I);
-      //     // assert (val && "Null Pointer for Allocation Call Site\n");
-      //     // val.getNode()->setTypeID(123);
-      //     // Result.first.getNode()->printrFull(outs());
-      //     outs() << "\n";
-
-          
-
-      // }
+      
 
 
   if (I.countOperandBundlesOfType(LLVMContext::OB_deopt))
