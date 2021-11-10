@@ -2220,7 +2220,7 @@ static llvm::Constant *buildTypeInfo(llvm::Module &M, llvm::DIType *Ty,
     return i->second;
 
   if (Ty == nullptr) {
-    llvm::Constant *Info = M.getOrInsertGlobal(TYPE_INFO_PREFIX "INT8", InfoTy);
+    llvm::Constant *Info  = llvm::ConstantPointerNull::get(InfoTy->getPointerTo());
     tInfo.infos.insert(std::make_pair(Ty, Info));
     return Info;
   } else if (auto *BasicTy = llvm::dyn_cast<llvm::DIBasicType>(Ty)) {
@@ -2247,7 +2247,8 @@ static llvm::Constant *buildTypeInfo(llvm::Module &M, llvm::DIType *Ty,
       break;
     }
     if (ok) {
-      llvm::Constant *Info = M.getOrInsertGlobal(name, InfoTy);
+      llvm::Constant *Info  = llvm::ConstantPointerNull::get(InfoTy->getPointerTo());
+      //llvm::Constant *Info = M.getOrInsertGlobal(name, InfoTy);
       tInfo.infos.insert(std::make_pair(Ty, Info));
       return Info;
     }

@@ -709,7 +709,7 @@ void EmitAssemblyHelper::EmitAssembly(BackendAction Action,
   // Run passes. For now we do all passes at once, but eventually we
   // would like to have the option of streaming code generation.
 
-  if (LangOpts.Sanitize.has(SanitizerKind::Effective)) {
+  //if (LangOpts.Sanitize.has(SanitizerKind::Effective)) {
     // EFFECTIVE: Currently EffectiveSan must be run before the function passes.
     legacy::PassManager MPM;
 
@@ -731,7 +731,7 @@ void EmitAssemblyHelper::EmitAssembly(BackendAction Action,
 
     MPM.add(createEffectiveSanPass());
     MPM.run(*TheModule);
-  }
+  //}
 
   {
     PrettyStackTraceString CrashInfo("Per-function optimization");

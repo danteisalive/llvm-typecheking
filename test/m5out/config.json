@@ -240,7 +240,7 @@
                         "pid": 100, 
                         "kvmInSE": false, 
                         "cxx_class": "Process", 
-                        "executable": "/home/dante/gem5-tc/tests/test-progs/hello/bin/x86/linux/hello", 
+                        "executable": "./Example.out", 
                         "drivers": [], 
                         "system": "system", 
                         "gid": 100, 
@@ -257,7 +257,7 @@
                         "path": "system.cpu.workload", 
                         "name": "workload", 
                         "cmd": [
-                            "/home/dante/gem5-tc/tests/test-progs/hello/bin/x86/linux/hello"
+                            "./Example.out"
                         ], 
                         "errout": "cerr", 
                         "useArchPT": false, 
