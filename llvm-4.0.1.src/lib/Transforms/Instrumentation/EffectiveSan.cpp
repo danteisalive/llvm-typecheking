@@ -90,8 +90,8 @@ extern "C" {
 
 //#define EFFECTIVE_INSTRUMENTATION_DEBUG 0
 //#define EFFECTIVE_LAYOUT_DEBUG  1
-//#define TYCHE_LAYOUT_DEBUG      1
-//#define TYCHE_TEMP_DUMP_LAYOUT
+// #define TYCHE_LAYOUT_DEBUG      1
+// #define TYCHE_TEMP_DUMP_LAYOUT
 
 #ifndef EFFECTIVE_INSTRUMENTATION_DEBUG
 #define EFFECTIVE_DEBUG_PRINT(...) /* NOP */
@@ -187,6 +187,8 @@ std::vector<std::vector<llvm::Constant*>> TyCheSectionsEntries(TYCHE_NUMBER_OF_S
 static uint64_t TypeId = 0;
 
 
+static uint64_t TYCHE_TYPE_ID = 0;
+
 
 /*
  * Type information.
@@ -196,6 +198,7 @@ struct TypeEntry {
   std::string name;         // Type human-readable name.
   HashVal hash;             // Type hash value.
   llvm::Constant *typeMeta; // Type meta-data value.
+  uint64_t type_id;
 };
 typedef std::map<llvm::DIType *, TypeEntry> TypeCache;
 typedef std::map<llvm::DIType *, std::string> TypeNames;
@@ -884,7 +887,8 @@ static llvm::StructType *makeTyCheCacheLineType(llvm::Module &M, int64_t tid, si
 static TypeEntry &addTypeEntry(TypeInfo &tInfo, llvm::DIType *Ty,
                                std::string &name, HashVal hash,
                                llvm::Constant *Meta, bool isInt8 = false) {
-  TypeEntry entry = {isInt8, name, hash, Meta};
+  TYCHE_TYPE_ID++; 
+  TypeEntry entry = {isInt8, name, hash, Meta, TYCHE_TYPE_ID};
   auto i = tInfo.cache.insert(std::make_pair(Ty, entry));
   return i.first->second;
 }
@@ -2542,7 +2546,7 @@ static void initializeTyCheCapabilityTypes(llvm::Module &M)
  * Compile the type into the EffectiveSan metadata representation for type
  * checking (i.e., the EFFECTIVE_TYPE metadata).
  */
-static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
+static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
                                     TypeInfo &tInfo, unsigned multiplier = 1) {
   
   Ty = normalizeType(Ty);
@@ -2560,7 +2564,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   buildTypeHumanName(Ty, humanName, tInfo);
 
   if (isBlacklisted("type", humanName)) {
-    const TypeEntry &charEntry = compileType(M, nullptr, tInfo);
+    TypeEntry &charEntry = compileType(M, nullptr, tInfo);
     tInfo.cache.insert(std::make_pair(Ty, charEntry));
     return charEntry;
   }
@@ -2636,7 +2640,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
 
   if (isVPtrType(Ty)) {
     // Virtual Function Table pointer.  Can be coerced into (void *):
-    const TypeEntry &voidPtrEntry = compileType(M, Int8PtrTy, tInfo);
+    TypeEntry &voidPtrEntry = compileType(M, Int8PtrTy, tInfo);
     tInfo.cache.erase(Ty);
     tInfo.cache.insert(std::make_pair(Ty, voidPtrEntry));
     return voidPtrEntry;
@@ -2656,7 +2660,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
     // Enum type.
     // All enums can be coerced to (int):
     //CompositeTy->dump();
-    const TypeEntry &intEntry = compileType(M, Int32Ty, tInfo);
+    TypeEntry &intEntry = compileType(M, Int32Ty, tInfo);
     tInfo.cache.erase(Ty);
     tInfo.cache.insert(std::make_pair(Ty, intEntry));
     return intEntry;
@@ -2690,7 +2694,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
       msg += std::to_string(option_max_sub_objs);
       msg += "); ";
 
-      EFFECTIVE_FATAL_ERROR(msg);
+      //EFFECTIVE_FATAL_ERROR(msg);
       
       if (shrinkLayoutToFit(layout, option_max_sub_objs)) {
         incomplete = true;
@@ -2700,7 +2704,7 @@ static const TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
         msg += "type will be treated as (char[])";
         warning(M, msg);
 
-        const TypeEntry &charEntry = compileType(M, nullptr, tInfo);
+        TypeEntry &charEntry = compileType(M, nullptr, tInfo);
         tInfo.cache.erase(Ty);
         tInfo.cache.insert(std::make_pair(Ty, charEntry));
         return charEntry;
@@ -2969,10 +2973,12 @@ static llvm::DIType *getNewArrayType(llvm::Module &M, llvm::DIType *Ty,
  * (char []) then this function returns NULL.  This function relies on
  * meta data inserted by the front-end.
  */
-static llvm::Constant *getDeclaredType(llvm::Module &M, llvm::Value *Ptr,
+static llvm::Constant *getDeclaredType(TypeEntry &entry,
+                                      llvm::Module &M, llvm::Value *Ptr,
                                        TypeInfo &tInfo,
                                        llvm::DIType **TyPtr = nullptr,
-                                       bool alloc = false) {
+                                       bool alloc = false
+                                       ) {
   llvm::DIType *Ty = getDeclaredTypeAnnotation(Ptr);
   if (Ty == nullptr) {
     // This occurs when the frontend has failed to annotate the type.
@@ -3010,7 +3016,10 @@ static llvm::Constant *getDeclaredType(llvm::Module &M, llvm::Value *Ptr,
   if (TyPtr != nullptr)
     *TyPtr = Ty;
 
-  const TypeEntry &entry = compileType(M, Ty, tInfo);
+  entry = compileType(M, Ty, tInfo);
+
+
+
   return (entry.isInt8 ? nullptr : entry.typeMeta);
 }
 
@@ -3187,7 +3196,8 @@ static llvm::Value *instrumentTypeCheck(llvm::Module &M, llvm::Function &F,
                                         llvm::Value *Ptr, TypeInfo &tInfo,
                                         CheckInfo &cInfo,
                                         bool untyped = false) {
-  llvm::Constant *Meta = (untyped ? nullptr : getDeclaredType(M, Ptr, tInfo));
+  TypeEntry entry;
+  llvm::Constant *Meta = (untyped ? nullptr : getDeclaredType(entry, M, Ptr, tInfo));
   auto i = nextInsertPoint(F, Ptr);
   llvm::IRBuilder<> builder(i.bb, i.itr);
   llvm::Value *Bounds = nullptr;
@@ -4024,7 +4034,8 @@ static void optimizeBoundsChecks(llvm::Module &M, llvm::Function &F,
  * cast the return value to the desired type.  This function uses a simple
  * heuristic to try and determine what that type is.
  */
-static llvm::Constant *inferMallocType(llvm::Module &M, llvm::Function &F,
+static llvm::Constant *inferMallocType(TypeEntry &entry,
+                                       llvm::Module &M, llvm::Function &F,
                                        llvm::Instruction *I, TypeInfo &tInfo,
                                        llvm::DIType **TyPtr = nullptr) {
   const llvm::DominatorTree DT(F);
@@ -4040,8 +4051,9 @@ static llvm::Constant *inferMallocType(llvm::Module &M, llvm::Function &F,
         return nullptr; // Conflicting casts; give up
     }
   }
+
   return (Cast == nullptr ? nullptr
-                          : getDeclaredType(M, Cast, tInfo, TyPtr, true));
+                          : getDeclaredType(entry, M, Cast, tInfo, TyPtr, true));
 }
 
 static size_t getSize(llvm::Value *Size) {
@@ -4076,11 +4088,23 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
        (Name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
         Name == "_ZnamRKSt9nothrow_t"))) // new[] (nothrow)
   {
+    TypeEntry entry;
     // malloc, new, new[]:
-    Meta = getDeclaredType(M, &I, tInfo, &Ty, true);
+    Meta = getDeclaredType(entry, M, &I, tInfo, &Ty, true);
     if (Meta == nullptr)
-      Meta = inferMallocType(M, F, &I, tInfo, &Ty);
+      Meta = inferMallocType(entry, M, F, &I, tInfo, &Ty);
+
+    auto itr = tInfo.cache.find(Ty);
+    if (itr != tInfo.cache.end())
+    {
+      llvm::LLVMContext& C = I.getContext();
+      llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(itr->second.type_id)));
+      I.setMetadata("TYCHE_MD", N);
+    }
+
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
+
+
     // std::string newName = "effective_";
     // newName += Name.str();
     // llvm::Constant *NewFn =
@@ -4090,7 +4114,8 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     // Bounds = builder.CreateCall(NewFn, {I.getOperand(0), Meta});
   } else if (Call.getNumArgOperands() == 2 && Name == "calloc") {
     // calloc:
-    Meta = inferMallocType(M, F, &I, tInfo, &Ty);
+    TypeEntry entry;
+    Meta = inferMallocType(entry, M, F, &I, tInfo, &Ty);
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
     // llvm::Constant *NewFn = M.getOrInsertFunction(
     //     "effective_calloc", BoundsTy, builder.getInt64Ty(),
@@ -4139,9 +4164,7 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
 
   //if (Meta == nullptr) return;
   
-  llvm::LLVMContext& C = I.getContext();
-  llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, "123456789"));
-  I.setMetadata("TYCHE_MD", N);
+
 
 }
 
@@ -4250,10 +4273,11 @@ static void replaceAlloca(llvm::Module &M, llvm::Function &F,
 
   // STEP (4) Insert the object meta data:
   llvm::DIType *AllocTy = nullptr;
-  llvm::Constant *Meta = getDeclaredType(M, &I, tInfo, &AllocTy, true);
+  TypeEntry entry;
+  llvm::Constant *Meta = getDeclaredType(entry, M, &I, tInfo, &AllocTy, true);
   if (Meta == nullptr) {
     // Fall back on type inference.
-    Meta = inferMallocType(M, F, &I, tInfo, &AllocTy);
+    Meta = inferMallocType(entry, M, F, &I, tInfo, &AllocTy);
   }
   Meta = (Meta == nullptr ? Int8TyMeta : Meta);
   llvm::Value *MetaPtr =
@@ -4418,8 +4442,8 @@ static void replaceGlobal(llvm::Module &M, llvm::GlobalVariable &GV,
     section += "const_";
   section += std::to_string(newSize);
   NewGV->setSection(section);
-
-  llvm::Constant *Meta = getDeclaredType(M, &GV, tInfo, nullptr, true);
+  TypeEntry entry;
+  llvm::Constant *Meta = getDeclaredType(entry, M, &GV, tInfo, nullptr, true);
   Meta = (Meta == nullptr ? Int8TyMeta : Meta);
   llvm::Constant *MetaInit = llvm::ConstantStruct::get(
       ObjMetaTy,

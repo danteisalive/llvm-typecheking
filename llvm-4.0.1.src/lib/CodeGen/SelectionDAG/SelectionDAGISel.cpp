@@ -2821,6 +2821,14 @@ public:
 void SelectionDAGISel::SelectCodeCommon(SDNode *NodeToMatch,
                                         const unsigned char *MatcherTable,
                                         unsigned TableSize) {
+
+  if (NodeToMatch->getTypeID() != -1)
+  {
+    outs() << "SelectCodeCommon Phase! OpCode: " << NodeToMatch->getOpcode() << " ";
+    NodeToMatch->print(outs());
+    outs() << "\n";
+
+  }
   // FIXME: Should these even be selected?  Handle these cases in the caller?
   switch (NodeToMatch->getOpcode()) {
   default:

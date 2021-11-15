@@ -1,0 +1,280 @@
+; ModuleID = 'Example.cpp'
+source_filename = "Example.cpp"
+target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-pc-linux-gnu"
+
+%"class.std::ios_base::Init" = type { i8 }
+%"class.std::basic_ostream" = type { i32 (...)**, %"class.std::basic_ios" }
+%"class.std::basic_ios" = type { %"class.std::ios_base", %"class.std::basic_ostream"*, i8, i8, %"class.std::basic_streambuf"*, %"class.std::ctype"*, %"class.std::num_put"*, %"class.std::num_get"* }
+%"class.std::ios_base" = type { i32 (...)**, i64, i64, i32, i32, i32, %"struct.std::ios_base::_Callback_list"*, %"struct.std::ios_base::_Words", [8 x %"struct.std::ios_base::_Words"], i32, %"struct.std::ios_base::_Words"*, %"class.std::locale" }
+%"struct.std::ios_base::_Callback_list" = type { %"struct.std::ios_base::_Callback_list"*, void (i32, %"class.std::ios_base"*, i32)*, i32, i32 }
+%"struct.std::ios_base::_Words" = type { i8*, i64 }
+%"class.std::locale" = type { %"class.std::locale::_Impl"* }
+%"class.std::locale::_Impl" = type { i32, %"class.std::locale::facet"**, i64, %"class.std::locale::facet"**, i8** }
+%"class.std::locale::facet" = type <{ i32 (...)**, i32, [4 x i8] }>
+%"class.std::basic_streambuf" = type { i32 (...)**, i8*, i8*, i8*, i8*, i8*, i8*, %"class.std::locale" }
+%"class.std::ctype" = type <{ %"class.std::locale::facet.base", [4 x i8], %struct.__locale_struct*, i8, [7 x i8], i32*, i32*, i16*, i8, [256 x i8], [256 x i8], i8, [6 x i8] }>
+%"class.std::locale::facet.base" = type <{ i32 (...)**, i32 }>
+%struct.__locale_struct = type { [13 x %struct.__locale_data*], i16*, i32*, i32*, [13 x i8*] }
+%struct.__locale_data = type opaque
+%"class.std::num_put" = type { %"class.std::locale::facet.base", [4 x i8] }
+%"class.std::num_get" = type { %"class.std::locale::facet.base", [4 x i8] }
+%class.W = type { %class.Y.base, [4 x i8], %class.Z, i32, [4 x i8] }
+%class.Y.base = type { %class.X.base, %class.NV, i32 }
+%class.X.base = type <{ i32 (...)**, i32 }>
+%class.NV = type { i32 }
+%class.Z = type { %class.X.base, i32 }
+%class.X = type <{ i32 (...)**, i32, [4 x i8] }>
+%class.Y = type { %class.X.base, %class.NV, i32, [4 x i8] }
+
+$_ZN1WD2Ev = comdat any
+
+$_ZN1WD0Ev = comdat any
+
+$_ZN1Y6printXEv = comdat any
+
+$_ZN1Y6printYEv = comdat any
+
+$_ZN1W6printWEv = comdat any
+
+$_ZThn24_N1WD1Ev = comdat any
+
+$_ZThn24_N1WD0Ev = comdat any
+
+$_ZN1Z6printXEv = comdat any
+
+$_ZN1Z6printZEv = comdat any
+
+$_ZN1Z6printYEv = comdat any
+
+$_ZTV1W = comdat any
+
+$_ZTS1W = comdat any
+
+$_ZTS1Y = comdat any
+
+$_ZTS2NV = comdat any
+
+$_ZTI2NV = comdat any
+
+$_ZTS1X = comdat any
+
+$_ZTI1X = comdat any
+
+$_ZTI1Y = comdat any
+
+$_ZTS1Z = comdat any
+
+$_ZTI1Z = comdat any
+
+$_ZTI1W = comdat any
+
+@_ZStL8__ioinit = internal global %"class.std::ios_base::Init" zeroinitializer, align 1
+@__dso_handle = external hidden global i8
+@_ZTV1W = linkonce_odr unnamed_addr constant { [7 x i8*], [7 x i8*] } { [7 x i8*] [i8* null, i8* bitcast ({ i8*, i8*, i32, i32, i8*, i64, i8*, i64 }* @_ZTI1W to i8*), i8* bitcast (void (%class.W*)* @_ZN1WD2Ev to i8*), i8* bitcast (void (%class.W*)* @_ZN1WD0Ev to i8*), i8* bitcast (void (%class.Y*)* @_ZN1Y6printXEv to i8*), i8* bitcast (void (%class.Y*)* @_ZN1Y6printYEv to i8*), i8* bitcast (void (%class.W*)* @_ZN1W6printWEv to i8*)], [7 x i8*] [i8* inttoptr (i64 -24 to i8*), i8* bitcast ({ i8*, i8*, i32, i32, i8*, i64, i8*, i64 }* @_ZTI1W to i8*), i8* bitcast (void (%class.W*)* @_ZThn24_N1WD1Ev to i8*), i8* bitcast (void (%class.W*)* @_ZThn24_N1WD0Ev to i8*), i8* bitcast (void (%class.Z*)* @_ZN1Z6printXEv to i8*), i8* bitcast (void (%class.Z*)* @_ZN1Z6printZEv to i8*), i8* bitcast (void (%class.Z*)* @_ZN1Z6printYEv to i8*)] }, comdat, align 8
+@_ZTVN10__cxxabiv121__vmi_class_type_infoE = external global i8*
+@_ZTS1W = linkonce_odr constant [3 x i8] c"1W\00", comdat
+@_ZTS1Y = linkonce_odr constant [3 x i8] c"1Y\00", comdat
+@_ZTVN10__cxxabiv117__class_type_infoE = external global i8*
+@_ZTS2NV = linkonce_odr constant [4 x i8] c"2NV\00", comdat
+@_ZTI2NV = linkonce_odr constant { i8*, i8* } { i8* bitcast (i8** getelementptr inbounds (i8*, i8** @_ZTVN10__cxxabiv117__class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @_ZTS2NV, i32 0, i32 0) }, comdat
+@_ZTS1X = linkonce_odr constant [3 x i8] c"1X\00", comdat
+@_ZTI1X = linkonce_odr constant { i8*, i8* } { i8* bitcast (i8** getelementptr inbounds (i8*, i8** @_ZTVN10__cxxabiv117__class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @_ZTS1X, i32 0, i32 0) }, comdat
+@_ZTI1Y = linkonce_odr constant { i8*, i8*, i32, i32, i8*, i64, i8*, i64 } { i8* bitcast (i8** getelementptr inbounds (i8*, i8** @_ZTVN10__cxxabiv121__vmi_class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @_ZTS1Y, i32 0, i32 0), i32 0, i32 2, i8* bitcast ({ i8*, i8* }* @_ZTI2NV to i8*), i64 3074, i8* bitcast ({ i8*, i8* }* @_ZTI1X to i8*), i64 2 }, comdat
+@_ZTVN10__cxxabiv120__si_class_type_infoE = external global i8*
+@_ZTS1Z = linkonce_odr constant [3 x i8] c"1Z\00", comdat
+@_ZTI1Z = linkonce_odr constant { i8*, i8*, i8* } { i8* bitcast (i8** getelementptr inbounds (i8*, i8** @_ZTVN10__cxxabiv120__si_class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @_ZTS1Z, i32 0, i32 0), i8* bitcast ({ i8*, i8* }* @_ZTI1X to i8*) }, comdat
+@_ZTI1W = linkonce_odr constant { i8*, i8*, i32, i32, i8*, i64, i8*, i64 } { i8* bitcast (i8** getelementptr inbounds (i8*, i8** @_ZTVN10__cxxabiv121__vmi_class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @_ZTS1W, i32 0, i32 0), i32 1, i32 2, i8* bitcast ({ i8*, i8*, i32, i32, i8*, i64, i8*, i64 }* @_ZTI1Y to i8*), i64 2, i8* bitcast ({ i8*, i8*, i8* }* @_ZTI1Z to i8*), i64 6146 }, comdat
+@_ZSt4cout = external global %"class.std::basic_ostream", align 8
+@.str.1 = private unnamed_addr constant [14 x i8] c"Y : printX()\0A\00", align 1
+@.str.2 = private unnamed_addr constant [14 x i8] c"Z : printX()\0A\00", align 1
+@llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I_Example.cpp, i8* null }]
+
+declare void @_ZNSt8ios_base4InitC1Ev(%"class.std::ios_base::Init"*) unnamed_addr #0
+
+; Function Attrs: nounwind
+declare void @_ZNSt8ios_base4InitD1Ev(%"class.std::ios_base::Init"*) unnamed_addr #1
+
+; Function Attrs: nounwind
+declare i32 @__cxa_atexit(void (i8*)*, i8*, i8*) local_unnamed_addr #2
+
+; Function Attrs: norecurse uwtable
+define i32 @main() local_unnamed_addr #3 {
+  %1 = alloca %class.W*, align 8
+  %2 = alloca %class.Z*, align 8
+  %3 = alloca %class.X*, align 8
+  %4 = alloca %class.Y*, align 8
+  %5 = bitcast %class.W** %1 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %5)
+  %6 = tail call i8* @_Znwm(i64 48) #10
+  %7 = bitcast i8* %6 to %class.W*
+  tail call void @llvm.memset.p0i8.i64(i8* nonnull %6, i8 0, i64 48, i32 16, i1 false)
+  %8 = bitcast i8* %6 to i32 (...)***
+  %9 = getelementptr inbounds i8, i8* %6, i64 24
+  %10 = bitcast i8* %9 to i32 (...)***
+  store i32 (...)** bitcast (i8** getelementptr inbounds ({ [7 x i8*], [7 x i8*] }, { [7 x i8*], [7 x i8*] }* @_ZTV1W, i64 0, inrange i32 0, i64 2) to i32 (...)**), i32 (...)*** %8, align 8, !tbaa !2
+  store i32 (...)** bitcast (i8** getelementptr inbounds ({ [7 x i8*], [7 x i8*] }, { [7 x i8*], [7 x i8*] }* @_ZTV1W, i64 0, inrange i32 1, i64 2) to i32 (...)**), i32 (...)*** %10, align 8, !tbaa !2
+  store volatile %class.W* %7, %class.W** %1, align 8
+  %11 = load volatile %class.W*, %class.W** %1, align 8
+  %12 = bitcast %class.W* %11 to void (%class.W*)***
+  %13 = load void (%class.W*)**, void (%class.W*)*** %12, align 8, !tbaa !2
+  %14 = getelementptr inbounds void (%class.W*)*, void (%class.W*)** %13, i64 4
+  %15 = load void (%class.W*)*, void (%class.W*)** %14, align 8
+  tail call void %15(%class.W* %11)
+  %16 = bitcast %class.Z** %2 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %16)
+  %17 = load volatile %class.W*, %class.W** %1, align 8
+  %18 = icmp eq %class.W* %17, null
+  %19 = getelementptr inbounds %class.W, %class.W* %17, i64 0, i32 2
+  %20 = select i1 %18, %class.Z* null, %class.Z* %19
+  store volatile %class.Z* %20, %class.Z** %2, align 8
+  %21 = load volatile %class.Z*, %class.Z** %2, align 8
+  %22 = bitcast %class.Z* %21 to void (%class.Z*)***
+  %23 = load void (%class.Z*)**, void (%class.Z*)*** %22, align 8, !tbaa !2
+  %24 = getelementptr inbounds void (%class.Z*)*, void (%class.Z*)** %23, i64 2
+  %25 = load void (%class.Z*)*, void (%class.Z*)** %24, align 8
+  tail call void %25(%class.Z* %21)
+  %26 = bitcast %class.X** %3 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %26)
+  %27 = load volatile %class.Z*, %class.Z** %2, align 8
+  %28 = bitcast %class.Z* %27 to %class.X*
+  store volatile %class.X* %28, %class.X** %3, align 8
+  %29 = load volatile %class.X*, %class.X** %3, align 8
+  %30 = bitcast %class.X* %29 to void (%class.X*)***
+  %31 = load void (%class.X*)**, void (%class.X*)*** %30, align 8, !tbaa !2
+  %32 = getelementptr inbounds void (%class.X*)*, void (%class.X*)** %31, i64 2
+  %33 = load void (%class.X*)*, void (%class.X*)** %32, align 8
+  tail call void %33(%class.X* %29)
+  %34 = bitcast %class.Y** %4 to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* nonnull %34)
+  %35 = load volatile %class.W*, %class.W** %1, align 8
+  %36 = bitcast %class.W* %35 to %class.Y*
+  store volatile %class.Y* %36, %class.Y** %4, align 8
+  %37 = load volatile %class.Y*, %class.Y** %4, align 8
+  %38 = bitcast %class.Y* %37 to void (%class.Y*)***
+  %39 = load void (%class.Y*)**, void (%class.Y*)*** %38, align 8, !tbaa !2
+  %40 = getelementptr inbounds void (%class.Y*)*, void (%class.Y*)** %39, i64 3
+  %41 = load void (%class.Y*)*, void (%class.Y*)** %40, align 8
+  tail call void %41(%class.Y* %37)
+  %42 = load volatile %class.Y*, %class.Y** %4, align 8
+  %43 = icmp eq %class.Y* %42, null
+  br i1 %43, label %49, label %44
+
+; <label>:44:                                     ; preds = %0
+  %45 = bitcast %class.Y* %42 to void (%class.Y*)***
+  %46 = load void (%class.Y*)**, void (%class.Y*)*** %45, align 8, !tbaa !2
+  %47 = getelementptr inbounds void (%class.Y*)*, void (%class.Y*)** %46, i64 1
+  %48 = load void (%class.Y*)*, void (%class.Y*)** %47, align 8
+  tail call void %48(%class.Y* nonnull %42) #2
+  br label %49
+
+; <label>:49:                                     ; preds = %44, %0
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %34)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %26)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %16)
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* nonnull %5)
+  ret i32 16
+}
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.start.p0i8(i64, i8* nocapture) #4
+
+; Function Attrs: nobuiltin
+declare noalias nonnull i8* @_Znwm(i64) local_unnamed_addr #5
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i32, i1) #4
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.end.p0i8(i64, i8* nocapture) #4
+
+; Function Attrs: norecurse nounwind uwtable
+define linkonce_odr void @_ZN1WD2Ev(%class.W*) unnamed_addr #6 comdat align 2 {
+  ret void
+}
+
+; Function Attrs: nounwind uwtable
+define linkonce_odr void @_ZN1WD0Ev(%class.W*) unnamed_addr #7 comdat align 2 {
+  %2 = bitcast %class.W* %0 to i8*
+  tail call void @_ZdlPv(i8* %2) #11
+  ret void
+}
+
+; Function Attrs: uwtable
+define linkonce_odr void @_ZN1Y6printXEv(%class.Y*) unnamed_addr #8 comdat align 2 {
+  %2 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* nonnull dereferenceable(272) @_ZSt4cout, i8* nonnull getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i64 0, i64 0), i64 13)
+  ret void
+}
+
+; Function Attrs: norecurse nounwind uwtable
+define linkonce_odr void @_ZN1Y6printYEv(%class.Y*) unnamed_addr #6 comdat align 2 {
+  ret void
+}
+
+; Function Attrs: norecurse nounwind uwtable
+define linkonce_odr void @_ZN1W6printWEv(%class.W*) unnamed_addr #6 comdat align 2 {
+  ret void
+}
+
+; Function Attrs: norecurse nounwind uwtable
+define linkonce_odr void @_ZThn24_N1WD1Ev(%class.W*) unnamed_addr #6 comdat align 2 {
+  ret void
+}
+
+; Function Attrs: nounwind uwtable
+define linkonce_odr void @_ZThn24_N1WD0Ev(%class.W*) unnamed_addr #7 comdat align 2 {
+  %2 = getelementptr inbounds %class.W, %class.W* %0, i64 -1, i32 2
+  %3 = bitcast %class.Z* %2 to i8*
+  tail call void @_ZdlPv(i8* nonnull %3) #11
+  ret void
+}
+
+; Function Attrs: uwtable
+define linkonce_odr void @_ZN1Z6printXEv(%class.Z*) unnamed_addr #8 comdat align 2 {
+  %2 = tail call dereferenceable(272) %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* nonnull dereferenceable(272) @_ZSt4cout, i8* nonnull getelementptr inbounds ([14 x i8], [14 x i8]* @.str.2, i64 0, i64 0), i64 13)
+  ret void
+}
+
+; Function Attrs: norecurse nounwind uwtable
+define linkonce_odr void @_ZN1Z6printZEv(%class.Z*) unnamed_addr #6 comdat align 2 {
+  ret void
+}
+
+; Function Attrs: norecurse nounwind uwtable
+define linkonce_odr void @_ZN1Z6printYEv(%class.Z*) unnamed_addr #6 comdat align 2 {
+  ret void
+}
+
+; Function Attrs: nobuiltin nounwind
+declare void @_ZdlPv(i8*) local_unnamed_addr #9
+
+declare dereferenceable(272) %"class.std::basic_ostream"* @_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l(%"class.std::basic_ostream"* dereferenceable(272), i8*, i64) local_unnamed_addr #0
+
+; Function Attrs: uwtable
+define internal void @_GLOBAL__sub_I_Example.cpp() #8 section ".text.startup" {
+  tail call void @_ZNSt8ios_base4InitC1Ev(%"class.std::ios_base::Init"* nonnull @_ZStL8__ioinit)
+  %1 = tail call i32 @__cxa_atexit(void (i8*)* bitcast (void (%"class.std::ios_base::Init"*)* @_ZNSt8ios_base4InitD1Ev to void (i8*)*), i8* getelementptr inbounds (%"class.std::ios_base::Init", %"class.std::ios_base::Init"* @_ZStL8__ioinit, i64 0, i32 0), i8* nonnull @__dso_handle) #2
+  ret void
+}
+
+attributes #0 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind }
+attributes #3 = { norecurse uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { argmemonly nounwind }
+attributes #5 = { nobuiltin "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { norecurse nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #7 = { nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #8 = { uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #9 = { nobuiltin nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #10 = { builtin }
+attributes #11 = { builtin nounwind }
+
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"wchar_size", i32 4}
+!1 = !{!"clang version 6.0.0-1ubuntu2 (tags/RELEASE_600/final)"}
+!2 = !{!3, !3, i64 0}
+!3 = !{!"vtable pointer", !4, i64 0}
+!4 = !{!"Simple C++ TBAA"}

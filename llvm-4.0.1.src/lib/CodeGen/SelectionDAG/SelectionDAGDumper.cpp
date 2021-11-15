@@ -700,7 +700,7 @@ void SDNode::dumprFull(const SelectionDAG *G) const {
 void SDNode::print(raw_ostream &OS, const SelectionDAG *G) const {
   printr(OS, G);
   for (unsigned i = 0, e = getNumOperands(); i != e; ++i) {
-    if (i) OS << ", "; else OS << " ";
+    if (i) OS << "; "; else OS << " ";
     printOperand(OS, G, getOperand(i));
   }
   OS << " Node TypeID: " << NodeTypeID;

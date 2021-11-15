@@ -1,6 +1,6 @@
 	.text
-	.file	"Example.ll"
-	.globl	main
+	.file	"Example.cpp"
+	.globl	main                    # -- Begin function main
 	.p2align	4, 0x90
 	.type	main,@function
 main:                                   # @main
@@ -8,14 +8,11 @@ main:                                   # @main
 	.file	1 "Example.cpp"
 	.loc	1 35 0                  # Example.cpp:35:0
 	.cfi_startproc
-# BB#0:
+# %bb.0:
 	pushq	%rbp
-.Lcfi0:
 	.cfi_def_cfa_offset 16
-.Lcfi1:
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
-.Lcfi2:
 	.cfi_def_cfa_register %rbp
 	subq	$32, %rsp
 	movl	$0, -20(%rbp)
@@ -67,7 +64,7 @@ main:                                   # @main
 	.loc	1 50 5 is_stmt 0        # Example.cpp:50:5
 	testq	%rdi, %rdi
 	je	.LBB0_2
-# BB#1:
+# %bb.1:
 	.loc	1 50 5 discriminator 1  # Example.cpp:50:5
 	callq	_ZdaPv
 .LBB0_2:
@@ -85,31 +82,25 @@ main:                                   # @main
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
 	.cfi_endproc
-
-	.p2align	4, 0x90
+                                        # -- End function
+	.p2align	4, 0x90         # -- Begin function _ZL8getValueIiET_PS0_i
 	.type	_ZL8getValueIiET_PS0_i,@function
 _ZL8getValueIiET_PS0_i:                 # @_ZL8getValueIiET_PS0_i
 .Lfunc_begin1:
 	.loc	1 30 0                  # Example.cpp:30:0
 	.cfi_startproc
-# BB#0:
+# %bb.0:
 	pushq	%rbp
-.Lcfi3:
 	.cfi_def_cfa_offset 16
-.Lcfi4:
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
-.Lcfi5:
 	.cfi_def_cfa_register %rbp
-	#DEBUG_VALUE: getValue<int>:ptr <- [%RBP+-16]
-	#DEBUG_VALUE: getValue<int>:idx <- [%RBP+-4]
 	movq	%rdi, -16(%rbp)
 	movl	%esi, -4(%rbp)
 .Ltmp2:
 	.loc	1 31 12 prologue_end    # Example.cpp:31:12
-	movq	-16(%rbp), %rax
-	movslq	-4(%rbp), %rcx
-	movl	(%rax,%rcx,4), %eax
+	movslq	-4(%rbp), %rax
+	movl	(%rdi,%rax,4), %eax
 	.loc	1 31 5 is_stmt 0        # Example.cpp:31:5
 	popq	%rbp
 	retq
@@ -117,31 +108,25 @@ _ZL8getValueIiET_PS0_i:                 # @_ZL8getValueIiET_PS0_i
 .Lfunc_end1:
 	.size	_ZL8getValueIiET_PS0_i, .Lfunc_end1-_ZL8getValueIiET_PS0_i
 	.cfi_endproc
-
-	.p2align	4, 0x90
+                                        # -- End function
+	.p2align	4, 0x90         # -- Begin function _ZL8getValueIdET_PS0_i
 	.type	_ZL8getValueIdET_PS0_i,@function
 _ZL8getValueIdET_PS0_i:                 # @_ZL8getValueIdET_PS0_i
 .Lfunc_begin2:
 	.loc	1 30 0 is_stmt 1        # Example.cpp:30:0
 	.cfi_startproc
-# BB#0:
+# %bb.0:
 	pushq	%rbp
-.Lcfi6:
 	.cfi_def_cfa_offset 16
-.Lcfi7:
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
-.Lcfi8:
 	.cfi_def_cfa_register %rbp
-	#DEBUG_VALUE: getValue<double>:ptr <- [%RBP+-16]
-	#DEBUG_VALUE: getValue<double>:idx <- [%RBP+-4]
 	movq	%rdi, -16(%rbp)
 	movl	%esi, -4(%rbp)
 .Ltmp4:
 	.loc	1 31 12 prologue_end    # Example.cpp:31:12
-	movq	-16(%rbp), %rax
-	movslq	-4(%rbp), %rcx
-	movsd	(%rax,%rcx,8), %xmm0    # xmm0 = mem[0],zero
+	movslq	-4(%rbp), %rax
+	movsd	(%rdi,%rax,8), %xmm0    # xmm0 = mem[0],zero
 	.loc	1 31 5 is_stmt 0        # Example.cpp:31:5
 	popq	%rbp
 	retq
@@ -149,7 +134,7 @@ _ZL8getValueIdET_PS0_i:                 # @_ZL8getValueIdET_PS0_i
 .Lfunc_end2:
 	.size	_ZL8getValueIdET_PS0_i, .Lfunc_end2-_ZL8getValueIdET_PS0_i
 	.cfi_endproc
-
+                                        # -- End function
 	.section	.debug_str,"MS",@progbits,1
 .Linfo_string0:
 	.asciz	"clang version 4.0.1-10 (tags/RELEASE_401/final)" # string offset=0
@@ -199,9 +184,7 @@ _ZL8getValueIdET_PS0_i:                 # @_ZL8getValueIdET_PS0_i
 	.asciz	"ptr"                   # string offset=221
 .Linfo_string23:
 	.asciz	"idx"                   # string offset=225
-	.section	.debug_loc,"",@progbits
 	.section	.debug_abbrev,"",@progbits
-.Lsection_abbrev:
 	.byte	1                       # Abbreviation Code
 	.byte	17                      # DW_TAG_compile_unit
 	.byte	1                       # DW_CHILDREN_yes
@@ -215,6 +198,8 @@ _ZL8getValueIdET_PS0_i:                 # @_ZL8getValueIdET_PS0_i
 	.byte	23                      # DW_FORM_sec_offset
 	.byte	27                      # DW_AT_comp_dir
 	.byte	14                      # DW_FORM_strp
+	.ascii	"\264B"                 # DW_AT_GNU_pubnames
+	.byte	25                      # DW_FORM_flag_present
 	.byte	17                      # DW_AT_low_pc
 	.byte	1                       # DW_FORM_addr
 	.byte	18                      # DW_AT_high_pc
@@ -377,11 +362,10 @@ _ZL8getValueIdET_PS0_i:                 # @_ZL8getValueIdET_PS0_i
 	.byte	0                       # EOM(2)
 	.byte	0                       # EOM(3)
 	.section	.debug_info,"",@progbits
-.Lsection_info:
 .Lcu_begin0:
 	.long	374                     # Length of Unit
 	.short	4                       # DWARF version number
-	.long	.Lsection_abbrev        # Offset Into Abbrev. Section
+	.long	.debug_abbrev           # Offset Into Abbrev. Section
 	.byte	8                       # Address Size (in bytes)
 	.byte	1                       # Abbrev [1] 0xb:0x16f DW_TAG_compile_unit
 	.long	.Linfo_string0          # DW_AT_producer
@@ -389,6 +373,7 @@ _ZL8getValueIdET_PS0_i:                 # @_ZL8getValueIdET_PS0_i
 	.long	.Linfo_string1          # DW_AT_name
 	.long	.Lline_table_start0     # DW_AT_stmt_list
 	.long	.Linfo_string2          # DW_AT_comp_dir
+                                        # DW_AT_GNU_pubnames
 	.quad	.Lfunc_begin0           # DW_AT_low_pc
 	.long	.Lfunc_end2-.Lfunc_begin0 # DW_AT_high_pc
 	.byte	2                       # Abbrev [2] 0x2a:0x5 DW_TAG_pointer_type
@@ -558,9 +543,7 @@ _ZL8getValueIdET_PS0_i:                 # @_ZL8getValueIdET_PS0_i
 	.long	256                     # DW_AT_type
 	.byte	0                       # End Of Children Mark
 	.section	.debug_ranges,"",@progbits
-.Ldebug_range:
 	.section	.debug_macinfo,"",@progbits
-.Ldebug_macinfo:
 .Lcu_macro_begin0:
 	.byte	0                       # End Of Macro List Mark
 	.section	.debug_pubnames,"",@progbits

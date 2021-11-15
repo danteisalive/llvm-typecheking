@@ -1989,13 +1989,36 @@ bool X86DAGToDAGISel::tryGather(SDNode *Node, unsigned Opc) {
 
 void X86DAGToDAGISel::Select(SDNode *Node) {
 
-  if (Node->getTypeID() != -1)
+  if (Node->getOpcode() == ISD::CopyFromReg && Node->getTypeID() != -1)
   {
-    outs() << "X86DAGToDAGISel Phase! ";
+    outs() << "Start: X86DAGToDAGISel Phase! OpCode: " << Node->getOpcode() << " " << Node->getNodeId() << " ";
     Node->print(outs());
-    outs() << "\n\n";
+    outs() << "\n";
 
+    const SDValue n1 = Node->getOperand(0);
+    n1.getNode()->print(outs());
+    outs() << "\n";
+
+    const SDValue n2 = n1.getNode()->getOperand(0);
+    n2.getNode()->print(outs());
+    outs() << "\n";
+
+    n2.getNode()->setTypeID(Node->getTypeID());
+    // if (const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Node))
+    // {
+
+    //     outs() << "Here!\n";
+    //     if (GADN->getGlobal()->hasName())
+    //     {
+    //         outs() << GADN->getGlobal()->getName() << " CATCHED YOU BITCH!\n";
+    //     }
+    // }
   }
+
+    // Node->print(outs());
+    // outs() << "\n";
+
+
 
   MVT NVT = Node->getSimpleValueType(0);
   unsigned Opc, MOpc;
@@ -2759,6 +2782,14 @@ void X86DAGToDAGISel::Select(SDNode *Node) {
   }
 
   SelectCode(Node);
+
+  if (Node->getTypeID() != -1)
+  {
+    outs() << "End: X86DAGToDAGISel Phase! OpCode: " << Node->getOpcode() << " " << Node->getNodeId() << " ";
+    Node->print(outs());
+    outs() << "\n";
+
+  }
 }
 
 bool X86DAGToDAGISel::

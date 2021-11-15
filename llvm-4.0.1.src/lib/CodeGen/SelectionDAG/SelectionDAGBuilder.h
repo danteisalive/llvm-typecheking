@@ -676,6 +676,9 @@ public:
     SDValue &N = NodeMap[V];
     assert(!N.getNode() && "Already set a value for this node!");
     N = NewN;
+    // outs() << "setValue: ";
+    // NewN.getNode()->print(outs());
+    // outs() << "\n";
   }
 
   void setUnusedArgValue(const Value *V, SDValue NewN) {

@@ -916,36 +916,37 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
 
 
 
-  // if (MIB.getInstr()->getDesc().isCall()) {
+  if (MIB.getInstr()->getDesc().isCall()) {
 
-  //       for (const MachineOperand &MO : MIB.getInstr()->operands())
-  //       {
-  //           if (MO.isGlobal())
-  //           {
-  //               StringRef name = MO.getGlobal()->getName();
-  //               if (name == "malloc" || 
-  //                   name == "_Znwm" || // new
-  //                   name == "_Znam" ||                   // new[]
-  //                   name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
-  //                   name == "_ZnamRKSt9nothrow_t" || 
-  //                   name == "calloc" ||
-  //                   name == "realloc" ||
-  //                   name == "free" || 
-  //                   name == "_ZdlPv" || // delete
-  //                   name == "_ZdaPv") // delete[] (nothrow)
-  //               {
-  //                 outs() << "Instemitter Phase: " << "\n";
-  //                 MIB.getInstr()->setMITypeID(123456789);
-  //                 MIB.getInstr()->print(outs());
-  //                 outs() << Node->getTypeID() << "\n";
-  //                 Node->print(outs());
-  //                 outs() <<"\n";
+        for (const MachineOperand &MO : MIB.getInstr()->operands())
+        {
+            if (MO.isGlobal())
+            {
+                StringRef name = MO.getGlobal()->getName();
+                if (name == "malloc" || 
+                    name == "_Znwm" || // new
+                    name == "_Znam" ||                   // new[]
+                    name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+                    name == "_ZnamRKSt9nothrow_t" || 
+                    name == "calloc" ||
+                    name == "realloc" /*||
+                    name == "free" || 
+                    name == "_ZdlPv" || // delete
+                    name == "_ZdaPv"*/) // delete[] (nothrow)
+                {
+                  outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID() << " ";
+                  Node->print(outs());
+                  MIB.getInstr()->setMITypeID(Node->getTypeID());
+                  //MIB.getInstr()->print(outs());
+                  //outs() << " Node TypeID: " << Node->getTypeID() << "\n";
+
+                  outs() <<"\n";
                   
-  //               }
-  //           }
-  //       }     
+                }
+            }
+        }     
             
-  // }
+  }
 }
 
 /// EmitSpecialNode - Generate machine code for a target-independent node and
