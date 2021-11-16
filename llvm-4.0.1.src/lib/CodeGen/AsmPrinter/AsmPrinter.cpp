@@ -889,7 +889,7 @@ void AsmPrinter::EmitFunctionBody() {
     EmitBasicBlockStart(MBB);
     for (auto &MI : MBB) {
 
-      if (MI.getDesc().isCall()) {
+      if (MI.getMITypeID() != -1 && MI.getDesc().isCall()) {
 
         for (const MachineOperand &MO : MI.operands())
         {
@@ -911,7 +911,7 @@ void AsmPrinter::EmitFunctionBody() {
                   outs() << name << "\n";
                   MI.print(outs());
                   outs() << "MI Type ID: " << MI.getMITypeID() << "\n";
-                  MCSymbol *CSLabel = getTempSymbol(getModuleIdentifier() + "_" + std::string(name));
+                  MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS_" + getModuleIdentifier() + "_" + std::string(name) + "_" + std::to_string(MI.getMITypeID()));
                   OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Global);
                   OutStreamer->EmitLabel(CSLabel);
                 }

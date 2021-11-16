@@ -55,7 +55,7 @@
 // }
 
 
-#include <iostream>
+// #include <iostream>
 
 class NV {
 public:
@@ -65,20 +65,20 @@ class X {
 public:
    int     x1;
    virtual ~X() {}
-   virtual void printX() {std::cout << "X : printX()\n";}
+   virtual void printX() {/*std::cout << "X : printX()\n";*/}
 };
 class Y : public NV, public X{
 public:
    int     y1;
    virtual ~Y() {}
-   virtual void printX() {std::cout << "Y : printX()\n";}
+   virtual void printX() {/*std::cout << "Y : printX()\n";*/}
    virtual void printY() {}
 };
 class Z : public  X{
 public:
    int     z1;
    virtual ~Z() {}
-   void printX() {std::cout << "Z : printX()\n";}
+   void printX() {/*std::cout << "Z : printX()\n";*/}
    virtual void printZ() {}
    virtual void printY() {}
 };
@@ -91,8 +91,8 @@ public:
 };
 
 
-    int main()
-    {
+int main()
+{
 
     W * volatile w = new W();
     //w->printX();
@@ -113,4 +113,4 @@ public:
 
 
     return sizeof(*z);
-    }
+}
