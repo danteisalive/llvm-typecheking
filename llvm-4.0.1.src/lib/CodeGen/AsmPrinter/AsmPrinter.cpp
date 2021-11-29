@@ -887,7 +887,8 @@ void AsmPrinter::EmitFunctionBody() {
   for (auto &MBB : *MF) {
     // Print a label for the basic block.
     EmitBasicBlockStart(MBB);
-    for (auto &MI : MBB) {
+    for (auto &MI : MBB) {      
+
 
       if (MI.getMITypeID() != -1 && MI.getDesc().isCall()) {
 
@@ -912,15 +913,15 @@ void AsmPrinter::EmitFunctionBody() {
                   MI.print(outs());
                   outs() << "MI Type ID: " << MI.getMITypeID() << "\n";
                   MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS_" + getModuleIdentifier() + "_" + std::string(name) + "_" + std::to_string(MI.getMITypeID()));
-                  OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Global);
+                  
+                  OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Internal);
                   OutStreamer->EmitLabel(CSLabel);
+                  //outs() << "Symbol Kind: " << (uint64_t)(CSLabel->getSection().getKind()) << "\n";
                 }
             }
         }     
             
       }
-
-      
 
       // Print the assembly for the instruction.
       if (!MI.isPosition() && !MI.isImplicitDef() && !MI.isKill() &&
@@ -2411,13 +2412,13 @@ void AsmPrinter::printOffset(int64_t Offset, raw_ostream &OS) const {
 /// getTempSymbol - Return the MCSymbol corresponding to the assembler
 /// temporary label with the specified stem and unique ID.
 MCSymbol *AsmPrinter::getTempSymbol(StringRef Name, unsigned ID) const {
-  return OutContext.getOrCreateSymbol(".TYCHE_" + Name + Twine(ID));
+  return OutContext.getOrCreateSymbol("TYCHE_" + Name + Twine(ID));
 }
 
 /// getTempSymbol - Return an assembler temporary label with the specified
 /// stem.
 MCSymbol *AsmPrinter::getTempSymbol(StringRef Name) const {
-  return OutContext.getOrCreateSymbol(".TYCHE_" + Name);
+  return OutContext.getOrCreateSymbol("TYCHE_" + Name);
 }
 
 

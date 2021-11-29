@@ -89,7 +89,7 @@ extern "C" {
 }
 
 //#define EFFECTIVE_INSTRUMENTATION_DEBUG 0
-//#define EFFECTIVE_LAYOUT_DEBUG  1
+#define EFFECTIVE_LAYOUT_DEBUG  1
 // #define TYCHE_LAYOUT_DEBUG      1
 // #define TYCHE_TEMP_DUMP_LAYOUT
 
@@ -182,6 +182,8 @@ TyChe Metadata structure
 std::map<uint64_t, std::map<uint64_t, std::map<uint64_t, std::vector<llvm::Constant *> > > > TyCheMetaCacheLinesSections;
 std::map<uint64_t, uint64_t> TypeIDNames;
 
+
+
 std::vector<std::vector<llvm::Constant*>> TyCheSectionsEntries(TYCHE_NUMBER_OF_SECTIONS);
 
 static uint64_t TypeId = 0;
@@ -189,7 +191,7 @@ static uint64_t TypeId = 0;
 
 static uint64_t TYCHE_TYPE_ID = 0;
 
-
+std::string APFileName = "allocation_points.hash";
 /*
  * Type information.
  */
@@ -242,6 +244,9 @@ struct LayoutEntry {
 };
 typedef std::multimap<size_t, LayoutEntry> LayoutInfo;
 typedef std::map<size_t, LayoutEntry *> FlattenedLayoutInfo;
+
+std::map<uint64_t, std::multimap <uint32_t, LayoutEntry> > AllocationPointsTypeInfo;
+std::map<llvm::Constant*, std::multimap <uint32_t, LayoutEntry> > AllocationPointsDIInfo;
 
 // static llvm::StructType *TyCheBaiscType = nullptr;
 // static llvm::StructType *TyCheDerivedType = nullptr;
@@ -1599,6 +1604,70 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
   }
 
   TypeIDNames[TypeId] = total_offset;
+
+
+  for (auto &entries : flattenedLayout) {
+    AllocationPointsTypeInfo[TypeId].insert(std::make_pair((uint32_t)entries.second->offset, *(entries.second)));
+  }
+
+      //std::ofstream file(APFileName, std::ios::app);
+      std::error_code EC;
+      llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
+      std::string line = "";
+
+      line  = "AllocationPointsTypeInfo[TypeId] Size: " + std::to_string(AllocationPointsTypeInfo[TypeId].size()) + "\n";
+      file << line;
+
+
+
+      // std::ofstream file(APFileName, std::ios::app);
+      auto di_itr = AllocationPointsTypeInfo.find(TypeId);
+      for (auto &entries : di_itr->second) {
+
+        LayoutEntry lEntry = entries.second;
+        assert(!lEntry.deleted);
+        assert(entries.first == lEntry.offset);
+
+          //std::string typeHierarchy = "";
+          // for (auto &par : lEntry.TyCheDependencyTree)
+          // {
+              //fprintf(stderr, "\t");
+              //par->print(file);
+              // if (getTypeName(par) != "")
+              // {
+              //   typeHierarchy.append(getTypeName(par));
+              //   typeHierarchy.append("::");
+              // }
+
+            
+          //}
+          // typeHierarchy.append(getTypeName(lEntry.type));
+          lEntry.type->print(file);
+          file << "\n";
+
+          file << "TYCHE[" <<  entries.first << "] = [" << lEntry.offset + lEntry.lb << ".." << lEntry.offset + lEntry.ub << "] = FileName: " <<  M.getSourceFileName() << "\n";
+          // fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] =  Filename: %s Type Hierarchy: %s\n", 
+          //         entries.first, lEntry.type, lEntry.coerced, lEntry.tyche_entry.FAM, lEntry.offset + lEntry.lb, lEntry.offset + lEntry.ub, M.getSourceFileName().c_str(), typeHierarchy.c_str());
+          
+          for (auto &par : lEntry.TyCheDependencyTree)
+          {
+            file << "\t";
+            par->print(file);
+            file << "\n";
+          }
+          if (lEntry.tyche_entry.Parent != nullptr)
+          {
+            file << "\t";
+            lEntry.tyche_entry.Parent->print(file);
+            file << "\n";
+          }
+          //typeHierarchy += "\n";
+
+          //file << typeHierarchy;
+      }  
+
+        file.close();
+
   TypeId++;
   assert(TypeId < TYCHE_NUMBER_OF_TYPES);
 
@@ -2762,8 +2831,8 @@ static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
       EFFECTIVE_DEBUG_PRINT("warning: failed to build layout hash "
                             "table; trying larger size [%zu -> %zu]\n",
                             layoutLen, 2 * layoutLen);
-      // EFFECTIVE_FATAL_ERROR("warning: failed to build layout hash "
-      //                       "table!\n");
+      EFFECTIVE_FATAL_ERROR("warning: failed to build layout hash "
+                            "table!\n");
       tInfo.cache.erase(Ty);
       multiplier *= 2;
       return compileType(M, Ty, tInfo, multiplier);
@@ -2772,6 +2841,9 @@ static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
     hval2 = getNextLayoutHash(hash, i, hval2, layoutLen);
   
   }
+
+
+
 
    // TODO:: Initilize all the basic types too
   llvm::ArrayType* tyche_cl_meta_type = nullptr;
@@ -2802,6 +2874,20 @@ static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   Elems.push_back(Layout);
   llvm::Constant *MetaInit = llvm::ConstantStruct::get(MetaTy, Elems);
   MetaGV->setInitializer(MetaInit);
+
+  if (Meta == nullptr) {llvm_unreachable("Meta is null!\n");}
+  if (AllocationPointsDIInfo.find(Meta) != AllocationPointsDIInfo.end()) {llvm_unreachable("Inserting a Meta with the same index!\n");}
+
+
+  for (auto &elem : AllocationPointsTypeInfo) {
+
+    for (auto &entries : elem.second)
+    {
+        AllocationPointsDIInfo[Meta].insert(std::make_pair(entries.first, entries.second));
+    }
+
+  }
+
 
   return entry;
 }
@@ -4094,15 +4180,103 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     if (Meta == nullptr)
       Meta = inferMallocType(entry, M, F, &I, tInfo, &Ty);
 
-    auto itr = tInfo.cache.find(Ty);
-    if (itr != tInfo.cache.end())
-    {
-      llvm::LLVMContext& C = I.getContext();
-      llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(itr->second.type_id)));
-      I.setMetadata("TYCHE_MD", N);
-    }
+
+      // for (auto &entries : di_itr->second) {
+
+      //   LayoutEntry lEntry = entries.second;
+      //   assert(!lEntry.deleted);
+      //   assert(entries.first == lEntry.offset);
+
+      //     std::string typeHierarchy = "";
+      //     // for (auto &par : lEntry.TyCheDependencyTree)
+      //     // {
+      //     //     //fprintf(stderr, "\t");
+      //     //     //par->dump();
+      //     //     if (getTypeName(par) != "")
+      //     //     {
+      //     //       typeHierarchy.append(getTypeName(par));
+      //     //       typeHierarchy.append("::");
+      //     //     }
+
+            
+      //     // }
+      //     //typeHierarchy.append(getTypeName(lEntry.type));
+      //     // lEntry.type->dump();
+
+      //     // fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] =  Filename: %s Type Hierarchy: %s\n", 
+      //     //         entries.first, lEntry->type, lEntry->coerced, lEntry->tyche_entry.FAM, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub, M.getSourceFileName().c_str(), typeHierarchy.c_str());
+          
+      //     // for (auto &par : lEntry->TyCheDependencyTree)
+      //     // {
+      //     //   fprintf(stderr, "\t");
+      //     //   par->dump();
+      //     // }
+      //     // if (lEntry->tyche_entry.Parent != nullptr)
+      //     // {
+      //     //   fprintf(stderr, "\t");
+      //     //   lEntry->tyche_entry.Parent->dump();
+      //     // }
+      //     typeHierarchy += "\n";
+
+      //     file << typeHierarchy;
+      // }
+
+
+      // file.close();
+  
+    // }
+    // else 
+    // {
+    //   llvm_unreachable("Can't find the type information in the type info cache!\n");
+    // }
+
 
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
+
+    auto itr = tInfo.infos.cbegin();
+    for (; itr != tInfo.infos.cend(); itr++)
+    {
+        if (itr->second == Meta)
+          break;
+    }
+
+    if (itr == tInfo.infos.cend()) llvm_unreachable("can't find a valid type!\n");
+
+    llvm::DIType* type_meta = itr->first;
+    if (tInfo.cache.find(type_meta) == tInfo.cache.end()) llvm_unreachable("can't find the type info DIType!\n");
+    if (tInfo.names.find(type_meta) == tInfo.names.end()) llvm_unreachable("can't find the type info name!\n");
+    if (tInfo.hashes.find(type_meta) == tInfo.hashes.end()) llvm_unreachable("can't find the type info hash!\n");
+
+    const llvm::DebugLoc &location = I.getDebugLoc();
+    std::string loc = "";
+    if (location) {
+          loc += std::to_string(location.getLine()) + "_";
+          loc += std::to_string(location.getCol());
+    }
+
+    std::ofstream file(APFileName, std::ios::app);
+    std::string line = "";
+    line += M.getSourceFileName() + "#" + loc + "#"  + tInfo.names.find(type_meta)->second + "#" + std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])+ "#" + std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]);
+    line += "\n";
+    file << line;
+
+      auto di_itr = AllocationPointsDIInfo.find(Meta);
+      if (di_itr == AllocationPointsDIInfo.end()) llvm_unreachable("Can't find Di info in AP cache!\n");
+
+      if (AllocationPointsTypeInfo.find(entry.type_id) == AllocationPointsTypeInfo.end()) {llvm_unreachable("Cannt find AllocationPointsTypeInfo!\n");}
+
+
+      line  = "AllocationPointsDIInfo[" + std::to_string((uint64_t)Meta) + "] Size: " + std::to_string(AllocationPointsDIInfo[Meta].size()) + "\n";
+      //line  += "AllocationPointsTypeInfo[TID] Size: " + std::to_string(AllocationPointsTypeInfo[entry.type_id].size()) + "\n";
+      file << line;
+      file << "--------------------------------------------------------------------------------------------------------------\n";
+      file.close();
+
+
+
+    llvm::LLVMContext& C = I.getContext();
+    llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
+    I.setMetadata("TYCHE_MD", N);
 
 
     // std::string newName = "effective_";
