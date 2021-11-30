@@ -498,7 +498,8 @@ protected:
 private:
   /// Unique id per SDNode in the DAG.
   int NodeId;
-  int64_t NodeTypeID;
+
+  
 
   /// The values that are used by this operation.
   SDUse *OperandList;
@@ -535,12 +536,25 @@ public:
   /// Used for debug printing.
   uint16_t PersistentId;
 
+  struct NodeTypeID
+  {
+    uint64_t NodeTypeID_1;
+    uint64_t NodeTypeID_2;
+    bool valid;
+
+    NodeTypeID(uint64_t tid_1, uint64_t tid_2) : NodeTypeID_1(tid_1), NodeTypeID_2(tid_2), valid(true) {}
+
+    NodeTypeID() : valid(false) {}
+
+  } NodeTID;
+
   //===--------------------------------------------------------------------===//
   //  Accessors
   //
   // set TID
-  void setTypeID(int64_t tid) {NodeTypeID = tid;}
-  int64_t getTypeID() const {return NodeTypeID;}
+  void setTypeID(uint64_t tid_1, uint64_t tid_2) {NodeTID.NodeTypeID_1 = tid_1; NodeTID.NodeTypeID_2 = tid_2; NodeTID.valid = true;}
+  void setTypeID(NodeTypeID tid) {NodeTID = tid;}
+  NodeTypeID getTypeID() const {return NodeTID;}
 
   /// Return the SelectionDAG opcode value for this node. For
   /// pre-isel nodes (those for which isMachineOpcode returns false), these
@@ -903,9 +917,11 @@ protected:
   /// SDNodes are created without any operands, and never own the operand
   /// storage. To add operands, see SelectionDAG::createOperands.
   SDNode(unsigned Opc, unsigned Order, DebugLoc dl, SDVTList VTs)
-      : NodeType(Opc), NodeId(-1), NodeTypeID(-1), OperandList(nullptr), ValueList(VTs.VTs),
+      : NodeType(Opc), NodeId(-1), OperandList(nullptr), ValueList(VTs.VTs),
         UseList(nullptr), NumOperands(0), NumValues(VTs.NumVTs), IROrder(Order),
         debugLoc(std::move(dl)) {
+
+    NodeTID = NodeTypeID();
     memset(&RawSDNodeBits, 0, sizeof(RawSDNodeBits));
     assert(debugLoc.hasTrivialDestructor() && "Expected trivial destructor");
     assert(NumValues == VTs.NumVTs &&

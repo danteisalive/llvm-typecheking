@@ -4272,10 +4272,12 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
       file << "--------------------------------------------------------------------------------------------------------------\n";
       file.close();
 
-
-
     llvm::LLVMContext& C = I.getContext();
-    llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
+    llvm::SmallVector<llvm::Metadata *, 32> Ops;
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));
+    auto *N =  llvm::MDTuple::get(C, Ops);
+    //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
     I.setMetadata("TYCHE_MD", N);
 
 

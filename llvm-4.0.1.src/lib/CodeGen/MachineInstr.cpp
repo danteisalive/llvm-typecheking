@@ -719,7 +719,7 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MCInstrDesc &tid,
   if (!NoImp)
     addImplicitDefUseOperands(MF);
 
-  MITypeID = -1;
+  MINodeTID = MINodeTypeID();
 }
 
 /// MachineInstr ctor - Copies MachineInstr arg exactly
@@ -740,7 +740,7 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MachineInstr &MI)
   // Copy all the sensible flags.
   setFlags(MI.Flags);
   
-  MITypeID = -1;
+  MINodeTID = MINodeTypeID();
 }
 
 /// getRegInfo - If this instruction is embedded into a MachineFunction,
@@ -1998,7 +1998,8 @@ void MachineInstr::print(raw_ostream &OS, ModuleSlotTracker &MST,
     debugLoc.print(OS);
   }
 
-  OS << " Node Type ID: " << MITypeID; 
+  if (MINodeTID.valid)
+    OS << " Node Type ID: [" << MINodeTID.NodeTypeID_1 << "," << MINodeTID.NodeTypeID_2 << "]"; 
 
   OS << '\n';
 }

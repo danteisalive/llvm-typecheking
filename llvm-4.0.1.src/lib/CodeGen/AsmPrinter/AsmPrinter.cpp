@@ -890,7 +890,7 @@ void AsmPrinter::EmitFunctionBody() {
     for (auto &MI : MBB) {      
 
 
-      if (MI.getMITypeID() != -1 && MI.getDesc().isCall()) {
+      if (MI.getMITypeID().valid && MI.getDesc().isCall()) {
 
         for (const MachineOperand &MO : MI.operands())
         {
@@ -902,8 +902,8 @@ void AsmPrinter::EmitFunctionBody() {
                     name == "_Znam" ||                   // new[]
                     name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
                     name == "_ZnamRKSt9nothrow_t" || 
-                    name == "calloc" ||
-                    name == "realloc" /*||
+                    name == "calloc" /*||
+                    name == "realloc" ||
                     name == "free" || 
                     name == "_ZdlPv" || // delete
                     name == "_ZdaPv"*/) // delete[] (nothrow)
@@ -911,8 +911,8 @@ void AsmPrinter::EmitFunctionBody() {
                   outs() << "ASM Printer Phase: " << "\n";
                   outs() << name << "\n";
                   MI.print(outs());
-                  outs() << "MI Type ID: " << MI.getMITypeID() << "\n";
-                  MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS_" + getModuleIdentifier() + "_" + std::string(name) + "_" + std::to_string(MI.getMITypeID()));
+                  outs() << "MI Type ID: " << MI.getMITypeID().NodeTypeID_1 << " " << MI.getMITypeID().NodeTypeID_2 << "\n";
+                  MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS_" + getModuleIdentifier() + "_" + std::string(name) + "_" + std::to_string(MI.getMITypeID().NodeTypeID_1) + "_" + std::to_string(MI.getMITypeID().NodeTypeID_2));
                   
                   OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Internal);
                   OutStreamer->EmitLabel(CSLabel);

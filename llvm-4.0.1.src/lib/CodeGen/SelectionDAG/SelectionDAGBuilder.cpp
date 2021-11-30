@@ -5908,24 +5908,25 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
                     name == "_Znam" ||                   // new[]
                     name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
                     name == "_ZnamRKSt9nothrow_t" || 
-                    name == "calloc" ||
+                    name == "calloc" /*||
                     name == "realloc" ||
                     name == "free" || 
                     name == "_ZdlPv" || // delete
-                    name == "_ZdaPv"); // delete[] (nothrow)
+                    name == "_ZdaPv" */); // delete[] (nothrow)
                 
           outs() << "SelectionDAG Phase: ";
-          //outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << " TailCall: " << isTailCall << "\n";
+          outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "\n";
 
           //Inst->print(outs()); outs() << "\n"; 
-          assert(Metadata->getOperand(0).get() == 1);
-          llvm::Metadata *MD = Metadata->getOperand(0).get();
+          if (Metadata->getNumOperands() != 2) {llvm_unreachable("wrong number of tyche operand metadata!\n");}
+          llvm::Metadata *MD1 = Metadata->getOperand(0).get();
+          llvm::Metadata *MD2 = Metadata->getOperand(1).get();
           //MD->print(outs());
           //outs() << "\n";
-          MDString *MDS = dyn_cast<MDString>(MD);
-          MDS->getString();
-
-          Result.first.getNode()->setTypeID(std::stoi(MDS->getString()));
+          MDString *MDS1 = dyn_cast<MDString>(MD1);
+          MDString *MDS2 = dyn_cast<MDString>(MD2);
+          
+          Result.first.getNode()->setTypeID(std::stoull(MDS1->getString()), std::stoull(MDS2->getString()));
 
           // outs() << MDS->getString() << "\n";
           // outs() << "NumOfOperands: " <<  Callee.getNode()->getNumOperands() << " NumOfValues: " << Callee.getNode()->getNumValues() << "\n";

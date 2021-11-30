@@ -928,15 +928,15 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
                     name == "_Znam" ||                   // new[]
                     name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
                     name == "_ZnamRKSt9nothrow_t" || 
-                    name == "calloc" ||
-                    name == "realloc" /*||
+                    name == "calloc" /*||
+                    name == "realloc" ||
                     name == "free" || 
                     name == "_ZdlPv" || // delete
                     name == "_ZdaPv"*/) // delete[] (nothrow)
                 {
-                  outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID() << " ";
+                  outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID().NodeTypeID_1 << " " << Node->getTypeID().NodeTypeID_2;
                   Node->print(outs());
-                  MIB.getInstr()->setMITypeID(Node->getTypeID());
+                  MIB.getInstr()->setMITypeID(Node->getTypeID().NodeTypeID_1, Node->getTypeID().NodeTypeID_2);
                   //MIB.getInstr()->print(outs());
                   //outs() << " Node TypeID: " << Node->getTypeID() << "\n";
 

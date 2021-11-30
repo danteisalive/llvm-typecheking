@@ -1989,7 +1989,7 @@ bool X86DAGToDAGISel::tryGather(SDNode *Node, unsigned Opc) {
 
 void X86DAGToDAGISel::Select(SDNode *Node) {
 
-  if (Node->getOpcode() == ISD::CopyFromReg && Node->getTypeID() != -1)
+  if (Node->getOpcode() == ISD::CopyFromReg && Node->getTypeID().valid)
   {
     outs() << "Start: X86DAGToDAGISel Phase! OpCode: " << Node->getOpcode() << " " << Node->getNodeId() << " ";
     Node->print(outs());
@@ -2783,7 +2783,7 @@ void X86DAGToDAGISel::Select(SDNode *Node) {
 
   SelectCode(Node);
 
-  if (Node->getTypeID() != -1)
+  if (Node->getTypeID().valid)
   {
     outs() << "End: X86DAGToDAGISel Phase! OpCode: " << Node->getOpcode() << " " << Node->getNodeId() << " ";
     Node->print(outs());
