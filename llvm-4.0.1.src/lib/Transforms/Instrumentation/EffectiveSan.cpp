@@ -2876,18 +2876,24 @@ static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   MetaGV->setInitializer(MetaInit);
 
   if (Meta == nullptr) {llvm_unreachable("Meta is null!\n");}
-  if (AllocationPointsDIInfo.find(Meta) != AllocationPointsDIInfo.end()) {llvm_unreachable("Inserting a Meta with the same index!\n");}
-
-
-  for (auto &elem : AllocationPointsTypeInfo) {
-
-    for (auto &entries : elem.second)
-    {
-        AllocationPointsDIInfo[Meta].insert(std::make_pair(entries.first, entries.second));
-    }
-
+  if (AllocationPointsDIInfo.find(Meta) != AllocationPointsDIInfo.end()) 
+  {
+    llvm_unreachable("Inserting a Meta with the same index!\n");
   }
 
+
+  if (tid_number == -1) 
+      llvm_unreachable("Cannot assign a valid tid number!\n");
+  if (AllocationPointsTypeInfo.find(tid_number) == AllocationPointsTypeInfo.end()) 
+      llvm_unreachable("Cannot find a valid entry for the tid_number in AllocationPointsTypeInfo!\n");
+
+
+  for (auto &entries : AllocationPointsTypeInfo[tid_number])
+  {
+    AllocationPointsDIInfo[Meta].insert(std::make_pair(entries.first, entries.second));
+  }
+
+  
 
   return entry;
 }
@@ -4260,17 +4266,24 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     line += "\n";
     file << line;
 
-      auto di_itr = AllocationPointsDIInfo.find(Meta);
-      if (di_itr == AllocationPointsDIInfo.end()) llvm_unreachable("Can't find Di info in AP cache!\n");
+    auto di_itr = AllocationPointsDIInfo.find(Meta);
+    if (di_itr == AllocationPointsDIInfo.end()) 
+      llvm_unreachable("Can't find Di info in AP cache!\n");
 
-      if (AllocationPointsTypeInfo.find(entry.type_id) == AllocationPointsTypeInfo.end()) {llvm_unreachable("Cannt find AllocationPointsTypeInfo!\n");}
+    if (AllocationPointsTypeInfo.find(entry.type_id) == AllocationPointsTypeInfo.end()) 
+      llvm_unreachable("Cannt find AllocationPointsTypeInfo!\n");
+
+    for (auto &elem : AllocationPointsDIInfo[Meta])
+    {
+        file << "[" << elem.first << "] = " << elem.second.hash << "," << elem.second.finalHash << "\n";
+    }
 
 
-      line  = "AllocationPointsDIInfo[" + std::to_string((uint64_t)Meta) + "] Size: " + std::to_string(AllocationPointsDIInfo[Meta].size()) + "\n";
-      //line  += "AllocationPointsTypeInfo[TID] Size: " + std::to_string(AllocationPointsTypeInfo[entry.type_id].size()) + "\n";
-      file << line;
-      file << "--------------------------------------------------------------------------------------------------------------\n";
-      file.close();
+    line  = "AllocationPointsDIInfo[" + std::to_string((uint64_t)Meta) + "] Size: " + std::to_string(AllocationPointsDIInfo[Meta].size()) + "\n";
+    //line  += "AllocationPointsTypeInfo[TID] Size: " + std::to_string(AllocationPointsTypeInfo[entry.type_id].size()) + "\n";
+    file << line;
+    file << "--------------------------------------------------------------------------------------------------------------\n";
+    file.close();
 
     llvm::LLVMContext& C = I.getContext();
     llvm::SmallVector<llvm::Metadata *, 32> Ops;
