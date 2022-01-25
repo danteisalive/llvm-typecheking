@@ -832,6 +832,25 @@ static llvm::StructType *makeTypeMetaType(llvm::Module &M, size_t len, llvm::Arr
   return Ty;
 }
 
+static llvm::DIType *getPointeeType(llvm::DIType *Ty) {
+  while (true) {
+    auto *DerivedTy = llvm::dyn_cast<llvm::DIDerivedType>(Ty);
+    if (DerivedTy == nullptr)
+      return nullptr;
+    switch (DerivedTy->getTag()) {
+    case llvm::dwarf::DW_TAG_typedef:
+      Ty = DerivedTy->getBaseType().resolve();
+      continue;
+    case llvm::dwarf::DW_TAG_pointer_type:
+    case llvm::dwarf::DW_TAG_reference_type:
+    case llvm::dwarf::DW_TAG_rvalue_reference_type:
+      return DerivedTy->getBaseType().resolve();
+    default:
+      return nullptr;
+    }
+  }
+}
+
 static llvm::StructType *makeTypeInfoType(llvm::Module &M, size_t len) {
   auto i = infoCache.find(len);
   if (i != infoCache.end())
@@ -1610,63 +1629,136 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
     AllocationPointsTypeInfo[TypeId].insert(std::make_pair((uint32_t)entries.second->offset, *(entries.second)));
   }
 
-      //std::ofstream file(APFileName, std::ios::app);
-      std::error_code EC;
-      llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
-      std::string line = "";
+  
+  std::error_code EC;
+  llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
+  
 
-      line  = "AllocationPointsTypeInfo[TypeId] Size: " + std::to_string(AllocationPointsTypeInfo[TypeId].size()) + "\n";
-      file << line;
+  //line  = "AllocationPointsTypeInfo[TypeId] Size: " + std::to_string(AllocationPointsTypeInfo[TypeId].size()) + "\n";
+  file << "FILENAME " <<  M.getSourceFileName() << "\n";
+  file << "APSIZE " << std::to_string(AllocationPointsTypeInfo[TypeId].size()) << "\n";
 
 
 
-      // std::ofstream file(APFileName, std::ios::app);
-      auto di_itr = AllocationPointsTypeInfo.find(TypeId);
-      for (auto &entries : di_itr->second) {
+  // std::ofstream file(APFileName, std::ios::app);
+  auto di_itr = AllocationPointsTypeInfo.find(TypeId);
+  for (auto &entries : di_itr->second) {
 
-        LayoutEntry lEntry = entries.second;
-        assert(!lEntry.deleted);
-        assert(entries.first == lEntry.offset);
-
-          //std::string typeHierarchy = "";
-          // for (auto &par : lEntry.TyCheDependencyTree)
-          // {
-              //fprintf(stderr, "\t");
-              //par->print(file);
-              // if (getTypeName(par) != "")
-              // {
-              //   typeHierarchy.append(getTypeName(par));
-              //   typeHierarchy.append("::");
-              // }
-
+    LayoutEntry lEntry = entries.second;
+    assert(!lEntry.deleted);
+    assert(entries.first == lEntry.offset);
             
-          //}
-          // typeHierarchy.append(getTypeName(lEntry.type));
-          lEntry.type->print(file);
-          file << "\n";
 
-          file << "TYCHE[" <<  entries.first << "] = [" << lEntry.offset + lEntry.lb << ".." << lEntry.offset + lEntry.ub << "] = FileName: " <<  M.getSourceFileName() << "\n";
-          // fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] =  Filename: %s Type Hierarchy: %s\n", 
-          //         entries.first, lEntry.type, lEntry.coerced, lEntry.tyche_entry.FAM, lEntry.offset + lEntry.lb, lEntry.offset + lEntry.ub, M.getSourceFileName().c_str(), typeHierarchy.c_str());
-          
-          for (auto &par : lEntry.TyCheDependencyTree)
-          {
-            file << "\t";
-            par->print(file);
-            file << "\n";
-          }
-          if (lEntry.tyche_entry.Parent != nullptr)
-          {
-            file << "\t";
-            lEntry.tyche_entry.Parent->print(file);
-            file << "\n";
-          }
-          //typeHierarchy += "\n";
+    bool isVirutalTableType = false;
+    llvm::DITypeRef  VptrDerivedTy;
+    llvm::DIType *VptrTy = nullptr;
+    llvm::DIType *VptrTableTy = nullptr;
+    llvm::DISubroutineType *VptrSubroutine = nullptr;
+    for (auto &par : lEntry.TyCheDependencyTree)
+    {
+      if (isVPtrType(par))
+      {
+          isVirutalTableType = true;
+          llvm::DIDerivedType * type = llvm::dyn_cast<llvm::DIDerivedType>(par);
 
-          //file << typeHierarchy;
-      }  
+          VptrDerivedTy = type->getBaseType();
+          VptrTy = VptrDerivedTy.resolve();
+          VptrTableTy = getPointeeType(VptrTy);
+          VptrTy = getPointeeType(VptrTableTy);
 
-        file.close();
+          VptrSubroutine = llvm::dyn_cast<llvm::DISubroutineType>(VptrTy);
+          if (VptrSubroutine == nullptr) llvm_unreachable("Null FuncTy is found!\n");
+
+      }
+    }
+
+
+    file << "OFFSET " << lEntry.offset << "\n" << 
+            "CORECED " << (lEntry.coerced ? "Y" : "N") << "\n" <<  
+            "LB " << lEntry.offset + lEntry.lb << "\n" << 
+            "UB " << lEntry.offset + lEntry.ub << "\n" << 
+            "FAM " << (lEntry.tyche_entry.FAM ? "Y" : "N") << "\n" <<
+            "NAME " << lEntry.humanName << "\n" <<
+            "VPTR " << (isVirutalTableType ? "Y" : "N") << "\n";
+
+              
+    if (lEntry.type == nullptr) llvm_unreachable("null DIType found!\n");
+    
+    file << "META TYPE ";lEntry.type->print(file); file << "\n" ;
+    
+    if (lEntry.tyche_entry.Parent != nullptr) 
+    {
+      file << "PARENT TYPE "; lEntry.tyche_entry.Parent->print(file); file << "\n" ;
+    }
+    else 
+    {
+      file << "PARENT NOPARENT" <<  "\n" ;
+    }
+
+    // if (isVirutalTableType && !lEntry.coerced) 
+    // {
+        // file << "VPTR TYPE ";  VptrTy->print(file); file << "\n" ;
+        // llvm::DITypeRefArray Types = VptrSubroutine->getTypeArray();
+        // llvm::DIType *RetTy = Types[0].resolve();
+        // file << "\tRET TYPE "; RetTy->print(file); file << "\n";
+        // for (auto Arg : Types) 
+        // {
+        //   llvm::DIType *ArgTy = Arg.resolve();   
+        //   file << "\tARG TYPE "; ArgTy->print(file); file << "\n";    
+        // }
+
+      // for (auto &par : lEntry.TyCheDependencyTree)
+      // {
+      //   auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(par);
+      //   if (CompositeTy != nullptr && 
+      //         (CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
+      //         CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
+      //   {
+      //       file << "CLASS "; par->print(file);  file << "\n" ;
+      //       llvm::DINodeArray Elements = CompositeTy->getElements();
+      //       for (auto Element : Elements) {
+      //         if (llvm::isa<llvm::DISubprogram>(Element) || 
+      //             llvm::isa<llvm::DISubroutineType>(Element)) 
+      //         {
+      //           file << "\tSUBPROGRAM "; Element->print(file);  file << "\n" ;
+      //         }
+      //       }
+
+      //       for (auto it = M.global_begin(); it != M.global_end(); it++)
+      //       {
+              
+      //         std::string mangledName(it->getName());
+      //         int status = 0;
+      //         char *res = abi::__cxa_demangle(mangledName.c_str(), NULL, NULL, &status);
+      //         if (status == 0 && std::string(res).find("vtable for ") != std::string::npos)
+      //         {
+      //           file << "GV "; it->print(file); file << " ===> "; 
+      //           file << std::string(res);
+      //           free(res);
+      //         }
+      //         file << "\n" ;
+      //       }
+      //   }
+      // }
+
+    // }
+    if ((int64_t)lEntry.lb == (int64_t)-17179869184 && (int64_t)lEntry.ub == (int64_t)17179869184)
+    {
+      auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(lEntry.type);
+      if (CompositeTy != nullptr)
+      {
+        std::string mangled_name = std::string(CompositeTy->getIdentifier());
+        mangled_name[3] = 'V';
+        file << "Mangled Name: " << mangled_name << "\n";
+        auto *vt_gv = M.getGlobalVariable(mangled_name);
+        file << "VTABLE GV "; vt_gv->print(file); file << "\n"; 
+      }
+    }
+
+
+  }  
+
+  file.close();
 
   TypeId++;
   assert(TypeId < TYCHE_NUMBER_OF_TYPES);
@@ -2890,7 +2982,7 @@ static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
 
   for (auto &entries : AllocationPointsTypeInfo[tid_number])
   {
-    AllocationPointsDIInfo[Meta].insert(std::make_pair(entries.first, entries.second));
+      AllocationPointsDIInfo[Meta].insert(std::make_pair(entries.first, entries.second));
   }
 
   
@@ -2967,24 +3059,7 @@ static InsertPoint nextInsertPoint(llvm::Function &F, llvm::Value *Ptr) {
     EFFECTIVE_FATAL_ERROR("failed to create insert point");
 }
 
-static llvm::DIType *getPointeeType(llvm::DIType *Ty) {
-  while (true) {
-    auto *DerivedTy = llvm::dyn_cast<llvm::DIDerivedType>(Ty);
-    if (DerivedTy == nullptr)
-      return nullptr;
-    switch (DerivedTy->getTag()) {
-    case llvm::dwarf::DW_TAG_typedef:
-      Ty = DerivedTy->getBaseType().resolve();
-      continue;
-    case llvm::dwarf::DW_TAG_pointer_type:
-    case llvm::dwarf::DW_TAG_reference_type:
-    case llvm::dwarf::DW_TAG_rvalue_reference_type:
-      return DerivedTy->getBaseType().resolve();
-    default:
-      return nullptr;
-    }
-  }
-}
+
 
 static std::string showValue(llvm::Value *Val) {
   std::string str;
@@ -4261,10 +4336,13 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     }
 
     std::ofstream file(APFileName, std::ios::app);
-    std::string line = "";
-    line += M.getSourceFileName() + "#" + loc + "#"  + tInfo.names.find(type_meta)->second + "#" + std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])+ "#" + std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]);
-    line += "\n";
-    file << line;
+    file << std::hex <<  
+        M.getSourceFileName()  << 
+        "#" << loc << 
+        "#" << tInfo.names.find(type_meta)->second << 
+        "#" << type_meta <<
+        "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
+        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << "\n" ;
 
     auto di_itr = AllocationPointsDIInfo.find(Meta);
     if (di_itr == AllocationPointsDIInfo.end()) 
@@ -4274,14 +4352,24 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
       llvm_unreachable("Cannt find AllocationPointsTypeInfo!\n");
 
     for (auto &elem : AllocationPointsDIInfo[Meta])
-    {
-        file << "[" << elem.first << "] = " << elem.second.hash << "," << elem.second.finalHash << "\n";
+    { 
+      if (tInfo.hashes.find(elem.second.type) == tInfo.hashes.end())
+        llvm_unreachable("Can't find hash value for this type!\n");
+
+      if (tInfo.cache.find(elem.second.type) == tInfo.cache.end())
+        llvm_unreachable("Can't find hash value for this type!\n");
+
+      file  << std::dec << "{" << elem.second.offset << "}=" << std::hex  <<  "(0x" << (uint64_t)elem.second.type <<")=" << "[" << tInfo.hashes[elem.second.type].i64[0] << "," << tInfo.hashes[elem.second.type].i64[1] << "]\n";
+  
     }
 
 
-    line  = "AllocationPointsDIInfo[" + std::to_string((uint64_t)Meta) + "] Size: " + std::to_string(AllocationPointsDIInfo[Meta].size()) + "\n";
-    //line  += "AllocationPointsTypeInfo[TID] Size: " + std::to_string(AllocationPointsTypeInfo[entry.type_id].size()) + "\n";
-    file << line;
+    file << std::hex << "AllocationPointsDIInfo[" << 
+      (uint64_t)Meta << 
+      "] Size: " << 
+      std::dec << std::to_string(AllocationPointsDIInfo[Meta].size())  
+      << "\n";
+
     file << "--------------------------------------------------------------------------------------------------------------\n";
     file.close();
 
@@ -5078,8 +5166,16 @@ struct EffectiveSan : public llvm::ModulePass {
     /*
      * Clean-up
      */
+    
     metaCache.clear();
     infoCache.clear();
+    
+    std::ofstream file(APFileName, std::ios::app);
+    for (auto & elem: tInfo.hashes)
+    {
+        file  << std::hex << "HASH(" << elem.first <<")=" << "[" << elem.second.i64[0] << "," << elem.second.i64[1] << "]\n";
+    }
+
 
     if (option_debug) {
       std::string outName(M.getName());
