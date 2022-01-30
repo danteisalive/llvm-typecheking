@@ -65,20 +65,20 @@ class X {
 public:
    int     x1;
    virtual ~X() {}
-   virtual void printX() {/*std::cout << "X : printX()\n";*/}
+   virtual void printX(int i, void * ii) {/*std::cout << "X : printX()\n";*/}
 };
 class Y : public NV, public X{
 public:
    int     y1;
    virtual ~Y() {}
-   virtual void printX() {/*std::cout << "Y : printX()\n";*/}
+   virtual void printX(int i, void * ii) {/*std::cout << "Y : printX()\n";*/}
    virtual void printY() {}
 };
 class Z : public  X{
 public:
    int     z1;
    virtual ~Z() {}
-   void printX() {/*std::cout << "Z : printX()\n";*/}
+   void printX(int i, void * ii) {/*std::cout << "Z : printX()\n";*/}
    virtual void printZ() {}
    virtual void printY() {}
 };
@@ -98,11 +98,11 @@ int main()
     //w->printX();
     w->printW();
 
-    Z * volatile  z = w;
-    z->printX();
+   //  Z * volatile  z = w;
+   //  z->printX();
 
-    X * volatile x = z;
-    x->printX();
+   //  X * volatile x = z;
+   //  x->printX();
 
     Y * volatile y = w;
     y->printY();
@@ -112,5 +112,5 @@ int main()
     //    z1->printX();
 
 
-    return sizeof(*z);
+    return 1;
 }

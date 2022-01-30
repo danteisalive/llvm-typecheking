@@ -1403,121 +1403,30 @@ static bool placeFlattenedLayoutEntry(FlattenedLayoutInfo &flattenedLayout,
   return false;
 }
 
-static std::string getTypeName(llvm::DIType* Ty)
+static void emitTyCHEInfo(llvm::Function FuncTy)
 {
 
-  if (Ty == nullptr)
-    return "";
+    std::error_code EC;
+    llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
+  
+    file << "Filename: " <<  (*Module).getSourceFileName() << "\n";
+    file << "\t" << FuncTy.getName() << "[" << FuncTy.isVarArg() << "]" << "\n";
+    
+    // auto i = FuncTy.getArgumentList().begin();
+    
+    // llvm::Value *Bounds = &*i;
 
-  else if (isVPtrType(Ty)) 
-  {
-    // std::string name = "";
-    // auto *DerivedTy = llvm::dyn_cast<llvm::DIDerivedType>(Ty);
-    // std::string tempName(DerivedTy->getName().str());
-    // tempName.erase(0, 6); // strlen("_vptr$") == 6
-    // name += "<vptr ";
-    // name += tempName;
-    // name += '>';
-    return "VPTR";
-  } 
-
-  else if (auto *BasicTy = llvm::dyn_cast<llvm::DIBasicType>(Ty)) 
-  {
-      std::string name = "";
-      switch (BasicTy->getEncoding()) 
-      {
-          case llvm::dwarf::DW_ATE_signed_char:
-            return "SCHAR";
-          case llvm::dwarf::DW_ATE_unsigned_char:
-            return "UCHAR";
-          case llvm::dwarf::DW_ATE_boolean:
-            return "BOOL";
-          case llvm::dwarf::DW_ATE_signed:
-            name += "INT";
-            name += std::to_string(BasicTy->getSizeInBits());
-            return name;
-          case llvm::dwarf::DW_ATE_unsigned:
-            name += "UINT";
-            name += std::to_string(BasicTy->getSizeInBits());
-            return name;
-          case llvm::dwarf::DW_ATE_UTF:
-            name += "UTF";
-            name += std::to_string(BasicTy->getSizeInBits());
-            return name;
-          case llvm::dwarf::DW_ATE_float:
-            name += "FLOAT";
-            name += std::to_string(BasicTy->getSizeInBits());
-            return name;
-          case llvm::dwarf::DW_ATE_complex_float:
-            name += "CFLOAT";
-            name += std::to_string(BasicTy->getSizeInBits() / 2);
-            return name;
-          case 128:
-            name += "CINT";
-            name += std::to_string(BasicTy->getSizeInBits() / 2);
-            return name;
-          default:
-            EFFECTIVE_DEBUG_PRINT("buildTypeHumanName: unknown basic\n");
-            return  "UNKBASIC";
-      }
-  } 
-  else if (auto *DerivedTy = llvm::dyn_cast<llvm::DIDerivedType>(Ty)) 
-  {
-      switch (DerivedTy->getTag()) {
-        case llvm::dwarf::DW_TAG_pointer_type:
-        case llvm::dwarf::DW_TAG_reference_type:
-        case llvm::dwarf::DW_TAG_rvalue_reference_type:
-          return "POINTER";
-        case llvm::dwarf::DW_TAG_member:
-          return "";
-        default:
-          return "UNKDERIVED";
-      }
-
-  } 
-  else if (auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(Ty)) 
-  {
-      switch (CompositeTy->getTag()) {
-        case llvm::dwarf::DW_TAG_structure_type:
-        case llvm::dwarf::DW_TAG_class_type:
-          return CompositeTy->getName().str();
-        case llvm::dwarf::DW_TAG_union_type:
-          return "UNION";
-        case llvm::dwarf::DW_TAG_enumeration_type:
-          return "ENUM";
-        case llvm::dwarf::DW_TAG_array_type:
-          return "ARRAY";
-        default:
-          return "UNKCOMPOSITE";
-      }
-  } 
-  else if (auto *FuncTy = llvm::dyn_cast<llvm::DISubroutineType>(Ty)) 
-  {
+    // llvm::DIType * type =  getDeclaredTypeAnnotation(&FuncTy);
     // llvm::DITypeRefArray Types = FuncTy->getTypeArray();
     // llvm::DIType *RetTy = Types[0].resolve();
-    // buildTypeHumanName(RetTy, name, tInfo);
-    // name += " (*)(";
+    // file << "\t"; RetTy->print(file); file << "\n";
     // unsigned argNum = 0;
     // for (auto Arg : Types) {
-    //   switch (argNum) {
-    //   case 0:
-    //     argNum++;
-    //     continue;
-    //   case 1:
-    //     break;
-    //   default:
-    //     name += ", ";
-    //     break;
-    //   }
     //   llvm::DIType *ArgTy = Arg.resolve();
-    //   buildTypeHumanName(ArgTy, name, tInfo);
-    //   argNum++;
+    //   file << "\t"; ArgTy->print(file); file << "\n";
     // }
-    // name += ")";
-    return "SUBROUTINE";
-  } 
-  else
-    return "UNK";
+
+  
 }
 
 
@@ -1547,15 +1456,7 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
         {
             fprintf(stderr, "\t");
             par->dump();
-            if (getTypeName(par) != "")
-            {
-              typeHierarchy.append(getTypeName(par));
-              typeHierarchy.append("::");
-            }
-
-          
         }
-        typeHierarchy.append(getTypeName(lEntry->type));
         lEntry->type->dump();
 
         fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] =  Filename: %s Type Hierarchy: %s\n", 
@@ -1695,8 +1596,49 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
       file << "PARENT NOPARENT" <<  "\n" ;
     }
 
-    // if (isVirutalTableType && !lEntry.coerced) 
-    // {
+
+
+/*
+    if (isVirutalTableType && !lEntry.coerced) 
+    {
+      if (lEntry.tyche_entry.Parent == nullptr) llvm_unreachable("Parent type is null for vtable entry!\n"); 
+      auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(lEntry.tyche_entry.Parent);
+      if (CompositeTy == nullptr) llvm_unreachable("Parent type is not composite for a vtable entry!\n");
+      if ((CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
+          CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
+      {
+        
+          auto * vtableholder = CompositeTy->getVTableHolder().resolve();
+          if (vtableholder == nullptr) llvm_unreachable("VTableHolder is null!\n");
+          auto * VTableHolderTy = llvm::dyn_cast<llvm::DICompositeType>(vtableholder);
+          if (VTableHolderTy == nullptr) llvm_unreachable("VTableHolderTy is null!\n");
+          if ((VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
+              VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
+          {
+            std::string mangled_name = std::string(VTableHolderTy->getIdentifier());
+            mangled_name[3] = 'V';
+            file << "Mangled Name: " << mangled_name << "\n";
+            auto *vt_gv = M.getGlobalVariable(mangled_name);
+            if (vt_gv != nullptr)
+            {
+              file << "VTABLE GV "; vt_gv->print(file); file << "\n\n"; 
+              file << vt_gv->getNumOperands() << "\n\n";
+            }
+            else 
+            {
+              llvm_unreachable("VTable GV is Null!\n");
+            }
+          }
+          else 
+          {
+            llvm_unreachable("VTableHolderTy is not class or structure!\n");
+          }
+
+      }
+      else 
+      {
+        llvm_unreachable("Parent is not class or structure!\n");
+      }
         // file << "VPTR TYPE ";  VptrTy->print(file); file << "\n" ;
         // llvm::DITypeRefArray Types = VptrSubroutine->getTypeArray();
         // llvm::DIType *RetTy = Types[0].resolve();
@@ -1706,54 +1648,86 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
         //   llvm::DIType *ArgTy = Arg.resolve();   
         //   file << "\tARG TYPE "; ArgTy->print(file); file << "\n";    
         // }
+    
+      for (auto &par : lEntry.TyCheDependencyTree)
+      {
+        file << "PAR TYPE ";par->print(file); file << "\n" ;
+        auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(par);
+        if (CompositeTy != nullptr && 
+              (CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
+              CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
+        {
 
-      // for (auto &par : lEntry.TyCheDependencyTree)
-      // {
-      //   auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(par);
-      //   if (CompositeTy != nullptr && 
-      //         (CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
-      //         CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
-      //   {
-      //       file << "CLASS "; par->print(file);  file << "\n" ;
-      //       llvm::DINodeArray Elements = CompositeTy->getElements();
-      //       for (auto Element : Elements) {
-      //         if (llvm::isa<llvm::DISubprogram>(Element) || 
-      //             llvm::isa<llvm::DISubroutineType>(Element)) 
-      //         {
-      //           file << "\tSUBPROGRAM "; Element->print(file);  file << "\n" ;
-      //         }
-      //       }
+          auto * vtableholder = CompositeTy->getVTableHolder().resolve();
+          if (vtableholder == nullptr) continue;
+          auto * VTableHolderTy = llvm::dyn_cast<llvm::DICompositeType>(vtableholder);
+          if (VTableHolderTy == nullptr) continue;
+          if ((VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
+              VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
+          {
+            std::string mangled_name = std::string(VTableHolderTy->getIdentifier());
+            mangled_name[3] = 'V';
+            file << "Mangled Name: " << mangled_name << "\n";
+            auto *vt_gv = M.getGlobalVariable(mangled_name);
+            if (vt_gv != nullptr)
+            {
+              file << "VTABLE GV "; vt_gv->print(file); file << "\n\n"; 
+            }
+          }
 
-      //       for (auto it = M.global_begin(); it != M.global_end(); it++)
-      //       {
-              
-      //         std::string mangledName(it->getName());
-      //         int status = 0;
-      //         char *res = abi::__cxa_demangle(mangledName.c_str(), NULL, NULL, &status);
-      //         if (status == 0 && std::string(res).find("vtable for ") != std::string::npos)
-      //         {
-      //           file << "GV "; it->print(file); file << " ===> "; 
-      //           file << std::string(res);
-      //           free(res);
-      //         }
-      //         file << "\n" ;
-      //       }
-      //   }
-      // }
+        }
+      }
 
-    // }
+    }
+    */
+   /*
     if ((int64_t)lEntry.lb == (int64_t)-17179869184 && (int64_t)lEntry.ub == (int64_t)17179869184)
     {
       auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(lEntry.type);
-      if (CompositeTy != nullptr)
+      if (CompositeTy != nullptr) 
       {
-        std::string mangled_name = std::string(CompositeTy->getIdentifier());
-        mangled_name[3] = 'V';
-        file << "Mangled Name: " << mangled_name << "\n";
-        auto *vt_gv = M.getGlobalVariable(mangled_name);
-        file << "VTABLE GV "; vt_gv->print(file); file << "\n"; 
+          if ((CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
+              CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
+          {
+              auto * vtableholder = CompositeTy->getVTableHolder().resolve();
+              if (vtableholder != nullptr) {
+
+                auto * VTableHolderTy = llvm::dyn_cast<llvm::DICompositeType>(vtableholder);
+                if (VTableHolderTy == nullptr) llvm_unreachable("VTableHolderTy is null!\n");
+                if ((VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
+                    VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
+                {
+                  std::string mangled_name = std::string(VTableHolderTy->getIdentifier());
+                  mangled_name[3] = 'V';
+                  file << "Mangled Name: " << mangled_name << "\n";
+                  auto *vt_gv = M.getGlobalVariable(mangled_name);
+                  if (vt_gv != nullptr)
+                  {
+                    file << "VTABLE GV "; vt_gv->print(file); file << "\n"; 
+                  }
+
+                }
+              }
+          }
       }
-    }
+    */
+    
+
+
+      // if (CompositeTy != nullptr)
+      // {
+      //   std::string mangled_name = std::string(CompositeTy->getIdentifier());
+      //   mangled_name[3] = 'V';
+      //   file << "Mangled Name: " << mangled_name << "\n";
+        
+      //   if (auto *vt_gv = M.getGlobalVariable(mangled_name))
+      //   {
+      //     file << "VTABLE GV "; vt_gv->print(file); file << "\n"; 
+      //   }
+       
+      // }
+   // }
+
 
 
   }  
@@ -3072,7 +3046,7 @@ static std::string showValue(llvm::Value *Val) {
  * Get the "effectiveSan" type annotation or return nullptr if it does not
  * exist.
  */
-static llvm::DIType *getDeclaredTypeAnnotation(llvm::Value *Ptr) {
+static llvm::DIType *getDeclaredTypeAnnotation(llvm::Value *Ptr, bool *_isPointer) {
   llvm::DIType *Ty = llvm::getEffectiveSanType(Ptr);
   if (Ty == nullptr) {
     // Attempt to infer type instead.  This can help when the optimizer
@@ -3092,9 +3066,12 @@ static llvm::DIType *getDeclaredTypeAnnotation(llvm::Value *Ptr) {
       return Int128Ty;
     return nullptr;
   }
+
   Ty = getPointeeType(Ty);
   if (Ty == nullptr)
     return Int8Ty;
+  
+  if (_isPointer) *_isPointer = true;
   return Ty;
 }
 
@@ -3146,7 +3123,7 @@ static llvm::Constant *getDeclaredType(TypeEntry &entry,
                                        llvm::DIType **TyPtr = nullptr,
                                        bool alloc = false
                                        ) {
-  llvm::DIType *Ty = getDeclaredTypeAnnotation(Ptr);
+  llvm::DIType *Ty = getDeclaredTypeAnnotation(Ptr, nullptr);
   if (Ty == nullptr) {
     // This occurs when the frontend has failed to annotate the type.
     // The front-end isn't perfect, so printing a message helps find new
@@ -3235,7 +3212,7 @@ static bool canIgnoreBitCast(llvm::BitCastInst *Cast, const CheckInfo &cInfo,
     // Ptr is a memory allocation.  We can ignore the cast if the
     // destination type matches the allocation type.
     const CheckEntry &Entry = i->second;
-    llvm::DIType *Ty = getDeclaredTypeAnnotation(Cast);
+    llvm::DIType *Ty = getDeclaredTypeAnnotation(Cast, nullptr);
     if (isTypeEquivalent(Ty, Entry.allocType))
       return true;
   }
@@ -4261,57 +4238,6 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     if (Meta == nullptr)
       Meta = inferMallocType(entry, M, F, &I, tInfo, &Ty);
 
-
-      // for (auto &entries : di_itr->second) {
-
-      //   LayoutEntry lEntry = entries.second;
-      //   assert(!lEntry.deleted);
-      //   assert(entries.first == lEntry.offset);
-
-      //     std::string typeHierarchy = "";
-      //     // for (auto &par : lEntry.TyCheDependencyTree)
-      //     // {
-      //     //     //fprintf(stderr, "\t");
-      //     //     //par->dump();
-      //     //     if (getTypeName(par) != "")
-      //     //     {
-      //     //       typeHierarchy.append(getTypeName(par));
-      //     //       typeHierarchy.append("::");
-      //     //     }
-
-            
-      //     // }
-      //     //typeHierarchy.append(getTypeName(lEntry.type));
-      //     // lEntry.type->dump();
-
-      //     // fprintf(stderr, "TYCHE[%zu](%p)(Coerced: %zu)(FAM: %zu) = [%zd..%zd] =  Filename: %s Type Hierarchy: %s\n", 
-      //     //         entries.first, lEntry->type, lEntry->coerced, lEntry->tyche_entry.FAM, lEntry->offset + lEntry->lb, lEntry->offset + lEntry->ub, M.getSourceFileName().c_str(), typeHierarchy.c_str());
-          
-      //     // for (auto &par : lEntry->TyCheDependencyTree)
-      //     // {
-      //     //   fprintf(stderr, "\t");
-      //     //   par->dump();
-      //     // }
-      //     // if (lEntry->tyche_entry.Parent != nullptr)
-      //     // {
-      //     //   fprintf(stderr, "\t");
-      //     //   lEntry->tyche_entry.Parent->dump();
-      //     // }
-      //     typeHierarchy += "\n";
-
-      //     file << typeHierarchy;
-      // }
-
-
-      // file.close();
-  
-    // }
-    // else 
-    // {
-    //   llvm_unreachable("Can't find the type information in the type info cache!\n");
-    // }
-
-
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
 
     auto itr = tInfo.infos.cbegin();
@@ -5105,6 +5031,45 @@ struct EffectiveSan : public llvm::ModulePass {
         {llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0),
          llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), INTPTR_MAX)});
 
+    for (auto &F : M) {
+        if (F.isDeclaration())
+          continue;
+        if (isBlacklisted("fun", F.getName()))
+          continue;
+        
+        //emitTyCHEInfo(F);
+        std::error_code EC;
+        llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
+        
+        int numArgs = 0;
+        for (auto i = F.getArgumentList().begin(); i != F.getArgumentList().end(); ++i)
+        {
+          numArgs++;
+        }
+        file << "Filename: " <<  M.getSourceFileName() << "\n";
+        file << "\tFunction Name: " << F.getName() << "[" << F.isVarArg() << "][" << numArgs << "]" << "\n";
+        
+        for (auto i = F.getArgumentList().begin(); i != F.getArgumentList().end(); ++i)
+        {
+          llvm::Value *Ptr = &*i;
+          bool isPointer = false;
+          // TypeEntry entry;
+          //llvm::Constant *Meta = getDeclaredType(entry, M, Ptr, tInfo, &AllocTy, false);
+          llvm::DIType *Ty = getDeclaredTypeAnnotation(Ptr, &isPointer);
+          if (Ty != nullptr)
+          {
+            file << "\tPointee Type: "; Ty->print(file); file << "\n";
+          }
+          if (isPointer)
+          {
+            file << "\tPointer Type: "; Ty->print(file); file << "\n";
+          }  
+        }
+
+    
+        
+    }
+
     /*
      * Main instrumentation loop:
      */
@@ -5152,11 +5117,6 @@ struct EffectiveSan : public llvm::ModulePass {
      * Strip metadata.
      */
     //stripMetaData(M);
-
-    /*
-    emit TyChe metadata into the defined sections in global sections
-    */
-    //emitTyCheMetadata(M);
 
     /*
      * Step #6: Emit instrumentation functions.

@@ -1,0 +1,216 @@
+      0: global: VTable Symbol Addr: 49e608 Mangled Symbol: _ZTV1W Symbol Size: 112 Symbol Info: 0x21 Symbol Shndx: 9
+      0: global: VTable Symbol Addr: 6c93c8 Mangled Symbol: _ZTVSt13bad_exception Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c9178 Mangled Symbol: _ZTVSt9type_info Symbol Size: 64 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c9290 Mangled Symbol: _ZTVN10__cxxabiv120__si_class_type_infoE Symbol Size: 88 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c9250 Mangled Symbol: _ZTVN9__gnu_cxx26__concurrence_unlock_errorE Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c91d0 Mangled Symbol: _ZTVSt9bad_alloc Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c9418 Mangled Symbol: _ZTVN10__cxxabiv119__foreign_exceptionE Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c93a0 Mangled Symbol: _ZTVSt9exception Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c9110 Mangled Symbol: _ZTVN10__cxxabiv117__class_type_infoE Symbol Size: 88 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c93f0 Mangled Symbol: _ZTVN10__cxxabiv115__forced_unwindE Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c9300 Mangled Symbol: _ZTVN10__cxxabiv121__vmi_class_type_infoE Symbol Size: 88 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: VTable Symbol Addr: 6c9228 Mangled Symbol: _ZTVN9__gnu_cxx24__concurrence_lock_errorE Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: 
+
+      0: global: Symbol Addr: 49e608 Symbol: _ZTV1W Demangled Symbol: vtable for W Symbol Size: 112 Symbol Info: 0x21 Symbol Shndx: 9
+      0: global: sec start: 49e600 sym_value: 49e608 phdr.p_paddr: 400000 phdr.p_vaddr: 400000 phdr.p_memsz: c5bf6 phdr.p_offset: 0 phdr.p_filesz: c5bf6!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 49e710 Mangled Symbol: _ZTI1W Demangled Symbol: typeinfo for W Symbol Size: 56 Symbol Info: 0x21 Symbol Shndx: 9
+      0: global: Symbol Addr: 400ed0 Mangled Symbol: _ZN1WD2Ev Demangled Symbol: W::~W() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400ee0 Mangled Symbol: _ZN1WD0Ev Demangled Symbol: W::~W() Symbol Size: 5 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400ef0 Mangled Symbol: _ZN1Y6printXEv Demangled Symbol: Y::printX() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f00 Mangled Symbol: _ZN1Y6printYEv Demangled Symbol: Y::printY() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f10 Mangled Symbol: _ZN1W6printWEv Demangled Symbol: W::printW() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: ffffffffffffffe8 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 49e710 Mangled Symbol: _ZTI1W Demangled Symbol: typeinfo for W Symbol Size: 56 Symbol Info: 0x21 Symbol Shndx: 9
+      0: global: Symbol Addr: 400f20 Mangled Symbol: _ZThn24_N1WD1Ev Demangled Symbol: non-virtual thunk to W::~W() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f30 Mangled Symbol: _ZThn24_N1WD0Ev Demangled Symbol: non-virtual thunk to W::~W() Symbol Size: 9 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f40 Mangled Symbol: _ZN1Z6printXEv Demangled Symbol: Z::printX() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f50 Mangled Symbol: _ZN1Z6printZEv Demangled Symbol: Z::printZ() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f60 Mangled Symbol: _ZN1Z6printYEv Demangled Symbol: Z::printY() Symbol Size: 1 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for W
+      0: global: VT Entry: W::~W()
+      0: global: VT Entry: W::~W()
+      0: global: VT Entry: Y::printX()
+      0: global: VT Entry: Y::printY()
+      0: global: VT Entry: W::printW()
+      0: global: VT Entry: 0xffffffffffffffe8
+      0: global: VT Entry: typeinfo for W
+      0: global: VT Entry: non-virtual thunk to W::~W()
+      0: global: VT Entry: non-virtual thunk to W::~W()
+      0: global: VT Entry: Z::printX()
+      0: global: VT Entry: Z::printZ()
+      0: global: VT Entry: Z::printY()
+      0: global: Symbol Addr: 6c9110 Symbol: _ZTVN10__cxxabiv117__class_type_infoE Demangled Symbol: vtable for __cxxabiv1::__class_type_info Symbol Size: 88 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c9110 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c90f8 Mangled Symbol: _ZTIN10__cxxabiv117__class_type_infoE Demangled Symbol: typeinfo for __cxxabiv1::__class_type_info Symbol Size: 24 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 401000 Mangled Symbol: _ZN10__cxxabiv117__class_type_infoD2Ev Demangled Symbol: __cxxabiv1::__class_type_info::~__class_type_info() Symbol Size: 19 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401020 Mangled Symbol: _ZN10__cxxabiv117__class_type_infoD0Ev Demangled Symbol: __cxxabiv1::__class_type_info::~__class_type_info() Symbol Size: 23 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401150 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info10__do_catchEPKSt9type_infoPPvj Demangled Symbol: __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const Symbol Size: 125 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f70 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info11__do_upcastEPKS0_PPv Demangled Symbol: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const Symbol Size: 121 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401100 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info11__do_upcastEPKS0_PKvRNS0_15__upcast_resultE Demangled Symbol: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const Symbol Size: 69 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401040 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info12__do_dyncastElNS0_10__sub_kindEPKS0_PKvS3_S5_RNS0_16__dyncast_resultE Demangled Symbol: __cxxabiv1::__class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const Symbol Size: 177 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 400ff0 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info20__do_find_public_srcElPKvPKS0_S2_ Demangled Symbol: __cxxabiv1::__class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const Symbol Size: 13 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for __cxxabiv1::__class_type_info
+      0: global: VT Entry: __cxxabiv1::__class_type_info::~__class_type_info()
+      0: global: VT Entry: __cxxabiv1::__class_type_info::~__class_type_info()
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const
+      0: global: Symbol Addr: 6c9178 Symbol: _ZTVSt9type_info Demangled Symbol: vtable for std::type_info Symbol Size: 64 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c9178 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c9168 Mangled Symbol: _ZTISt9type_info Demangled Symbol: typeinfo for std::type_info Symbol Size: 16 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 401230 Mangled Symbol: _ZNSt9type_infoD2Ev Demangled Symbol: std::type_info::~type_info() Symbol Size: 1 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401260 Mangled Symbol: _ZNSt9type_infoD0Ev Demangled Symbol: std::type_info::~type_info() Symbol Size: 23 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401280 Mangled Symbol: _ZNKSt9type_info10__do_catchEPKS_PPvj Demangled Symbol: std::type_info::__do_catch(std::type_info const*, void**, unsigned int) const Symbol Size: 49 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401250 Mangled Symbol: _ZNKSt9type_info11__do_upcastEPKN10__cxxabiv117__class_type_infoEPPv Demangled Symbol: std::type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for std::type_info
+      0: global: VT Entry: std::type_info::~type_info()
+      0: global: VT Entry: std::type_info::~type_info()
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: std::type_info::__do_catch(std::type_info const*, void**, unsigned int) const
+      0: global: VT Entry: std::type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
+      0: global: Symbol Addr: 6c91d0 Symbol: _ZTVSt9bad_alloc Demangled Symbol: vtable for std::bad_alloc Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c91d0 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c91b8 Mangled Symbol: _ZTISt9bad_alloc Demangled Symbol: typeinfo for std::bad_alloc Symbol Size: 24 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 4012e0 Mangled Symbol: _ZNSt9bad_allocD1Ev Demangled Symbol: std::bad_alloc::~bad_alloc() Symbol Size: 19 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401300 Mangled Symbol: _ZNSt9bad_allocD0Ev Demangled Symbol: std::bad_alloc::~bad_alloc() Symbol Size: 23 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 4012d0 Mangled Symbol: _ZNKSt9bad_alloc4whatEv Demangled Symbol: std::bad_alloc::what() const Symbol Size: 8 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for std::bad_alloc
+      0: global: VT Entry: std::bad_alloc::~bad_alloc()
+      0: global: VT Entry: std::bad_alloc::~bad_alloc()
+      0: global: VT Entry: std::bad_alloc::what() const
+      0: global: Symbol Addr: 6c9228 Symbol: _ZTVN9__gnu_cxx24__concurrence_lock_errorE Demangled Symbol: vtable for __gnu_cxx::__concurrence_lock_error Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c9228 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c91f8 Mangled Symbol: _ZTIN9__gnu_cxx24__concurrence_lock_errorE Demangled Symbol: typeinfo for __gnu_cxx::__concurrence_lock_error Symbol Size: 24 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 401340 Mangled Symbol: _ZN9__gnu_cxx24__concurrence_lock_errorD1Ev Demangled Symbol: __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error() Symbol Size: 19 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 401380 Mangled Symbol: _ZN9__gnu_cxx24__concurrence_lock_errorD0Ev Demangled Symbol: __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error() Symbol Size: 37 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 401320 Mangled Symbol: _ZNK9__gnu_cxx24__concurrence_lock_error4whatEv Demangled Symbol: __gnu_cxx::__concurrence_lock_error::what() const Symbol Size: 8 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for __gnu_cxx::__concurrence_lock_error
+      0: global: VT Entry: __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error()
+      0: global: VT Entry: __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error()
+      0: global: VT Entry: __gnu_cxx::__concurrence_lock_error::what() const
+      0: global: Symbol Addr: 6c9250 Symbol: _ZTVN9__gnu_cxx26__concurrence_unlock_errorE Demangled Symbol: vtable for __gnu_cxx::__concurrence_unlock_error Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c9250 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c9210 Mangled Symbol: _ZTIN9__gnu_cxx26__concurrence_unlock_errorE Demangled Symbol: typeinfo for __gnu_cxx::__concurrence_unlock_error Symbol Size: 24 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 401360 Mangled Symbol: _ZN9__gnu_cxx26__concurrence_unlock_errorD2Ev Demangled Symbol: __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error() Symbol Size: 19 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 4013b0 Mangled Symbol: _ZN9__gnu_cxx26__concurrence_unlock_errorD0Ev Demangled Symbol: __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error() Symbol Size: 37 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: Symbol Addr: 401330 Mangled Symbol: _ZNK9__gnu_cxx26__concurrence_unlock_error4whatEv Demangled Symbol: __gnu_cxx::__concurrence_unlock_error::what() const Symbol Size: 8 Symbol Info: 0x22 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for __gnu_cxx::__concurrence_unlock_error
+      0: global: VT Entry: __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error()
+      0: global: VT Entry: __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error()
+      0: global: VT Entry: __gnu_cxx::__concurrence_unlock_error::what() const
+      0: global: Symbol Addr: 6c9290 Symbol: _ZTVN10__cxxabiv120__si_class_type_infoE Demangled Symbol: vtable for __cxxabiv1::__si_class_type_info Symbol Size: 88 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c9290 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c9278 Mangled Symbol: _ZTIN10__cxxabiv120__si_class_type_infoE Demangled Symbol: typeinfo for __cxxabiv1::__si_class_type_info Symbol Size: 24 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 401860 Mangled Symbol: _ZN10__cxxabiv120__si_class_type_infoD1Ev Demangled Symbol: __cxxabiv1::__si_class_type_info::~__si_class_type_info() Symbol Size: 19 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401880 Mangled Symbol: _ZN10__cxxabiv120__si_class_type_infoD0Ev Demangled Symbol: __cxxabiv1::__si_class_type_info::~__si_class_type_info() Symbol Size: 23 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401150 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info10__do_catchEPKSt9type_infoPPvj Demangled Symbol: __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const Symbol Size: 125 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f70 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info11__do_upcastEPKS0_PPv Demangled Symbol: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const Symbol Size: 121 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401a60 Mangled Symbol: _ZNK10__cxxabiv120__si_class_type_info11__do_upcastEPKNS_17__class_type_infoEPKvRNS1_15__upcast_resultE Demangled Symbol: __cxxabiv1::__si_class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const Symbol Size: 75 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401920 Mangled Symbol: _ZNK10__cxxabiv120__si_class_type_info12__do_dyncastElNS_17__class_type_info10__sub_kindEPKS1_PKvS4_S6_RNS1_16__dyncast_resultE Demangled Symbol: __cxxabiv1::__si_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const Symbol Size: 318 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 4018a0 Mangled Symbol: _ZNK10__cxxabiv120__si_class_type_info20__do_find_public_srcElPKvPKNS_17__class_type_infoES2_ Demangled Symbol: __cxxabiv1::__si_class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const Symbol Size: 117 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for __cxxabiv1::__si_class_type_info
+      0: global: VT Entry: __cxxabiv1::__si_class_type_info::~__si_class_type_info()
+      0: global: VT Entry: __cxxabiv1::__si_class_type_info::~__si_class_type_info()
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
+      0: global: VT Entry: __cxxabiv1::__si_class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const
+      0: global: VT Entry: __cxxabiv1::__si_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+      0: global: VT Entry: __cxxabiv1::__si_class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const
+      0: global: Symbol Addr: 6c9300 Symbol: _ZTVN10__cxxabiv121__vmi_class_type_infoE Demangled Symbol: vtable for __cxxabiv1::__vmi_class_type_info Symbol Size: 88 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c9300 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c92e8 Mangled Symbol: _ZTIN10__cxxabiv121__vmi_class_type_infoE Demangled Symbol: typeinfo for __cxxabiv1::__vmi_class_type_info Symbol Size: 24 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 401b70 Mangled Symbol: _ZN10__cxxabiv121__vmi_class_type_infoD2Ev Demangled Symbol: __cxxabiv1::__vmi_class_type_info::~__vmi_class_type_info() Symbol Size: 19 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401b90 Mangled Symbol: _ZN10__cxxabiv121__vmi_class_type_infoD0Ev Demangled Symbol: __cxxabiv1::__vmi_class_type_info::~__vmi_class_type_info() Symbol Size: 23 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401240 Mangled Symbol: _ZNKSt9type_info14__is_pointer_pEv Demangled Symbol: std::type_info::__is_pointer_p() const Symbol Size: 3 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401150 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info10__do_catchEPKSt9type_infoPPvj Demangled Symbol: __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const Symbol Size: 125 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 400f70 Mangled Symbol: _ZNK10__cxxabiv117__class_type_info11__do_upcastEPKS0_PPv Demangled Symbol: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const Symbol Size: 121 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 402330 Mangled Symbol: _ZNK10__cxxabiv121__vmi_class_type_info11__do_upcastEPKNS_17__class_type_infoEPKvRNS1_15__upcast_resultE Demangled Symbol: __cxxabiv1::__vmi_class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const Symbol Size: 598 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401cb0 Mangled Symbol: _ZNK10__cxxabiv121__vmi_class_type_info12__do_dyncastElNS_17__class_type_info10__sub_kindEPKS1_PKvS4_S6_RNS1_16__dyncast_resultE Demangled Symbol: __cxxabiv1::__vmi_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const Symbol Size: 1654 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 401bb0 Mangled Symbol: _ZNK10__cxxabiv121__vmi_class_type_info20__do_find_public_srcElPKvPKNS_17__class_type_infoES2_ Demangled Symbol: __cxxabiv1::__vmi_class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const Symbol Size: 241 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for __cxxabiv1::__vmi_class_type_info
+      0: global: VT Entry: __cxxabiv1::__vmi_class_type_info::~__vmi_class_type_info()
+      0: global: VT Entry: __cxxabiv1::__vmi_class_type_info::~__vmi_class_type_info()
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: std::type_info::__is_pointer_p() const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const
+      0: global: VT Entry: __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
+      0: global: VT Entry: __cxxabiv1::__vmi_class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const
+      0: global: VT Entry: __cxxabiv1::__vmi_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+      0: global: VT Entry: __cxxabiv1::__vmi_class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const
+      0: global: Symbol Addr: 6c93a0 Symbol: _ZTVSt9exception Demangled Symbol: vtable for std::exception Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c93a0 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c9358 Mangled Symbol: _ZTISt9exception Demangled Symbol: typeinfo for std::exception Symbol Size: 16 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 403150 Mangled Symbol: _ZNSt9exceptionD1Ev Demangled Symbol: std::exception::~exception() Symbol Size: 1 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 4031a0 Mangled Symbol: _ZNSt9exceptionD0Ev Demangled Symbol: std::exception::~exception() Symbol Size: 23 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 403180 Mangled Symbol: _ZNKSt9exception4whatEv Demangled Symbol: std::exception::what() const Symbol Size: 8 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for std::exception
+      0: global: VT Entry: std::exception::~exception()
+      0: global: VT Entry: std::exception::~exception()
+      0: global: VT Entry: std::exception::what() const
+      0: global: Symbol Addr: 6c93c8 Symbol: _ZTVSt13bad_exception Demangled Symbol: vtable for std::bad_exception Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c93c8 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c9368 Mangled Symbol: _ZTISt13bad_exception Demangled Symbol: typeinfo for std::bad_exception Symbol Size: 24 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 403160 Mangled Symbol: _ZNSt13bad_exceptionD1Ev Demangled Symbol: std::bad_exception::~bad_exception() Symbol Size: 19 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 4031c0 Mangled Symbol: _ZNSt13bad_exceptionD0Ev Demangled Symbol: std::bad_exception::~bad_exception() Symbol Size: 23 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: Symbol Addr: 403190 Mangled Symbol: _ZNKSt13bad_exception4whatEv Demangled Symbol: std::bad_exception::what() const Symbol Size: 8 Symbol Info: 0x12 Symbol Shndx: 5
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for std::bad_exception
+      0: global: VT Entry: std::bad_exception::~bad_exception()
+      0: global: VT Entry: std::bad_exception::~bad_exception()
+      0: global: VT Entry: std::bad_exception::what() const
+      0: global: Symbol Addr: 6c93f0 Symbol: _ZTVN10__cxxabiv115__forced_unwindE Demangled Symbol: vtable for __cxxabiv1::__forced_unwind Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c93f0 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c9380 Mangled Symbol: _ZTIN10__cxxabiv115__forced_unwindE Demangled Symbol: typeinfo for __cxxabiv1::__forced_unwind Symbol Size: 16 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for __cxxabiv1::__forced_unwind
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: __cxa_pure_virtual
+      0: global: Symbol Addr: 6c9418 Symbol: _ZTVN10__cxxabiv119__foreign_exceptionE Demangled Symbol: vtable for __cxxabiv1::__foreign_exception Symbol Size: 40 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: sec start: 6c6200 sym_value: 6c9418 phdr.p_paddr: 6c61b8 phdr.p_vaddr: 6c61b8 phdr.p_memsz: 7988 phdr.p_offset: c61b8 phdr.p_filesz: 6200!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 6c9390 Mangled Symbol: _ZTIN10__cxxabiv119__foreign_exceptionE Demangled Symbol: typeinfo for __cxxabiv1::__foreign_exception Symbol Size: 16 Symbol Info: 0x21 Symbol Shndx: 25
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: Symbol Addr: 0 Demangled Symbol: Empty!
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: typeinfo for __cxxabiv1::__foreign_exception
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: 0x00000000
+      0: global: VT Entry: __cxa_pure_virtual
