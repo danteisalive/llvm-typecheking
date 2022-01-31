@@ -936,7 +936,10 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
                 {
                   outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID().NodeTypeID_1 << " " << Node->getTypeID().NodeTypeID_2;
                   Node->print(outs());
-                  MIB.getInstr()->setMITypeID(Node->getTypeID().NodeTypeID_1, Node->getTypeID().NodeTypeID_2);
+                  MIB.getInstr()->setMITypeID(Node->getTypeID().NodeTypeID_1, 
+                                              Node->getTypeID().NodeTypeID_2,
+                                              Node->getTypeID().NodeTypeID_3,
+                                              Node->getTypeID().NodeTypeID_4);
                   //MIB.getInstr()->print(outs());
                   //outs() << " Node TypeID: " << Node->getTypeID() << "\n";
 

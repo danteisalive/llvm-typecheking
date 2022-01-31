@@ -911,8 +911,19 @@ void AsmPrinter::EmitFunctionBody() {
                   outs() << "ASM Printer Phase: " << "\n";
                   outs() << name << "\n";
                   MI.print(outs());
-                  outs() << "MI Type ID: " << MI.getMITypeID().NodeTypeID_1 << " " << MI.getMITypeID().NodeTypeID_2 << "\n";
-                  MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS_" + getModuleIdentifier() + "_" + std::string(name) + "_" + std::to_string(MI.getMITypeID().NodeTypeID_1) + "_" + std::to_string(MI.getMITypeID().NodeTypeID_2));
+                  outs() << "MI Type ID: " << 
+                            MI.getMITypeID().NodeTypeID_1 << " " << 
+                            MI.getMITypeID().NodeTypeID_2 << " " << 
+                            MI.getMITypeID().NodeTypeID_3 << " " << 
+                            MI.getMITypeID().NodeTypeID_4 << "\n";
+                  MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS#" + 
+                                                    getModuleIdentifier() + "#" + 
+                                                    std::string(name) + "#" + 
+                                                    std::to_string(MI.getMITypeID().NodeTypeID_1) + "#" +
+                                                    std::to_string(MI.getMITypeID().NodeTypeID_2) + "#" +
+                                                    std::to_string(MI.getMITypeID().NodeTypeID_3) + "#" + 
+                                                    std::to_string(MI.getMITypeID().NodeTypeID_4)
+                                                    );
                   
                   OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Internal);
                   OutStreamer->EmitLabel(CSLabel);

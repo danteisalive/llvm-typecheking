@@ -540,9 +540,14 @@ public:
   {
     uint64_t NodeTypeID_1;
     uint64_t NodeTypeID_2;
+    uint64_t NodeTypeID_3;
+    uint64_t NodeTypeID_4;
     bool valid;
 
-    NodeTypeID(uint64_t tid_1, uint64_t tid_2) : NodeTypeID_1(tid_1), NodeTypeID_2(tid_2), valid(true) {}
+    NodeTypeID(uint64_t tid_1, uint64_t tid_2, uint64_t tid_3, uint64_t tid_4) : 
+              NodeTypeID_1(tid_1), NodeTypeID_2(tid_2), 
+              NodeTypeID_3(tid_3), NodeTypeID_4(tid_4), 
+              valid(true) {}
 
     NodeTypeID() : valid(false) {}
 
@@ -552,7 +557,12 @@ public:
   //  Accessors
   //
   // set TID
-  void setTypeID(uint64_t tid_1, uint64_t tid_2) {NodeTID.NodeTypeID_1 = tid_1; NodeTID.NodeTypeID_2 = tid_2; NodeTID.valid = true;}
+  void setTypeID(uint64_t tid_1, uint64_t tid_2, uint64_t tid_3, uint64_t tid_4) {
+                NodeTID.NodeTypeID_1 = tid_1; 
+                NodeTID.NodeTypeID_2 = tid_2; 
+                NodeTID.NodeTypeID_3 = tid_3; 
+                NodeTID.NodeTypeID_4 = tid_4; 
+                NodeTID.valid = true;}
   void setTypeID(NodeTypeID tid) {NodeTID = tid;}
   NodeTypeID getTypeID() const {return NodeTID;}
 

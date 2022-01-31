@@ -1999,7 +1999,7 @@ void MachineInstr::print(raw_ostream &OS, ModuleSlotTracker &MST,
   }
 
   if (MINodeTID.valid)
-    OS << " Node Type ID: [" << MINodeTID.NodeTypeID_1 << "," << MINodeTID.NodeTypeID_2 << "]"; 
+    OS << " Node Type ID: [" << MINodeTID.NodeTypeID_1 << "," << MINodeTID.NodeTypeID_2 << "," << MINodeTID.NodeTypeID_3 << "," << MINodeTID.NodeTypeID_4 << "]"; 
 
   OS << '\n';
 }

@@ -4303,6 +4303,18 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     llvm::SmallVector<llvm::Metadata *, 32> Ops;
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])));
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));
+
+    if (location)
+    {
+        Ops.push_back(llvm::MDString::get(C, std::to_string(location.getLine())));
+        Ops.push_back(llvm::MDString::get(C, std::to_string(location.getCol()))); 
+    }
+    else 
+    {
+        std::srand(std::time(0));
+        Ops.push_back(llvm::MDString::get(C, std::to_string(std::rand())));
+        Ops.push_back(llvm::MDString::get(C, std::to_string(std::rand()))); 
+    }
     auto *N =  llvm::MDTuple::get(C, Ops);
     //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
     I.setMetadata("TYCHE_MD", N);

@@ -246,3 +246,499 @@ HASH(0x1cafea0)=[900160930d17d049,c0a000d04193794f]
 HASH(0x1cb1a60)=[ef0f0640c3db1c26,973ceef1fe09c9e1]
 HASH(0x1cb1ae0)=[424b439cc3acee2e,a27b67c0dd20dec5]
 HASH(0x1cbe5a8)=[fa9b3c68f3169b27,14fe0bbdd778431]
+FILENAME Example.cpp
+APSIZE 1
+OFFSET 0
+CORECED N
+LB 18446744056529682432
+UB 17179869184
+FAM N
+NAME int8_t
+VPTR N
+META TYPE <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+PARENT NOPARENT
+Filename: Example.cpp
+	Function Name: main[0][0]
+Filename: Example.cpp
+	Function Name: _ZN1WD2Ev[0][1]
+	Pointee Type: <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1WD0Ev[0][1]
+	Pointee Type: <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1Y6printXEiPv[0][3]
+	Pointee Type: <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+	Pointee Type: <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+	Pointee Type: <0x839a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+	Pointer Type: <0x839a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1Y6printYEv[0][1]
+	Pointee Type: <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1W6printWEv[0][1]
+	Pointee Type: <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZThn24_N1WD1Ev[0][1]
+Filename: Example.cpp
+	Function Name: _ZThn24_N1WD0Ev[0][1]
+Filename: Example.cpp
+	Function Name: _ZN1Z6printXEiPv[0][3]
+	Pointee Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+	Pointee Type: <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+	Pointee Type: <0x839a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+	Pointer Type: <0x839a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1Z6printZEv[0][1]
+	Pointee Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+Filename: Example.cpp
+	Function Name: _ZN1Z6printYEv[0][1]
+	Pointee Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+Filename: Example.cpp
+	Function Name: _ZN1YD0Ev[0][1]
+	Pointee Type: <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1XD0Ev[0][1]
+	Pointee Type: <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+	Pointer Type: <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+Filename: Example.cpp
+	Function Name: _ZN1X6printXEiPv[0][3]
+	Pointee Type: <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+	Pointer Type: <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+	Pointee Type: <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+	Pointee Type: <0x839a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+	Pointer Type: <0x839a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1XD2Ev[0][1]
+	Pointee Type: <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+	Pointer Type: <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+Filename: Example.cpp
+	Function Name: _ZN1ZD0Ev[0][1]
+	Pointee Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+Filename: Example.cpp
+	Function Name: __clang_call_terminate[0][1]
+	Pointee Type: <0x8435a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+FILENAME Example.cpp
+APSIZE 16
+OFFSET 0
+CORECED N
+LB 0
+UB 24
+FAM N
+NAME class Y
+VPTR N
+META TYPE <0x834ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x7b2168>, line: 70, size: 192, elements: <0x837270>, vtableHolder: <0x834e20>, identifier: "_ZTS1Y")
+PARENT TYPE <0x834da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x7b2168>, line: 85, size: 384, elements: <0x838f58>, vtableHolder: <0x834e20>, identifier: "_ZTS1W")
+OFFSET 0
+CORECED N
+LB 0
+UB 16
+FAM N
+NAME class X
+VPTR N
+META TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+PARENT TYPE <0x834ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x7b2168>, line: 70, size: 192, elements: <0x837270>, vtableHolder: <0x834e20>, identifier: "_ZTS1Y")
+OFFSET 0
+CORECED N
+LB 0
+UB 8
+FAM N
+NAME int8_t *
+VPTR Y
+META TYPE <0x829e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x8435a8>, size: 64)
+PARENT TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+OFFSET 0
+CORECED Y
+LB 0
+UB 8
+FAM N
+NAME coerced
+VPTR Y
+META TYPE <0x829e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x8435a8>, size: 64)
+PARENT TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+OFFSET 0
+CORECED N
+LB 18446744056529682432
+UB 17179869184
+FAM N
+NAME class W
+VPTR N
+META TYPE <0x834da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x7b2168>, line: 85, size: 384, elements: <0x838f58>, vtableHolder: <0x834e20>, identifier: "_ZTS1W")
+PARENT NOPARENT
+OFFSET 8
+CORECED N
+LB 8
+UB 12
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+OFFSET 12
+CORECED N
+LB 12
+UB 16
+FAM N
+NAME class NV
+VPTR N
+META TYPE <0x836a60> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "NV", file: <0x7b2168>, line: 60, size: 32, elements: <0x836b28>, identifier: "_ZTS2NV")
+PARENT TYPE <0x834ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x7b2168>, line: 70, size: 192, elements: <0x837270>, vtableHolder: <0x834e20>, identifier: "_ZTS1Y")
+OFFSET 12
+CORECED N
+LB 12
+UB 16
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x836a60> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "NV", file: <0x7b2168>, line: 60, size: 32, elements: <0x836b28>, identifier: "_ZTS2NV")
+OFFSET 16
+CORECED N
+LB 16
+UB 20
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x834ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x7b2168>, line: 70, size: 192, elements: <0x837270>, vtableHolder: <0x834e20>, identifier: "_ZTS1Y")
+OFFSET 24
+CORECED Y
+LB 24
+UB 32
+FAM N
+NAME coerced
+VPTR Y
+META TYPE <0x829e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x8435a8>, size: 64)
+PARENT TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+OFFSET 24
+CORECED N
+LB 24
+UB 32
+FAM N
+NAME int8_t *
+VPTR Y
+META TYPE <0x829e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x8435a8>, size: 64)
+PARENT TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+OFFSET 24
+CORECED N
+LB 24
+UB 40
+FAM N
+NAME class X
+VPTR N
+META TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+PARENT TYPE <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+OFFSET 24
+CORECED N
+LB 24
+UB 40
+FAM N
+NAME class Z
+VPTR N
+META TYPE <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+PARENT TYPE <0x834da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x7b2168>, line: 85, size: 384, elements: <0x838f58>, vtableHolder: <0x834e20>, identifier: "_ZTS1W")
+OFFSET 32
+CORECED N
+LB 32
+UB 36
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x834e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x7b2168>, line: 64, size: 128, elements: <0x837e80>, vtableHolder: <0x834e20>, identifier: "_ZTS1X")
+OFFSET 36
+CORECED N
+LB 36
+UB 40
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x836ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x7b2168>, line: 77, size: 128, elements: <0x839fa0>, vtableHolder: <0x834e20>, identifier: "_ZTS1Z")
+OFFSET 40
+CORECED N
+LB 40
+UB 44
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x7a0218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x834da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x7b2168>, line: 85, size: 384, elements: <0x838f58>, vtableHolder: <0x834e20>, identifier: "_ZTS1W")
+Example.cpp#97_22##0x8#1#7f5aa9912a40
+{0}=(0x834ea0)=[900160930d17d049,c0a000d04193794f]
+{0}=(0x834e20)=[2f561fff4d858154,230deb118585f88f]
+{0}=(0x829e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{0}=(0x829e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{0}=(0x834da0)=[5186479acf4a2765,eba19d4de9269dff]
+{8}=(0x7a0218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{12}=(0x836a60)=[ef0f0640c3db1c26,973ceef1fe09c9e1]
+{12}=(0x7a0218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{16}=(0x7a0218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{24}=(0x829e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{24}=(0x829e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{24}=(0x834e20)=[2f561fff4d858154,230deb118585f88f]
+{24}=(0x836ae0)=[424b439cc3acee2e,a27b67c0dd20dec5]
+{32}=(0x7a0218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{36}=(0x7a0218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{40}=(0x7a0218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+AllocationPointsDIInfo[8d5ea8] Size: 16
+--------------------------------------------------------------------------------------------------------------
+HASH(0x7a0218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+HASH(0x829e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+HASH(0x834da0)=[5186479acf4a2765,eba19d4de9269dff]
+HASH(0x834e20)=[2f561fff4d858154,230deb118585f88f]
+HASH(0x834ea0)=[900160930d17d049,c0a000d04193794f]
+HASH(0x836a60)=[ef0f0640c3db1c26,973ceef1fe09c9e1]
+HASH(0x836ae0)=[424b439cc3acee2e,a27b67c0dd20dec5]
+HASH(0x8435a8)=[fa9b3c68f3169b27,14fe0bbdd778431]
+FILENAME Example.cpp
+APSIZE 1
+OFFSET 0
+CORECED N
+LB 18446744056529682432
+UB 17179869184
+FAM N
+NAME int8_t
+VPTR N
+META TYPE <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+PARENT NOPARENT
+Filename: Example.cpp
+	Function Name: main[0][0]
+Filename: Example.cpp
+	Function Name: _ZN1WD2Ev[0][1]
+	Pointee Type: <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1WD0Ev[0][1]
+	Pointee Type: <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1Y6printXEiPv[0][3]
+	Pointee Type: <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+	Pointee Type: <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+	Pointee Type: <0x708a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+	Pointer Type: <0x708a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1Y6printYEv[0][1]
+	Pointee Type: <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1W6printWEv[0][1]
+	Pointee Type: <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZThn24_N1WD1Ev[0][1]
+Filename: Example.cpp
+	Function Name: _ZThn24_N1WD0Ev[0][1]
+Filename: Example.cpp
+	Function Name: _ZN1Z6printXEiPv[0][3]
+	Pointee Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+	Pointee Type: <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+	Pointee Type: <0x708a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+	Pointer Type: <0x708a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1Z6printZEv[0][1]
+	Pointee Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+Filename: Example.cpp
+	Function Name: _ZN1Z6printYEv[0][1]
+	Pointee Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+Filename: Example.cpp
+	Function Name: _ZN1YD0Ev[0][1]
+	Pointee Type: <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1XD0Ev[0][1]
+	Pointee Type: <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+	Pointer Type: <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+Filename: Example.cpp
+	Function Name: _ZN1X6printXEiPv[0][3]
+	Pointee Type: <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+	Pointer Type: <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+	Pointee Type: <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+	Pointee Type: <0x708a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+	Pointer Type: <0x708a88> = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+Filename: Example.cpp
+	Function Name: _ZN1XD2Ev[0][1]
+	Pointee Type: <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+	Pointer Type: <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+Filename: Example.cpp
+	Function Name: _ZN1ZD0Ev[0][1]
+	Pointee Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+	Pointer Type: <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+Filename: Example.cpp
+	Function Name: __clang_call_terminate[0][1]
+	Pointee Type: <0x7125a8> = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+FILENAME Example.cpp
+APSIZE 16
+OFFSET 0
+CORECED N
+LB 0
+UB 24
+FAM N
+NAME class Y
+VPTR N
+META TYPE <0x703ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x681168>, line: 70, size: 192, elements: <0x706270>, vtableHolder: <0x703e20>, identifier: "_ZTS1Y")
+PARENT TYPE <0x703da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x681168>, line: 85, size: 384, elements: <0x707f58>, vtableHolder: <0x703e20>, identifier: "_ZTS1W")
+OFFSET 0
+CORECED N
+LB 0
+UB 16
+FAM N
+NAME class X
+VPTR N
+META TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+PARENT TYPE <0x703ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x681168>, line: 70, size: 192, elements: <0x706270>, vtableHolder: <0x703e20>, identifier: "_ZTS1Y")
+OFFSET 0
+CORECED N
+LB 0
+UB 8
+FAM N
+NAME int8_t *
+VPTR Y
+META TYPE <0x6f8e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x7125a8>, size: 64)
+PARENT TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+OFFSET 0
+CORECED Y
+LB 0
+UB 8
+FAM N
+NAME coerced
+VPTR Y
+META TYPE <0x6f8e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x7125a8>, size: 64)
+PARENT TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+OFFSET 0
+CORECED N
+LB 18446744056529682432
+UB 17179869184
+FAM N
+NAME class W
+VPTR N
+META TYPE <0x703da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x681168>, line: 85, size: 384, elements: <0x707f58>, vtableHolder: <0x703e20>, identifier: "_ZTS1W")
+PARENT NOPARENT
+OFFSET 8
+CORECED N
+LB 8
+UB 12
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+OFFSET 12
+CORECED N
+LB 12
+UB 16
+FAM N
+NAME class NV
+VPTR N
+META TYPE <0x705a60> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "NV", file: <0x681168>, line: 60, size: 32, elements: <0x705b28>, identifier: "_ZTS2NV")
+PARENT TYPE <0x703ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x681168>, line: 70, size: 192, elements: <0x706270>, vtableHolder: <0x703e20>, identifier: "_ZTS1Y")
+OFFSET 12
+CORECED N
+LB 12
+UB 16
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x705a60> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "NV", file: <0x681168>, line: 60, size: 32, elements: <0x705b28>, identifier: "_ZTS2NV")
+OFFSET 16
+CORECED N
+LB 16
+UB 20
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x703ea0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Y", file: <0x681168>, line: 70, size: 192, elements: <0x706270>, vtableHolder: <0x703e20>, identifier: "_ZTS1Y")
+OFFSET 24
+CORECED Y
+LB 24
+UB 32
+FAM N
+NAME coerced
+VPTR Y
+META TYPE <0x6f8e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x7125a8>, size: 64)
+PARENT TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+OFFSET 24
+CORECED N
+LB 24
+UB 32
+FAM N
+NAME int8_t *
+VPTR Y
+META TYPE <0x6f8e58> = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: <0x7125a8>, size: 64)
+PARENT TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+OFFSET 24
+CORECED N
+LB 24
+UB 40
+FAM N
+NAME class X
+VPTR N
+META TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+PARENT TYPE <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+OFFSET 24
+CORECED N
+LB 24
+UB 40
+FAM N
+NAME class Z
+VPTR N
+META TYPE <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+PARENT TYPE <0x703da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x681168>, line: 85, size: 384, elements: <0x707f58>, vtableHolder: <0x703e20>, identifier: "_ZTS1W")
+OFFSET 32
+CORECED N
+LB 32
+UB 36
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x703e20> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "X", file: <0x681168>, line: 64, size: 128, elements: <0x706e80>, vtableHolder: <0x703e20>, identifier: "_ZTS1X")
+OFFSET 36
+CORECED N
+LB 36
+UB 40
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x705ae0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "Z", file: <0x681168>, line: 77, size: 128, elements: <0x708fa0>, vtableHolder: <0x703e20>, identifier: "_ZTS1Z")
+OFFSET 40
+CORECED N
+LB 40
+UB 44
+FAM N
+NAME int32_t
+VPTR N
+META TYPE <0x66f218> = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+PARENT TYPE <0x703da0> = distinct !DICompositeType(tag: DW_TAG_class_type, name: "W", file: <0x681168>, line: 85, size: 384, elements: <0x707f58>, vtableHolder: <0x703e20>, identifier: "_ZTS1W")
+Example.cpp#97_22##0x8#715818#7f2247c4e053
+{0}=(0x703ea0)=[900160930d17d049,c0a000d04193794f]
+{0}=(0x703e20)=[2f561fff4d858154,230deb118585f88f]
+{0}=(0x6f8e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{0}=(0x6f8e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{0}=(0x703da0)=[5186479acf4a2765,eba19d4de9269dff]
+{8}=(0x66f218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{12}=(0x705a60)=[ef0f0640c3db1c26,973ceef1fe09c9e1]
+{12}=(0x66f218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{16}=(0x66f218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{24}=(0x6f8e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{24}=(0x6f8e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+{24}=(0x703e20)=[2f561fff4d858154,230deb118585f88f]
+{24}=(0x705ae0)=[424b439cc3acee2e,a27b67c0dd20dec5]
+{32}=(0x66f218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{36}=(0x66f218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+{40}=(0x66f218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+AllocationPointsDIInfo[7a49c8] Size: 16
+--------------------------------------------------------------------------------------------------------------
+HASH(0x66f218)=[424017b0d642f46a,20ba7da4c4ad98b8]
+HASH(0x6f8e58)=[74fac0bfec5c40a,a481e2de8ae46130]
+HASH(0x703da0)=[5186479acf4a2765,eba19d4de9269dff]
+HASH(0x703e20)=[2f561fff4d858154,230deb118585f88f]
+HASH(0x703ea0)=[900160930d17d049,c0a000d04193794f]
+HASH(0x705a60)=[ef0f0640c3db1c26,973ceef1fe09c9e1]
+HASH(0x705ae0)=[424b439cc3acee2e,a27b67c0dd20dec5]
+HASH(0x7125a8)=[fa9b3c68f3169b27,14fe0bbdd778431]

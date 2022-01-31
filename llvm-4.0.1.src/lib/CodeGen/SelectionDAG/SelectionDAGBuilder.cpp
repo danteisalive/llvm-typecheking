@@ -5918,15 +5918,23 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "\n";
 
           //Inst->print(outs()); outs() << "\n"; 
-          if (Metadata->getNumOperands() != 2) {llvm_unreachable("wrong number of tyche operand metadata!\n");}
+          if (Metadata->getNumOperands() != 4) {llvm_unreachable("wrong number of tyche operand metadata!\n");}
           llvm::Metadata *MD1 = Metadata->getOperand(0).get();
           llvm::Metadata *MD2 = Metadata->getOperand(1).get();
+          llvm::Metadata *MD3 = Metadata->getOperand(2).get();
+          llvm::Metadata *MD4 = Metadata->getOperand(3).get();
           //MD->print(outs());
           //outs() << "\n";
           MDString *MDS1 = dyn_cast<MDString>(MD1);
           MDString *MDS2 = dyn_cast<MDString>(MD2);
+          MDString *MDS3 = dyn_cast<MDString>(MD3);
+          MDString *MDS4 = dyn_cast<MDString>(MD4);
           
-          Result.first.getNode()->setTypeID(std::stoull(MDS1->getString()), std::stoull(MDS2->getString()));
+          Result.first.getNode()->setTypeID(std::stoull(MDS1->getString()), 
+                                            std::stoull(MDS2->getString()),
+                                            std::stoull(MDS3->getString()),
+                                            std::stoull(MDS4->getString())
+                                            );
 
           // outs() << MDS->getString() << "\n";
           // outs() << "NumOfOperands: " <<  Callee.getNode()->getNumOperands() << " NumOfValues: " << Callee.getNode()->getNumValues() << "\n";

@@ -135,16 +135,30 @@ public:
   {
     uint64_t NodeTypeID_1;
     uint64_t NodeTypeID_2;
+    uint64_t NodeTypeID_3;
+    uint64_t NodeTypeID_4;
     bool valid;
 
-    MINodeTypeID(uint64_t tid_1, uint64_t tid_2) : NodeTypeID_1(tid_1), NodeTypeID_2(tid_2), valid(true) {}
+    MINodeTypeID(uint64_t tid_1, uint64_t tid_2, uint64_t tid_3, uint64_t tid_4) : 
+                NodeTypeID_1(tid_1), 
+                NodeTypeID_2(tid_2), 
+                NodeTypeID_3(tid_3), 
+                NodeTypeID_4(tid_4), 
+                valid(true) {}
 
     MINodeTypeID() : valid(false) {}
 
   } MINodeTID;
 
 
-  void setMITypeID( uint64_t tid_1, uint64_t tid_2) { MINodeTID.NodeTypeID_1 = tid_1; MINodeTID.NodeTypeID_2 = tid_2; MINodeTID.valid = true;}
+  void setMITypeID( uint64_t tid_1, uint64_t tid_2, uint64_t tid_3, uint64_t tid_4) 
+  { 
+    MINodeTID.NodeTypeID_1 = tid_1; 
+    MINodeTID.NodeTypeID_2 = tid_2; 
+    MINodeTID.NodeTypeID_3 = tid_3; 
+    MINodeTID.NodeTypeID_4 = tid_4; 
+    MINodeTID.valid = true;
+  }
   MINodeTypeID getMITypeID() const {return MINodeTID;}
 
   const MachineBasicBlock* getParent() const { return Parent; }
