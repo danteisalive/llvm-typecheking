@@ -11,6 +11,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <sstream>
+
 #include "llvm/CodeGen/AsmPrinter.h"
 #include "CodeViewDebug.h"
 #include "DwarfDebug.h"
@@ -916,14 +918,15 @@ void AsmPrinter::EmitFunctionBody() {
                             MI.getMITypeID().NodeTypeID_2 << " " << 
                             MI.getMITypeID().NodeTypeID_3 << " " << 
                             MI.getMITypeID().NodeTypeID_4 << "\n";
+                  
+                  std::stringstream ss;
+                  ss << std::hex << MI.getMITypeID().NodeTypeID_1  << "#" <<
+                                    MI.getMITypeID().NodeTypeID_2 << "#" << 
+                                    MI.getMITypeID().NodeTypeID_3 << "#" << 
+                                    MI.getMITypeID().NodeTypeID_4;
                   MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS#" + 
                                                     getModuleIdentifier() + "#" + 
-                                                    std::string(name) + "#" + 
-                                                    std::to_string(MI.getMITypeID().NodeTypeID_1) + "#" +
-                                                    std::to_string(MI.getMITypeID().NodeTypeID_2) + "#" +
-                                                    std::to_string(MI.getMITypeID().NodeTypeID_3) + "#" + 
-                                                    std::to_string(MI.getMITypeID().NodeTypeID_4)
-                                                    );
+                                                    std::string(name) + "#" + ss.str());
                   
                   OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Internal);
                   OutStreamer->EmitLabel(CSLabel);
