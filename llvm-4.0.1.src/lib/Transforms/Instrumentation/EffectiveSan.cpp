@@ -1585,11 +1585,11 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
               
     if (lEntry.type == nullptr) llvm_unreachable("null DIType found!\n");
     
-    file << "META TYPE ";lEntry.type->print(file); file << "\n" ;
+    file << "METATYPE ";lEntry.type->print(file); file << "\n" ;
     
     if (lEntry.tyche_entry.Parent != nullptr) 
     {
-      file << "PARENT TYPE "; lEntry.tyche_entry.Parent->print(file); file << "\n" ;
+      file << "PARENTTYPE "; lEntry.tyche_entry.Parent->print(file); file << "\n" ;
     }
     else 
     {
@@ -2960,10 +2960,10 @@ static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
   }
 
   
-  std::ofstream file(APFileName, std::ios::app);
-  if (!entry.isInt8) file << "compileType::Returning: " << entry.typeMeta << "\n";
-  else               file << "compileType::Returning: " << "nullptr" << "\n";
-  file.close();
+  // std::ofstream file(APFileName, std::ios::app);
+  // if (!entry.isInt8) file << "compileType::Returning: " << entry.typeMeta << "\n";
+  // else               file << "compileType::Returning: " << "nullptr" << "\n";
+  // file.close();
   
   return entry;
 }
@@ -3166,10 +3166,10 @@ static llvm::Constant *getDeclaredType(TypeEntry &entry,
 
   entry = compileType(M, Ty, tInfo);
 
-  std::ofstream file(APFileName, std::ios::app);
-  if (!entry.isInt8) file << "Returning: " << entry.typeMeta << "\n";
-  else               file << "Returning: " << "nullptr" << "\n";
-  file.close();
+  // std::ofstream file(APFileName, std::ios::app);
+  // if (!entry.isInt8) file << "getDeclaredType::Returning: " << entry.typeMeta << "\n";
+  // else               file << "getDeclaredType::Returning: " << "nullptr" << "\n";
+  // file.close();
 
   return (entry.isInt8 ? nullptr : entry.typeMeta);
 }
@@ -4249,7 +4249,7 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
 
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
 
-    file << "Looking for: " << Meta << "\n";
+    //file << "Looking for: " << Meta << "\n";
 
     llvm::DIType* type_meta = nullptr;
     bool found = false;
@@ -4257,19 +4257,19 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     {
       if (elem.second.typeMeta == Meta)
       {
-          file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
+          // file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
           type_meta = elem.first;
           found = true;
       }
-      file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
+      // file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
     }
 
 
-    for (auto &elem : tInfo.infos)
-        file  << std::hex << "DUMP_INFO(" << elem.first << "," << elem.second <<")" << "\n";
+    // for (auto &elem : tInfo.infos)
+    //     file  << std::hex << "DUMP_INFO(" << elem.first << "," << elem.second <<")" << "\n";
 
-    for (auto &elem : tInfo.names)
-        file  << std::hex << "DUMP_NAME(" << elem.first << "," << elem.second <<")" << "\n";
+    // for (auto &elem : tInfo.names)
+    //     file  << std::hex << "DUMP_NAME(" << elem.first << "," << elem.second <<")" << "\n";
 
 
 
@@ -4313,18 +4313,18 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
       if (tInfo.cache.find(elem.second.type) == tInfo.cache.end())
         llvm_unreachable("Can't find hash value for this type!\n");
 
-      file  << std::dec << "{" << elem.second.offset << "}=" << std::hex  <<  "(0x" << (uint64_t)elem.second.type <<")=" << "[" << tInfo.hashes[elem.second.type].i64[0] << "," << tInfo.hashes[elem.second.type].i64[1] << "]\n";
+      // file  << std::dec << "{" << elem.second.offset << "}=" << std::hex  <<  "(0x" << (uint64_t)elem.second.type <<")=" << "[" << tInfo.hashes[elem.second.type].i64[0] << "," << tInfo.hashes[elem.second.type].i64[1] << "]\n";
   
     }
 
 
-    file << std::hex << "AllocationPointsDIInfo[" << 
-      (uint64_t)Meta << 
-      "] Size: " << 
-      std::dec << std::to_string(AllocationPointsDIInfo[Meta].size())  
-      << "\n";
+    // file << std::hex << "AllocationPointsDIInfo[" << 
+    //   (uint64_t)Meta << 
+    //   "] Size: " << 
+    //   std::dec << std::to_string(AllocationPointsDIInfo[Meta].size())  
+    //   << "\n";
 
-    file << "--------------------------------------------------------------------------------------------------------------\n";
+    // file << "--------------------------------------------------------------------------------------------------------------\n";
     file.close();
 
     llvm::LLVMContext& C = I.getContext();
@@ -4367,7 +4367,7 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
 
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
 
-    file << "Looking for: " << Meta << "\n";
+    // file << "Looking for: " << Meta << "\n";
 
     llvm::DIType* type_meta = nullptr;
     bool found = false;
@@ -4375,20 +4375,20 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     {
       if (elem.second.typeMeta == Meta)
       {
-          file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
+          // file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
           type_meta = elem.first;
           found = true;
       }
-      file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
+      // file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
     }
 
 
 
-    for (auto &elem : tInfo.infos)
-        file  << std::hex << "DUMP_INFO(" << elem.first << "," << elem.second <<")" << "\n";
+    // for (auto &elem : tInfo.infos)
+    //     file  << std::hex << "DUMP_INFO(" << elem.first << "," << elem.second <<")" << "\n";
 
-    for (auto &elem : tInfo.names)
-        file  << std::hex << "DUMP_NAME(" << elem.first << "," << elem.second <<")" << "\n";
+    // for (auto &elem : tInfo.names)
+    //     file  << std::hex << "DUMP_NAME(" << elem.first << "," << elem.second <<")" << "\n";
 
 
 
@@ -4432,18 +4432,18 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
       if (tInfo.cache.find(elem.second.type) == tInfo.cache.end())
         llvm_unreachable("Can't find hash value for this type!\n");
 
-      file  << std::dec << "{" << elem.second.offset << "}=" << std::hex  <<  "(0x" << (uint64_t)elem.second.type <<")=" << "[" << tInfo.hashes[elem.second.type].i64[0] << "," << tInfo.hashes[elem.second.type].i64[1] << "]\n";
+      // file  << std::dec << "{" << elem.second.offset << "}=" << std::hex  <<  "(0x" << (uint64_t)elem.second.type <<")=" << "[" << tInfo.hashes[elem.second.type].i64[0] << "," << tInfo.hashes[elem.second.type].i64[1] << "]\n";
   
     }
 
 
-    file << std::hex << "AllocationPointsDIInfo[" << 
-      (uint64_t)Meta << 
-      "] Size: " << 
-      std::dec << std::to_string(AllocationPointsDIInfo[Meta].size())  
-      << "\n";
+    // file << std::hex << "AllocationPointsDIInfo[" << 
+    //   (uint64_t)Meta << 
+    //   "] Size: " << 
+    //   std::dec << std::to_string(AllocationPointsDIInfo[Meta].size())  
+    //   << "\n";
 
-    file << "--------------------------------------------------------------------------------------------------------------\n";
+    // file << "--------------------------------------------------------------------------------------------------------------\n";
     file.close();
 
     llvm::LLVMContext& C = I.getContext();
@@ -5087,6 +5087,10 @@ struct EffectiveSan : public llvm::ModulePass {
     Module = &M;
     llvm::LLVMContext &Cxt = M.getContext();
 
+    std::error_code EC;
+    llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
+    // file << "MODULE " << std::string(M.getName()) << "\n";
+
     /*
      * Generate EffectiveSan meta data types and constants.
      */
@@ -5168,7 +5172,9 @@ struct EffectiveSan : public llvm::ModulePass {
     Int128Ty = builder.createBasicType("__int128", 16 * CHAR_BIT,
                                        llvm::dwarf::DW_ATE_signed);
 
-    
+
+
+
     Int8TyMeta = compileType(M, nullptr, tInfo).typeMeta;
 
     Int8PtrTy = builder.createPointerType(Int8Ty, sizeof(void *) * CHAR_BIT);
@@ -5220,6 +5226,7 @@ struct EffectiveSan : public llvm::ModulePass {
     /*
      * Main instrumentation loop:
      */
+
     for (auto &F : M) {
         if (F.isDeclaration())
           continue;
@@ -5277,13 +5284,13 @@ struct EffectiveSan : public llvm::ModulePass {
     metaCache.clear();
     infoCache.clear();
     
-    std::ofstream file(APFileName, std::ios::app);
-    for (auto & elem: tInfo.hashes)
-    {
-        file  << std::hex << "HASH(" << elem.first <<")=" << 
-                            "[" << elem.second.i64[0] << 
-                            "," << elem.second.i64[1] << "]\n";
-    }
+    //std::ofstream file(APFileName, std::ios::app);
+    // for (auto & elem: tInfo.hashes)
+    // {
+    //     file  << std::hex << "HASH(" << elem.first <<")=" << 
+    //                         "[" << elem.second.i64[0] << 
+    //                         "," << elem.second.i64[1] << "]\n";
+    // }
 
 
     if (option_debug) {
