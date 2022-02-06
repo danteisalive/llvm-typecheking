@@ -4152,35 +4152,36 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     {
       if (elem.second.typeMeta == Meta)
       {
-          // file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
           type_meta = elem.first;
           tid = elem.second.type_id;     
           found = true;
       }
-      // file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
+
     }
 
-    if (tInfo.cache.find(type_meta) == tInfo.cache.end()) llvm_unreachable("can't find the type info DIType!\n");
-    if (tInfo.names.find(type_meta) == tInfo.names.end()) llvm_unreachable("can't find the type info name!\n");
-    if (tInfo.infos.find(type_meta) == tInfo.infos.end()) llvm_unreachable("can't find the type info name!\n");
-    if (tInfo.hashes.find(type_meta) == tInfo.hashes.end()) llvm_unreachable("can't find the type info hash!\n");
 
 
 
 
     const llvm::DebugLoc &location = I.getDebugLoc();
     std::string loc = "";
+    unsigned int line;
+    unsigned int col;
     if (location) {
-          loc += std::to_string(location.getLine()) + "#";
-          loc += std::to_string(location.getCol());
+      line = location.getLine();
+      col = location.getCol();
+    }
+    else 
+    {
+      std::srand(std::time(0));
+      line  = std::rand();
+      col = std::rand();
     }
 
+    loc += std::to_string(line) + "#" + std::to_string(col);
 
 
-    // if (Meta == nullptr) file << std::dec << "replaceMalloc::Returning: " << Int8TyMeta << "\n" << std::flush;
-    // else  file << std::dec << "replaceMalloc::Returning: " << Meta << "\n" << std::flush;    
-
-    // if (TypeIDCache.find(tid) == TypeIDCache.end()) llvm_unreachable("Can't find the tid in TypeIDCache!\n");
+    
     file << TypeIDCache[tid-1];
     file << std::dec << "METAID " << 
         M.getSourceFileName()  <<
@@ -4194,56 +4195,19 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
         "\n" ;
 
 
-    auto di_itr = AllocationPointsDIInfo.find(Meta);
-    if (di_itr == AllocationPointsDIInfo.end()) 
-      llvm_unreachable("Can't find Di info in AP cache!\n");
 
-    if (AllocationPointsTypeInfo.find(entry.type_id) == AllocationPointsTypeInfo.end()) 
-      llvm_unreachable("Cannt find AllocationPointsTypeInfo!\n");
-
-    for (auto &elem : AllocationPointsDIInfo[Meta])
-    { 
-      if (tInfo.hashes.find(elem.second.type) == tInfo.hashes.end())
-        llvm_unreachable("Can't find hash value for this type!\n");
-
-      if (tInfo.cache.find(elem.second.type) == tInfo.cache.end())
-        llvm_unreachable("Can't find hash value for this type!\n");
-
-      // file  << std::dec << "{" << elem.second.offset << "}=" << std::hex  <<  "(0x" << (uint64_t)elem.second.type <<")=" << "[" << tInfo.hashes[elem.second.type].i64[0] << "," << tInfo.hashes[elem.second.type].i64[1] << "]\n";
-  
-    }
-
-
-    // file << std::hex << "AllocationPointsDIInfo[" << 
-    //   (uint64_t)Meta << 
-    //   "] Size: " << 
-    //   std::dec << std::to_string(AllocationPointsDIInfo[Meta].size())  
-    //   << "\n";
-
-    // file << "--------------------------------------------------------------------------------------------------------------\n";
     file.close();
 
     llvm::LLVMContext& C = I.getContext();
     llvm::SmallVector<llvm::Metadata *, 32> Ops;
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])));
-    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));
-
-    if (location)
-    {
-        Ops.push_back(llvm::MDString::get(C, std::to_string(location.getLine())));
-        Ops.push_back(llvm::MDString::get(C, std::to_string(location.getCol()))); 
-    }
-    else 
-    {
-        std::srand(std::time(0));
-        Ops.push_back(llvm::MDString::get(C, std::to_string(std::rand())));
-        Ops.push_back(llvm::MDString::get(C, std::to_string(std::rand()))); 
-    }
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));    
+    Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    
     auto *N =  llvm::MDTuple::get(C, Ops);
     //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
     I.setMetadata("TYCHE_MD", N);
-
-
     // std::string newName = "effective_";
     // newName += Name.str();
     // llvm::Constant *NewFn =
@@ -4273,35 +4237,36 @@ std::ofstream file(APFileName, std::ios::app);
     {
       if (elem.second.typeMeta == Meta)
       {
-          // file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
           type_meta = elem.first;
           tid = elem.second.type_id;     
           found = true;
       }
-      // file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
+
     }
 
-    if (tInfo.cache.find(type_meta) == tInfo.cache.end()) llvm_unreachable("can't find the type info DIType!\n");
-    if (tInfo.names.find(type_meta) == tInfo.names.end()) llvm_unreachable("can't find the type info name!\n");
-    if (tInfo.infos.find(type_meta) == tInfo.infos.end()) llvm_unreachable("can't find the type info name!\n");
-    if (tInfo.hashes.find(type_meta) == tInfo.hashes.end()) llvm_unreachable("can't find the type info hash!\n");
 
 
 
 
     const llvm::DebugLoc &location = I.getDebugLoc();
     std::string loc = "";
+    unsigned int line;
+    unsigned int col;
     if (location) {
-          loc += std::to_string(location.getLine()) + "#";
-          loc += std::to_string(location.getCol());
+      line = location.getLine();
+      col = location.getCol();
+    }
+    else 
+    {
+      std::srand(std::time(0));
+      line  = std::rand();
+      col = std::rand();
     }
 
+    loc += std::to_string(line) + "#" + std::to_string(col);
 
 
-    // if (Meta == nullptr) file << std::dec << "replaceMalloc::Returning: " << Int8TyMeta << "\n" << std::flush;
-    // else  file << std::dec << "replaceMalloc::Returning: " << Meta << "\n" << std::flush;    
-
-    // if (TypeIDCache.find(tid) == TypeIDCache.end()) llvm_unreachable("Can't find the tid in TypeIDCache!\n");
+    
     file << TypeIDCache[tid-1];
     file << std::dec << "METAID " << 
         M.getSourceFileName()  <<
@@ -4315,51 +4280,16 @@ std::ofstream file(APFileName, std::ios::app);
         "\n" ;
 
 
-    auto di_itr = AllocationPointsDIInfo.find(Meta);
-    if (di_itr == AllocationPointsDIInfo.end()) 
-      llvm_unreachable("Can't find Di info in AP cache!\n");
 
-    if (AllocationPointsTypeInfo.find(entry.type_id) == AllocationPointsTypeInfo.end()) 
-      llvm_unreachable("Cannt find AllocationPointsTypeInfo!\n");
-
-    for (auto &elem : AllocationPointsDIInfo[Meta])
-    { 
-      if (tInfo.hashes.find(elem.second.type) == tInfo.hashes.end())
-        llvm_unreachable("Can't find hash value for this type!\n");
-
-      if (tInfo.cache.find(elem.second.type) == tInfo.cache.end())
-        llvm_unreachable("Can't find hash value for this type!\n");
-
-      // file  << std::dec << "{" << elem.second.offset << "}=" << std::hex  <<  "(0x" << (uint64_t)elem.second.type <<")=" << "[" << tInfo.hashes[elem.second.type].i64[0] << "," << tInfo.hashes[elem.second.type].i64[1] << "]\n";
-  
-    }
-
-
-    // file << std::hex << "AllocationPointsDIInfo[" << 
-    //   (uint64_t)Meta << 
-    //   "] Size: " << 
-    //   std::dec << std::to_string(AllocationPointsDIInfo[Meta].size())  
-    //   << "\n";
-
-    // file << "--------------------------------------------------------------------------------------------------------------\n";
     file.close();
 
     llvm::LLVMContext& C = I.getContext();
     llvm::SmallVector<llvm::Metadata *, 32> Ops;
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])));
-    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));
-
-    if (location)
-    {
-        Ops.push_back(llvm::MDString::get(C, std::to_string(location.getLine())));
-        Ops.push_back(llvm::MDString::get(C, std::to_string(location.getCol()))); 
-    }
-    else 
-    {
-        std::srand(std::time(0));
-        Ops.push_back(llvm::MDString::get(C, std::to_string(std::rand())));
-        Ops.push_back(llvm::MDString::get(C, std::to_string(std::rand()))); 
-    }
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));    
+    Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    
     auto *N =  llvm::MDTuple::get(C, Ops);
     //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
     I.setMetadata("TYCHE_MD", N);
