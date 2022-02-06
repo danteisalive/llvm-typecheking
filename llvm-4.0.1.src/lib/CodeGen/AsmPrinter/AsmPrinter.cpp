@@ -920,7 +920,7 @@ void AsmPrinter::EmitFunctionBody() {
                             MI.getMITypeID().NodeTypeID_4 << "\n";
                   
                   std::stringstream ss;
-                  ss << std::hex << MI.getMITypeID().NodeTypeID_1  << "#" <<
+                  ss << std::dec << MI.getMITypeID().NodeTypeID_1  << "#" <<
                                     MI.getMITypeID().NodeTypeID_2 << "#" << 
                                     MI.getMITypeID().NodeTypeID_3 << "#" << 
                                     MI.getMITypeID().NodeTypeID_4;

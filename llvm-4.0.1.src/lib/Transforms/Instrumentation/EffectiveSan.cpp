@@ -385,6 +385,10 @@ static std::unique_ptr<llvm::SpecialCaseList> Blacklist = nullptr;
 static std::map<size_t, llvm::StructType *> metaCache;
 static std::map<size_t, llvm::StructType *> infoCache;
 
+
+static std::map<size_t, std::string>  TypeIDCache;
+
+
 /*
  * Prototypes.
  */
@@ -1529,19 +1533,13 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
   for (auto &entries : flattenedLayout) {
     AllocationPointsTypeInfo[TypeId].insert(std::make_pair((uint32_t)entries.second->offset, *(entries.second)));
   }
-
-  
-  std::error_code EC;
-  llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
   
 
-  //line  = "AllocationPointsTypeInfo[TypeId] Size: " + std::to_string(AllocationPointsTypeInfo[TypeId].size()) + "\n";
-  file << "FILENAME " <<  M.getSourceFileName() << "\n";
-  file << "APSIZE " << std::to_string(AllocationPointsTypeInfo[TypeId].size()) << "\n";
+  std::stringstream dump;
 
+  dump << "FILENAME " <<  M.getSourceFileName() << "\n";
+  dump << "APSIZE " << std::to_string(AllocationPointsTypeInfo[TypeId].size()) << "\n";
 
-
-  // std::ofstream file(APFileName, std::ios::app);
   auto di_itr = AllocationPointsTypeInfo.find(TypeId);
   for (auto &entries : di_itr->second) {
 
@@ -1574,7 +1572,7 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
     }
 
 
-    file << "OFFSET " << lEntry.offset << "\n" << 
+    dump << "OFFSET " << lEntry.offset << "\n" << 
             "CORECED " << (lEntry.coerced ? "Y" : "N") << "\n" <<  
             "LB " << lEntry.offset + lEntry.lb << "\n" << 
             "UB " << lEntry.offset + lEntry.ub << "\n" << 
@@ -1585,154 +1583,41 @@ static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
               
     if (lEntry.type == nullptr) llvm_unreachable("null DIType found!\n");
     
-    file << "METATYPE ";lEntry.type->print(file); file << "\n" ;
+    // a simple workaround for now!
+    {
+      std::error_code EC;
+      llvm::raw_fd_ostream file ("temp.txt", EC, llvm::sys::fs::OpenFlags::F_RW);
+      lEntry.type->print(file);
+      file.close();
+      std::ifstream t("temp.txt");
+      std::stringstream buffer;
+      buffer << t.rdbuf();
+      dump << "METATYPE " << buffer.str() << "\n" ;
+    }
     
     if (lEntry.tyche_entry.Parent != nullptr) 
     {
-      file << "PARENTTYPE "; lEntry.tyche_entry.Parent->print(file); file << "\n" ;
+      std::error_code EC;
+      llvm::raw_fd_ostream file ("temp.txt", EC, llvm::sys::fs::OpenFlags::F_RW);
+      lEntry.tyche_entry.Parent->print(file);
+      file.close();
+      std::ifstream t("temp.txt");
+      std::stringstream buffer;
+      buffer << t.rdbuf();
+      dump << "PARENTTYPE " << buffer.str() << "\n" ;
     }
     else 
     {
-      file << "PARENT NOPARENT" <<  "\n" ;
+      dump << "PARENTTYPE NOPARENT" <<  "\n" ;
     }
-
-
-
-/*
-    if (isVirutalTableType && !lEntry.coerced) 
-    {
-      if (lEntry.tyche_entry.Parent == nullptr) llvm_unreachable("Parent type is null for vtable entry!\n"); 
-      auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(lEntry.tyche_entry.Parent);
-      if (CompositeTy == nullptr) llvm_unreachable("Parent type is not composite for a vtable entry!\n");
-      if ((CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
-          CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
-      {
-        
-          auto * vtableholder = CompositeTy->getVTableHolder().resolve();
-          if (vtableholder == nullptr) llvm_unreachable("VTableHolder is null!\n");
-          auto * VTableHolderTy = llvm::dyn_cast<llvm::DICompositeType>(vtableholder);
-          if (VTableHolderTy == nullptr) llvm_unreachable("VTableHolderTy is null!\n");
-          if ((VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
-              VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
-          {
-            std::string mangled_name = std::string(VTableHolderTy->getIdentifier());
-            mangled_name[3] = 'V';
-            file << "Mangled Name: " << mangled_name << "\n";
-            auto *vt_gv = M.getGlobalVariable(mangled_name);
-            if (vt_gv != nullptr)
-            {
-              file << "VTABLE GV "; vt_gv->print(file); file << "\n\n"; 
-              file << vt_gv->getNumOperands() << "\n\n";
-            }
-            else 
-            {
-              llvm_unreachable("VTable GV is Null!\n");
-            }
-          }
-          else 
-          {
-            llvm_unreachable("VTableHolderTy is not class or structure!\n");
-          }
-
-      }
-      else 
-      {
-        llvm_unreachable("Parent is not class or structure!\n");
-      }
-        // file << "VPTR TYPE ";  VptrTy->print(file); file << "\n" ;
-        // llvm::DITypeRefArray Types = VptrSubroutine->getTypeArray();
-        // llvm::DIType *RetTy = Types[0].resolve();
-        // file << "\tRET TYPE "; RetTy->print(file); file << "\n";
-        // for (auto Arg : Types) 
-        // {
-        //   llvm::DIType *ArgTy = Arg.resolve();   
-        //   file << "\tARG TYPE "; ArgTy->print(file); file << "\n";    
-        // }
-    
-      for (auto &par : lEntry.TyCheDependencyTree)
-      {
-        file << "PAR TYPE ";par->print(file); file << "\n" ;
-        auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(par);
-        if (CompositeTy != nullptr && 
-              (CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
-              CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
-        {
-
-          auto * vtableholder = CompositeTy->getVTableHolder().resolve();
-          if (vtableholder == nullptr) continue;
-          auto * VTableHolderTy = llvm::dyn_cast<llvm::DICompositeType>(vtableholder);
-          if (VTableHolderTy == nullptr) continue;
-          if ((VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
-              VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
-          {
-            std::string mangled_name = std::string(VTableHolderTy->getIdentifier());
-            mangled_name[3] = 'V';
-            file << "Mangled Name: " << mangled_name << "\n";
-            auto *vt_gv = M.getGlobalVariable(mangled_name);
-            if (vt_gv != nullptr)
-            {
-              file << "VTABLE GV "; vt_gv->print(file); file << "\n\n"; 
-            }
-          }
-
-        }
-      }
-
-    }
-    */
-   /*
-    if ((int64_t)lEntry.lb == (int64_t)-17179869184 && (int64_t)lEntry.ub == (int64_t)17179869184)
-    {
-      auto *CompositeTy = llvm::dyn_cast<llvm::DICompositeType>(lEntry.type);
-      if (CompositeTy != nullptr) 
-      {
-          if ((CompositeTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
-              CompositeTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
-          {
-              auto * vtableholder = CompositeTy->getVTableHolder().resolve();
-              if (vtableholder != nullptr) {
-
-                auto * VTableHolderTy = llvm::dyn_cast<llvm::DICompositeType>(vtableholder);
-                if (VTableHolderTy == nullptr) llvm_unreachable("VTableHolderTy is null!\n");
-                if ((VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_class_type || 
-                    VTableHolderTy->getTag() == llvm::dwarf::DW_TAG_structure_type))
-                {
-                  std::string mangled_name = std::string(VTableHolderTy->getIdentifier());
-                  mangled_name[3] = 'V';
-                  file << "Mangled Name: " << mangled_name << "\n";
-                  auto *vt_gv = M.getGlobalVariable(mangled_name);
-                  if (vt_gv != nullptr)
-                  {
-                    file << "VTABLE GV "; vt_gv->print(file); file << "\n"; 
-                  }
-
-                }
-              }
-          }
-      }
-    */
-    
-
-
-      // if (CompositeTy != nullptr)
-      // {
-      //   std::string mangled_name = std::string(CompositeTy->getIdentifier());
-      //   mangled_name[3] = 'V';
-      //   file << "Mangled Name: " << mangled_name << "\n";
-        
-      //   if (auto *vt_gv = M.getGlobalVariable(mangled_name))
-      //   {
-      //     file << "VTABLE GV "; vt_gv->print(file); file << "\n"; 
-      //   }
-       
-      // }
-   // }
-
 
 
   }  
 
-  file.close();
+  
+
+  
+  TypeIDCache.insert(std::make_pair(TypeId, dump.str()));
 
   TypeId++;
   assert(TypeId < TYCHE_NUMBER_OF_TYPES);
@@ -2961,8 +2846,8 @@ static  TypeEntry &compileType(llvm::Module &M, llvm::DIType *Ty,
 
   
   // std::ofstream file(APFileName, std::ios::app);
-  // if (!entry.isInt8) file << "compileType::Returning: " << entry.typeMeta << "\n";
-  // else               file << "compileType::Returning: " << "nullptr" << "\n";
+  // if (!entry.isInt8) file << std::dec << "compileType::Returning: " << entry.typeMeta << "\n"<< std::flush;
+  // else               file << std::dec << "compileType::Returning: " << "nullptr" << "\n"<< std::flush;
   // file.close();
   
   return entry;
@@ -3167,8 +3052,8 @@ static llvm::Constant *getDeclaredType(TypeEntry &entry,
   entry = compileType(M, Ty, tInfo);
 
   // std::ofstream file(APFileName, std::ios::app);
-  // if (!entry.isInt8) file << "getDeclaredType::Returning: " << entry.typeMeta << "\n";
-  // else               file << "getDeclaredType::Returning: " << "nullptr" << "\n";
+  // if (!entry.isInt8) file << std::dec <<  "getDeclaredType::Returning: " << entry.typeMeta << "\n"<< std::flush;
+  // else               file << std::dec << "getDeclaredType::Returning: " << "nullptr" << "\n"<< std::flush;
   // file.close();
 
   return (entry.isInt8 ? nullptr : entry.typeMeta);
@@ -4203,8 +4088,16 @@ static llvm::Constant *inferMallocType(TypeEntry &entry,
     }
   }
 
-  return (Cast == nullptr ? nullptr
-                          : getDeclaredType(entry, M, Cast, tInfo, TyPtr, true));
+  llvm::Constant * retConstant = nullptr;
+  if (Cast != nullptr)
+    retConstant = getDeclaredType(entry, M, Cast, tInfo, TyPtr, true);
+
+  // std::ofstream file(APFileName, std::ios::app);
+  // if (Cast == nullptr) file << std::dec << "inferMallocType::Returning: " << "nullptr" << "\n"<< std::flush;
+  // else  file << std::dec << "inferMallocType::Returning: " << retConstant << "\n"<< std::flush;             
+  // file.close();
+
+  return (Cast == nullptr ? nullptr: retConstant);
 }
 
 static size_t getSize(llvm::Value *Size) {
@@ -4241,6 +4134,8 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
   {
     
     std::ofstream file(APFileName, std::ios::app);
+
+
     TypeEntry entry;
     // malloc, new, new[]:
     Meta = getDeclaredType(entry, M, &I, tInfo, &Ty, true);
@@ -4249,29 +4144,21 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
 
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
 
-    //file << "Looking for: " << Meta << "\n";
 
     llvm::DIType* type_meta = nullptr;
     bool found = false;
+    uint64_t tid = 0;
     for (auto &elem : tInfo.cache)
     {
       if (elem.second.typeMeta == Meta)
       {
           // file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
           type_meta = elem.first;
+          tid = elem.second.type_id;     
           found = true;
       }
       // file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
     }
-
-
-    // for (auto &elem : tInfo.infos)
-    //     file  << std::hex << "DUMP_INFO(" << elem.first << "," << elem.second <<")" << "\n";
-
-    // for (auto &elem : tInfo.names)
-    //     file  << std::hex << "DUMP_NAME(" << elem.first << "," << elem.second <<")" << "\n";
-
-
 
     if (tInfo.cache.find(type_meta) == tInfo.cache.end()) llvm_unreachable("can't find the type info DIType!\n");
     if (tInfo.names.find(type_meta) == tInfo.names.end()) llvm_unreachable("can't find the type info name!\n");
@@ -4284,18 +4171,27 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     const llvm::DebugLoc &location = I.getDebugLoc();
     std::string loc = "";
     if (location) {
-          loc += std::to_string(location.getLine()) + "_";
+          loc += std::to_string(location.getLine()) + "#";
           loc += std::to_string(location.getCol());
     }
 
 
-    file << std::hex <<  
-        M.getSourceFileName()  << 
+
+    // if (Meta == nullptr) file << std::dec << "replaceMalloc::Returning: " << Int8TyMeta << "\n" << std::flush;
+    // else  file << std::dec << "replaceMalloc::Returning: " << Meta << "\n" << std::flush;    
+
+    // if (TypeIDCache.find(tid) == TypeIDCache.end()) llvm_unreachable("Can't find the tid in TypeIDCache!\n");
+    file << TypeIDCache[tid-1];
+    file << std::dec << "METAID " << 
+        M.getSourceFileName()  <<
         "#" << loc << 
         "#" << tInfo.names.find(type_meta)->second << 
-        "#" << type_meta <<
+        "#" << Meta <<
         "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
-        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << "\n" ;
+        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+        "#" << std::string(Name) <<
+        "#" << tid <<  
+        "\n" ;
 
 
     auto di_itr = AllocationPointsDIInfo.find(Meta);
@@ -4358,7 +4254,9 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
   } else if (Call.getNumArgOperands() == 2 && Name == "calloc") {
     // calloc:
    
-    std::ofstream file(APFileName, std::ios::app);
+std::ofstream file(APFileName, std::ios::app);
+
+
     TypeEntry entry;
     // malloc, new, new[]:
     Meta = getDeclaredType(entry, M, &I, tInfo, &Ty, true);
@@ -4367,30 +4265,21 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
 
     Meta = (Meta == nullptr ? Int8TyMeta : Meta);
 
-    // file << "Looking for: " << Meta << "\n";
 
     llvm::DIType* type_meta = nullptr;
     bool found = false;
+    uint64_t tid = 0;
     for (auto &elem : tInfo.cache)
     {
       if (elem.second.typeMeta == Meta)
       {
           // file << std::hex << "Found it in Cache!: " <<  elem.first << "\n";
           type_meta = elem.first;
+          tid = elem.second.type_id;     
           found = true;
       }
       // file  << std::hex << "DUMP_CACHES(" << elem.first << "," << elem.second.typeMeta <<")" << "\n";
     }
-
-
-
-    // for (auto &elem : tInfo.infos)
-    //     file  << std::hex << "DUMP_INFO(" << elem.first << "," << elem.second <<")" << "\n";
-
-    // for (auto &elem : tInfo.names)
-    //     file  << std::hex << "DUMP_NAME(" << elem.first << "," << elem.second <<")" << "\n";
-
-
 
     if (tInfo.cache.find(type_meta) == tInfo.cache.end()) llvm_unreachable("can't find the type info DIType!\n");
     if (tInfo.names.find(type_meta) == tInfo.names.end()) llvm_unreachable("can't find the type info name!\n");
@@ -4403,18 +4292,27 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     const llvm::DebugLoc &location = I.getDebugLoc();
     std::string loc = "";
     if (location) {
-          loc += std::to_string(location.getLine()) + "_";
+          loc += std::to_string(location.getLine()) + "#";
           loc += std::to_string(location.getCol());
     }
 
 
-    file << std::hex <<  
-        M.getSourceFileName()  << 
+
+    // if (Meta == nullptr) file << std::dec << "replaceMalloc::Returning: " << Int8TyMeta << "\n" << std::flush;
+    // else  file << std::dec << "replaceMalloc::Returning: " << Meta << "\n" << std::flush;    
+
+    // if (TypeIDCache.find(tid) == TypeIDCache.end()) llvm_unreachable("Can't find the tid in TypeIDCache!\n");
+    file << TypeIDCache[tid-1];
+    file << std::dec << "METAID " << 
+        M.getSourceFileName()  <<
         "#" << loc << 
         "#" << tInfo.names.find(type_meta)->second << 
-        "#" << type_meta <<
+        "#" << Meta <<
         "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
-        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << "\n" ;
+        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+        "#" << std::string(Name) <<
+        "#" << tid <<  
+        "\n" ;
 
 
     auto di_itr = AllocationPointsDIInfo.find(Meta);
@@ -5087,8 +4985,8 @@ struct EffectiveSan : public llvm::ModulePass {
     Module = &M;
     llvm::LLVMContext &Cxt = M.getContext();
 
-    std::error_code EC;
-    llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
+    //std::error_code EC;
+    //llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
     // file << "MODULE " << std::string(M.getName()) << "\n";
 
     /*
@@ -5281,16 +5179,40 @@ struct EffectiveSan : public llvm::ModulePass {
      * Clean-up
      */
     
-    metaCache.clear();
-    infoCache.clear();
-    
-    //std::ofstream file(APFileName, std::ios::app);
+    // std::ofstream file(APFileName, std::ios::app);
     // for (auto & elem: tInfo.hashes)
     // {
-    //     file  << std::hex << "HASH(" << elem.first <<")=" << 
+    //     file  << std::dec << "HASH(" << elem.first <<")=" << 
     //                         "[" << elem.second.i64[0] << 
     //                         "," << elem.second.i64[1] << "]\n";
     // }
+    // for (auto & elem: tInfo.cache)
+    // {
+    //     file  << std::dec << "CACHE(" << elem.first <<")=" << 
+    //                         "[" << elem.second.typeMeta << 
+    //                         "," << elem.second.type_id << "]\n";
+    // }
+    // for (auto & elem: tInfo.infos)
+    // {
+    //     file  << std::dec << "INFOS(" << elem.first <<")=" << 
+    //                         "[" << elem.second << "]\n";
+    // }
+    // for (auto & elem: tInfo.names)
+    // {
+    //     file  << std::dec << "NAMES(" << elem.first <<")=" << 
+    //                         "[" << elem.second << "]\n";
+    // }
+    // for (auto & elem: TypeIDCache)
+    // {
+    //     file  << std::dec << "TID(" << elem.first <<")=\n" << 
+    //                          elem.second << "\n";
+    // }
+   
+
+    metaCache.clear();
+    infoCache.clear();
+    
+
 
 
     if (option_debug) {
