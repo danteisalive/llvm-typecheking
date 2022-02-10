@@ -911,14 +911,16 @@ void AsmPrinter::EmitFunctionBody() {
                     name == "_ZdaPv"*/) // delete[] (nothrow)
                 {
                   outs() << "ASM Printer Phase: " << "\n";
-                  outs() << name << "\n";
+                  outs() << name << " " << (uint64_t)(&MI) << "\n";
                   MI.print(outs());
                   outs() << "MI Type ID: " << 
                             MI.getMITypeID().NodeTypeID_1 << " " << 
                             MI.getMITypeID().NodeTypeID_2 << " " << 
                             MI.getMITypeID().NodeTypeID_3 << " " << 
                             MI.getMITypeID().NodeTypeID_4 << "\n";
-                  
+                  outs() << "MI Type ID Location (Inlined): [" << 
+                            MI.getDebugLoc().getInlinedLocation().first << "," <<
+                            MI.getDebugLoc().getInlinedLocation().second << "]\n";
                   std::stringstream ss;
                   ss << std::dec << MI.getMITypeID().NodeTypeID_1  << "#" <<
                                     MI.getMITypeID().NodeTypeID_2 << "#" << 

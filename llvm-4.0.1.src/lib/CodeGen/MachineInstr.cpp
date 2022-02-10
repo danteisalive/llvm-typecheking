@@ -1998,8 +1998,12 @@ void MachineInstr::print(raw_ostream &OS, ModuleSlotTracker &MST,
     debugLoc.print(OS);
   }
 
-  if (MINodeTID.valid)
-    OS << " Node Type ID: [" << MINodeTID.NodeTypeID_1 << "," << MINodeTID.NodeTypeID_2 << "," << MINodeTID.NodeTypeID_3 << "," << MINodeTID.NodeTypeID_4 << "]"; 
+  // if (MINodeTID.valid)
+    OS << " Node Type ID: [" << MINodeTID.valid <<
+    "][" << MINodeTID.NodeTypeID_1 << "," << 
+    MINodeTID.NodeTypeID_2 << "," << 
+    MINodeTID.NodeTypeID_3 << "," << 
+    MINodeTID.NodeTypeID_4 << "]"; 
 
   OS << '\n';
 }

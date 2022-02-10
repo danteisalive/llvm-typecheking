@@ -67,6 +67,12 @@
 #include "llvm/Target/TargetLowering.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Target/TargetSubtargetInfo.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/MD5.h"
+#include "llvm/Support/SpecialCaseList.h"
+#include "llvm/Support/ToolOutputFile.h"
+#include "llvm/Support/raw_ostream.h"
 #include <algorithm>
 #include <utility>
 using namespace llvm;
@@ -5894,14 +5900,12 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
   if (Result.first.getNode()) {
     const Instruction *Inst = CS.getInstruction();
 
-   
-
       // get Tyche Metadata and pass it to the SDNode for allocations sites
       llvm::MDNode *Metadata = Inst->getMetadata("TYCHE_MD");
       if (Metadata != nullptr) {
-          
-          assert(const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode()));
           const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode());
+          assert(GADN != nullptr);
+          
           StringRef name =  GADN->getGlobal()->getName();
           assert (name == "malloc" || 
                     name == "_Znwm" || // new
@@ -5917,33 +5921,54 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           outs() << "SelectionDAG Phase: ";
           outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "\n";
 
+
           //Inst->print(outs()); outs() << "\n"; 
-          if (Metadata->getNumOperands() != 4) {llvm_unreachable("wrong number of tyche operand metadata!\n");}
+          //if (Metadata->getNumOperands() != 4) {llvm_unreachable("wrong number of tyche operand metadata!\n");}
           llvm::Metadata *MD1 = Metadata->getOperand(0).get();
           llvm::Metadata *MD2 = Metadata->getOperand(1).get();
           llvm::Metadata *MD3 = Metadata->getOperand(2).get();
           llvm::Metadata *MD4 = Metadata->getOperand(3).get();
+          llvm::Metadata *MD5 = Metadata->getOperand(4).get();
           //MD->print(outs());
           //outs() << "\n";
           MDString *MDS1 = dyn_cast<MDString>(MD1);
           MDString *MDS2 = dyn_cast<MDString>(MD2);
           MDString *MDS3 = dyn_cast<MDString>(MD3);
           MDString *MDS4 = dyn_cast<MDString>(MD4);
-          
+          MDString *MDS5 = dyn_cast<MDString>(MD5);
           Result.first.getNode()->setTypeID(std::stoull(MDS1->getString()), 
                                             std::stoull(MDS2->getString()),
                                             std::stoull(MDS3->getString()),
                                             std::stoull(MDS4->getString())
                                             );
 
-          // outs() << MDS->getString() << "\n";
-          // outs() << "NumOfOperands: " <<  Callee.getNode()->getNumOperands() << " NumOfValues: " << Callee.getNode()->getNumValues() << "\n";
-          // const Instruction *Inst = CS.getInstruction();
-          //llvm::SDValue val = getValue(&I);
-          // assert (val && "Null Pointer for Allocation Call Site\n");
-          // val.getNode()->setTypeID(123);
           Result.first.getNode()->print(outs());
           outs() << "\n";
+
+          std::error_code EC;
+          llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+          const llvm::Function * caller =  Inst->getParent()->getParent();
+          const llvm::Module   * M = caller->getParent();
+          auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+          file << "LowerCallTo::\nLLVM IR Location (Inlined): [" << M->getSourceFileName() << 
+                    "][Caller Name: " << CallerName  <<
+                    "][Allocator Name: " <<  std::string(name) << 
+                    "][Location: " << std::stoull(MDS3->getString()) << "," << std::stoull(MDS4->getString()) << 
+                    "][Inlined Location: " << Inst->getDebugLoc().getInlinedLocation().first << "," << Inst->getDebugLoc().getInlinedLocation().second << 
+                    "][BB ID: " << (uint64_t)Inst->getParent() << 
+                    "][Inst ID: " << (uint64_t)Inst << 
+                    "][Prev. Inst ID: " << MDS5->getString() << 
+                    "]\n";
+
+          Inst->print(file); file << "\n";
+          // if (CallerName == "do_type")
+          // {
+          //   file << "Module:\n";
+          //             M->print(file, nullptr);
+          //             file << "\n";
+
+          // }
+          
 
       }
 

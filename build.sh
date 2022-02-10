@@ -62,6 +62,8 @@ build_llvm()
     if [ $CONFIGURE = true ]
     then
         CC=$CLANG CXX=$CLANGXX cmake ../llvm-4.0.1.src/ \
+            -DCMAKE_C_FLAGS=-msse4.2 \
+            -DCMAKE_CXX_FLAGS=-msse4.2 \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=install \
             -DBUILD_SHARED_LIBS=ON \

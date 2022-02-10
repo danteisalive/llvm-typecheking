@@ -99,3 +99,22 @@ void DebugLoc::print(raw_ostream &OS) const {
     OS << " ]";
   }
 }
+
+
+std::pair<unsigned, unsigned> DebugLoc::getInlinedLocation() const  {
+  if (!Loc)
+    return std::pair<unsigned, unsigned>(0, 0);
+
+  // Print source line info.
+  std::pair<unsigned, unsigned> res(getLine(), 0);
+  
+  if (getCol() != 0)
+    res.second =  getCol();
+
+  if (DebugLoc InlinedAtDL = getInlinedAt()) {
+    res = InlinedAtDL.getInlinedLocation();
+  }
+
+  return res;
+}
+

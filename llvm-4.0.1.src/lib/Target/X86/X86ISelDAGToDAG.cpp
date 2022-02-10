@@ -35,6 +35,12 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/MD5.h"
+#include "llvm/Support/SpecialCaseList.h"
+#include "llvm/Support/ToolOutputFile.h"
+#include "llvm/Support/raw_ostream.h"
 #include <stdint.h>
 using namespace llvm;
 
@@ -1991,6 +1997,12 @@ void X86DAGToDAGISel::Select(SDNode *Node) {
 
   if (Node->getOpcode() == ISD::CopyFromReg && Node->getTypeID().valid)
   {
+
+
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+    file << "X86DAGToDAGISel::\n" ;
+
     outs() << "Start: X86DAGToDAGISel Phase! OpCode: " << Node->getOpcode() << " " << Node->getNodeId() << " ";
     Node->print(outs());
     outs() << "\n";
@@ -1998,12 +2010,17 @@ void X86DAGToDAGISel::Select(SDNode *Node) {
     const SDValue n1 = Node->getOperand(0);
     n1.getNode()->print(outs());
     outs() << "\n";
+    n1.getNode()->print(file);
+    file << "\n";
 
     const SDValue n2 = n1.getNode()->getOperand(0);
     n2.getNode()->print(outs());
     outs() << "\n";
-
+    n2.getNode()->print(file);
+    file << "\n";
     n2.getNode()->setTypeID(Node->getTypeID());
+    n2.getNode()->print(file);
+    file << "\n";
     // if (const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Node))
     // {
 
@@ -2015,8 +2032,6 @@ void X86DAGToDAGISel::Select(SDNode *Node) {
     // }
   }
 
-    // Node->print(outs());
-    // outs() << "\n";
 
 
 

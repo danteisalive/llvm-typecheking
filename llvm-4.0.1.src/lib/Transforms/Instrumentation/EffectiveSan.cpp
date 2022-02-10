@@ -356,7 +356,7 @@ static llvm::cl::opt<unsigned> option_max_sub_objs(
     llvm::cl::desc("Maximum number of allowable sub-objects per type"),
     llvm::cl::init(10000));
 static llvm::cl::opt<bool> option_debug("effective-debug",
-                                        llvm::cl::desc("Enable debug output"));
+                                        llvm::cl::desc("Enable debug output"),llvm::cl::init(true));
 
 /*
  * Pre-defined types and objects.
@@ -4119,6 +4119,8 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
   if (CalledFn == nullptr || !CalledFn->hasName())
     return;
 
+
+
   llvm::StringRef Name = CalledFn->getName();
   llvm::Value *Bounds = nullptr;
   llvm::Constant *Meta = nullptr;
@@ -4133,8 +4135,9 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
         Name == "_ZnamRKSt9nothrow_t"))) // new[] (nothrow)
   {
     
-    std::ofstream file(APFileName, std::ios::app);
-
+    //std::ofstream file(APFileName, std::ios::app);
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
 
     TypeEntry entry;
     // malloc, new, new[]:
@@ -4161,12 +4164,10 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
 
 
 
-
-
     const llvm::DebugLoc &location = I.getDebugLoc();
     std::string loc = "";
-    unsigned int line;
-    unsigned int col;
+    uint64_t line;
+    uint64_t col;
     if (location) {
       line = location.getLine();
       col = location.getCol();
@@ -4174,25 +4175,40 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     else 
     {
       std::srand(std::time(0));
-      line  = std::rand();
-      col = std::rand();
+      line  = UINT64_MAX;
+      col = UINT64_MAX;
     }
 
     loc += std::to_string(line) + "#" + std::to_string(col);
 
+    llvm::Function * caller =  I.getParent()->getParent();
+    auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+    file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+              "][Caller Name: " << CallerName  <<
+              "][Allocator Name: " <<  std::string(Name) << 
+              "][isCall: " << Call.isCall() << 
+              "][isInvoke: " << Call.isInvoke() << 
+              "][isMustTailCall: " << Call.isMustTailCall() << 
+              "][isTailCall: " << Call.isTailCall() << 
+              "][Location: " << line << "," << col << 
+              "][Inlined Location: " << I.getDebugLoc().getInlinedLocation().first << "," << I.getDebugLoc().getInlinedLocation().second << 
+              "][BB ID: " << (uint64_t)I.getParent() << 
+              "][Inst ID: " << (uint64_t)(&I) <<
+              "]\n";
 
+    I.print(file); file << "\n";
     
-    file << TypeIDCache[tid-1];
-    file << std::dec << "METAID " << 
-        M.getSourceFileName()  <<
-        "#" << loc << 
-        "#" << tInfo.names.find(type_meta)->second << 
-        "#" << Meta <<
-        "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
-        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
-        "#" << std::string(Name) <<
-        "#" << tid <<  
-        "\n" ;
+    // file << TypeIDCache[tid-1];
+    // file /*<< std::dec*/ << "METAID " << 
+    //     M.getSourceFileName()  <<
+    //     "#" << loc << 
+    //     "#" << tInfo.names.find(type_meta)->second << 
+    //     "#" << Meta <<
+    //     "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
+    //     "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+    //     "#" << std::string(Name) <<
+    //     "#" << tid <<  
+    //     "\n" ;
 
 
 
@@ -4204,6 +4220,7 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));    
     Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
     Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
     
     auto *N =  llvm::MDTuple::get(C, Ops);
     //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
@@ -4218,8 +4235,9 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
   } else if (Call.getNumArgOperands() == 2 && Name == "calloc") {
     // calloc:
    
-std::ofstream file(APFileName, std::ios::app);
-
+    // std::ofstream file(APFileName, std::ios::app);
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
 
     TypeEntry entry;
     // malloc, new, new[]:
@@ -4247,7 +4265,6 @@ std::ofstream file(APFileName, std::ios::app);
 
 
 
-
     const llvm::DebugLoc &location = I.getDebugLoc();
     std::string loc = "";
     unsigned int line;
@@ -4266,18 +4283,34 @@ std::ofstream file(APFileName, std::ios::app);
     loc += std::to_string(line) + "#" + std::to_string(col);
 
 
+    llvm::Function * caller =  I.getParent()->getParent();
+    auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+    file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+              "][Caller Name: " << CallerName  <<
+              "][Allocator Name: " <<  std::string(Name) << 
+              "][isCall: " << Call.isCall() << 
+              "][isInvoke: " << Call.isInvoke() << 
+              "][isMustTailCall: " << Call.isMustTailCall() << 
+              "][isTailCall: " << Call.isTailCall() << 
+              "][Location: " << line << "," << col << 
+              "][Inlined Location: " << I.getDebugLoc().getInlinedLocation().first << "," << I.getDebugLoc().getInlinedLocation().second << 
+              "][BB ID: " << (uint64_t)I.getParent() <<          
+              "][Inst ID: " << (uint64_t)(&I) << 
+              "]\n";
+
+    I.print(file); file << "\n";
     
-    file << TypeIDCache[tid-1];
-    file << std::dec << "METAID " << 
-        M.getSourceFileName()  <<
-        "#" << loc << 
-        "#" << tInfo.names.find(type_meta)->second << 
-        "#" << Meta <<
-        "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
-        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
-        "#" << std::string(Name) <<
-        "#" << tid <<  
-        "\n" ;
+    // file << TypeIDCache[tid-1];
+    // file /*<< std::dec*/ << "METAID " << 
+    //     M.getSourceFileName()  <<
+    //     "#" << loc << 
+    //     "#" << tInfo.names.find(type_meta)->second << 
+    //     "#" << Meta <<
+    //     "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
+    //     "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+    //     "#" << std::string(Name) <<
+    //     "#" << tid <<  
+    //     "\n" ;
 
 
 
@@ -4289,6 +4322,7 @@ std::ofstream file(APFileName, std::ios::app);
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1])));    
     Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
     Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
     
     auto *N =  llvm::MDTuple::get(C, Ops);
     //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
@@ -5109,34 +5143,34 @@ struct EffectiveSan : public llvm::ModulePass {
      * Clean-up
      */
     
-    // std::ofstream file(APFileName, std::ios::app);
-    // for (auto & elem: tInfo.hashes)
-    // {
-    //     file  << std::dec << "HASH(" << elem.first <<")=" << 
-    //                         "[" << elem.second.i64[0] << 
-    //                         "," << elem.second.i64[1] << "]\n";
-    // }
-    // for (auto & elem: tInfo.cache)
-    // {
-    //     file  << std::dec << "CACHE(" << elem.first <<")=" << 
-    //                         "[" << elem.second.typeMeta << 
-    //                         "," << elem.second.type_id << "]\n";
-    // }
-    // for (auto & elem: tInfo.infos)
-    // {
-    //     file  << std::dec << "INFOS(" << elem.first <<")=" << 
-    //                         "[" << elem.second << "]\n";
-    // }
-    // for (auto & elem: tInfo.names)
-    // {
-    //     file  << std::dec << "NAMES(" << elem.first <<")=" << 
-    //                         "[" << elem.second << "]\n";
-    // }
-    // for (auto & elem: TypeIDCache)
-    // {
-    //     file  << std::dec << "TID(" << elem.first <<")=\n" << 
-    //                          elem.second << "\n";
-    // }
+    std::ofstream file(APFileName, std::ios::app);
+    for (auto & elem: tInfo.hashes)
+    {
+        file  << std::dec << "HASH(" << elem.first <<")=" << 
+                            "[" << elem.second.i64[0] << 
+                            "," << elem.second.i64[1] << "]\n";
+    }
+    for (auto & elem: tInfo.cache)
+    {
+        file  << std::dec << "CACHE(" << elem.first <<")=" << 
+                            "[" << elem.second.typeMeta << 
+                            "," << elem.second.type_id << "]\n";
+    }
+    for (auto & elem: tInfo.infos)
+    {
+        file  << std::dec << "INFOS(" << elem.first <<")=" << 
+                            "[" << elem.second << "]\n";
+    }
+    for (auto & elem: tInfo.names)
+    {
+        file  << std::dec << "NAMES(" << elem.first <<")=" << 
+                            "[" << elem.second << "]\n";
+    }
+    for (auto & elem: TypeIDCache)
+    {
+        file  << std::dec << "TID(" << elem.first <<")=\n" << 
+                             elem.second << "\n";
+    }
    
 
     metaCache.clear();

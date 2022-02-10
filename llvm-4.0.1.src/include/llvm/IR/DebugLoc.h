@@ -18,6 +18,8 @@
 #include "llvm/IR/TrackingMDRef.h"
 #include "llvm/Support/DataTypes.h"
 
+#include <map>
+
 namespace llvm {
 
   class LLVMContext;
@@ -84,6 +86,7 @@ namespace llvm {
     unsigned getCol() const;
     MDNode *getScope() const;
     DILocation *getInlinedAt() const;
+    std::pair<unsigned, unsigned> getInlinedLocation() const;
 
     /// \brief Get the fully inlined-at scope for a DebugLoc.
     ///

@@ -703,7 +703,11 @@ void SDNode::print(raw_ostream &OS, const SelectionDAG *G) const {
     if (i) OS << "; "; else OS << " ";
     printOperand(OS, G, getOperand(i));
   }
-  if (NodeTID.valid)
-    OS << " Node TypeID: [" << NodeTID.NodeTypeID_1 << "," << NodeTID.NodeTypeID_2 << "," << NodeTID.NodeTypeID_3 << "," << NodeTID.NodeTypeID_4 << "]";
+  // if (NodeTID.valid)
+  OS << " Node TypeID: [ " << NodeTID.valid << 
+  "]" << NodeTID.NodeTypeID_1 << "," << 
+  NodeTID.NodeTypeID_2 << "," << 
+  NodeTID.NodeTypeID_3 << "," << 
+  NodeTID.NodeTypeID_4 << "]";
 
 }
