@@ -29,6 +29,8 @@
 #include "llvm/Support/ArrayRecycler.h"
 #include "llvm/Target/TargetOpcodes.h"
 
+#include <sstream>
+
 namespace llvm {
 
 class StringRef;
@@ -72,6 +74,68 @@ public:
     BundledPred  = 1 << 2,              // Instruction has bundled predecessors.
     BundledSucc  = 1 << 3               // Instruction has bundled successors.
   };
+
+
+  class MINodeTypeID
+  {
+    private:
+      uint64_t NodeTypeID_1;
+      uint64_t NodeTypeID_2;
+      uint64_t NodeTypeID_3;
+      uint64_t NodeTypeID_4;
+      uint64_t NodeTypeID_5;
+      uint64_t NodeTypeID_6;
+      bool valid;
+    public:
+      MINodeTypeID(uint64_t tid_1, 
+                  uint64_t tid_2, uint64_t tid_3, 
+                  uint64_t tid_4, uint64_t tid_5, 
+                  uint64_t tid_6, bool _valid) : 
+                  NodeTypeID_1(tid_1), 
+                  NodeTypeID_2(tid_2), 
+                  NodeTypeID_3(tid_3), 
+                  NodeTypeID_4(tid_4), 
+                  NodeTypeID_5(tid_5), 
+                  NodeTypeID_6(tid_6), 
+                  valid(_valid) {}
+
+      // MINodeTypeID() : valid(false) {}
+    
+      MINodeTypeID& operator = (const MINodeTypeID& mi_node)
+      {
+        if (this == &mi_node)
+          return *this;
+
+        this->NodeTypeID_1 = mi_node.NodeTypeID_1;
+        this->NodeTypeID_2 = mi_node.NodeTypeID_2;
+        this->NodeTypeID_3 = mi_node.NodeTypeID_3;
+        this->NodeTypeID_4 = mi_node.NodeTypeID_4;
+        this->NodeTypeID_5 = mi_node.NodeTypeID_5;
+        this->NodeTypeID_6 = mi_node.NodeTypeID_6;
+        this->valid = mi_node.valid;
+
+        return *this;
+      }
+
+      std::string dump() const
+      {
+        std::stringstream ss;
+        ss << std::dec << NodeTypeID_1  << "#" <<
+                          NodeTypeID_2 << "#" << 
+                          NodeTypeID_3 << "#" << 
+                          NodeTypeID_4 << "#" << 
+                          NodeTypeID_5 << "#" << 
+                          NodeTypeID_6;
+          
+        return ss.str();
+      }
+      
+      bool isValid() const {return valid;}
+      
+  };
+
+  typedef MINodeTypeID MINodeTypeID;
+
 private:
   const MCInstrDesc *MCID;              // Instruction descriptor.
   MachineBasicBlock *Parent;            // Pointer to the owning basic block.
@@ -129,37 +193,17 @@ private:
   // MachineInstrs are pool-allocated and owned by MachineFunction.
   friend class MachineFunction;
 
+
+
+  MINodeTypeID MINodeTID;
+
 public:
 
-  struct MINodeTypeID
-  {
-    uint64_t NodeTypeID_1;
-    uint64_t NodeTypeID_2;
-    uint64_t NodeTypeID_3;
-    uint64_t NodeTypeID_4;
-    bool valid;
-
-    MINodeTypeID(uint64_t tid_1, uint64_t tid_2, uint64_t tid_3, uint64_t tid_4) : 
-                NodeTypeID_1(tid_1), 
-                NodeTypeID_2(tid_2), 
-                NodeTypeID_3(tid_3), 
-                NodeTypeID_4(tid_4), 
-                valid(true) {}
-
-    MINodeTypeID() : valid(false) {}
-
-  } MINodeTID;
 
 
-  void setMITypeID( uint64_t tid_1, uint64_t tid_2, uint64_t tid_3, uint64_t tid_4) 
-  { 
-    MINodeTID.NodeTypeID_1 = tid_1; 
-    MINodeTID.NodeTypeID_2 = tid_2; 
-    MINodeTID.NodeTypeID_3 = tid_3; 
-    MINodeTID.NodeTypeID_4 = tid_4; 
-    MINodeTID.valid = true;
-  }
+
   MINodeTypeID getMITypeID() const {return MINodeTID;}
+  void         setMITypeID(const MINodeTypeID& mi) {MINodeTID = mi;}
 
   const MachineBasicBlock* getParent() const { return Parent; }
   MachineBasicBlock* getParent() { return Parent; }

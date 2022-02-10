@@ -706,7 +706,8 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MCInstrDesc &tid,
                            DebugLoc dl, bool NoImp)
     : MCID(&tid), Parent(nullptr), Operands(nullptr), NumOperands(0), Flags(0),
       AsmPrinterFlags(0), NumMemRefs(0), MemRefs(nullptr),
-      debugLoc(std::move(dl)) {
+      debugLoc(std::move(dl)),
+      MINodeTID(MachineInstr::MINodeTypeID(0, 0, 0 , 0, 0, 0, false)) {
   assert(debugLoc.hasTrivialDestructor() && "Expected trivial destructor");
 
   // Reserve space for the expected number of operands.
@@ -719,7 +720,7 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MCInstrDesc &tid,
   if (!NoImp)
     addImplicitDefUseOperands(MF);
 
-  MINodeTID = MINodeTypeID();
+  
 }
 
 /// MachineInstr ctor - Copies MachineInstr arg exactly
@@ -727,7 +728,7 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MCInstrDesc &tid,
 MachineInstr::MachineInstr(MachineFunction &MF, const MachineInstr &MI)
     : MCID(&MI.getDesc()), Parent(nullptr), Operands(nullptr), NumOperands(0),
       Flags(0), AsmPrinterFlags(0), NumMemRefs(MI.NumMemRefs),
-      MemRefs(MI.MemRefs), debugLoc(MI.getDebugLoc()) {
+      MemRefs(MI.MemRefs), debugLoc(MI.getDebugLoc()), MINodeTID(MI.getMITypeID()) {
   assert(debugLoc.hasTrivialDestructor() && "Expected trivial destructor");
 
   CapOperands = OperandCapacity::get(MI.getNumOperands());
@@ -740,7 +741,7 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MachineInstr &MI)
   // Copy all the sensible flags.
   setFlags(MI.Flags);
   
-  MINodeTID = MINodeTypeID();
+
 }
 
 /// getRegInfo - If this instruction is embedded into a MachineFunction,
@@ -1999,11 +2000,7 @@ void MachineInstr::print(raw_ostream &OS, ModuleSlotTracker &MST,
   }
 
   // if (MINodeTID.valid)
-    OS << " Node Type ID: [" << MINodeTID.valid <<
-    "][" << MINodeTID.NodeTypeID_1 << "," << 
-    MINodeTID.NodeTypeID_2 << "," << 
-    MINodeTID.NodeTypeID_3 << "," << 
-    MINodeTID.NodeTypeID_4 << "]"; 
+    OS << " Node Type ID: [" << MINodeTID.dump() << "]"; 
 
   OS << '\n';
 }

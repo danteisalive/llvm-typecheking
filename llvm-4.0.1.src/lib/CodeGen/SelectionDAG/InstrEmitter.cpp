@@ -29,6 +29,12 @@
 #include "llvm/Target/TargetInstrInfo.h"
 #include "llvm/Target/TargetLowering.h"
 #include "llvm/Target/TargetSubtargetInfo.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/MD5.h"
+#include "llvm/Support/SpecialCaseList.h"
+#include "llvm/Support/ToolOutputFile.h"
+#include "llvm/Support/raw_ostream.h"
 using namespace llvm;
 
 #define DEBUG_TYPE "instr-emitter"
@@ -936,14 +942,26 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
                 {
                   outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID().NodeTypeID_1 << " " << Node->getTypeID().NodeTypeID_2;
                   Node->print(outs());
-                  MIB.getInstr()->setMITypeID(Node->getTypeID().NodeTypeID_1, 
+                  auto MINode = llvm::MachineInstr::MINodeTypeID(
+                                              Node->getTypeID().NodeTypeID_1, 
                                               Node->getTypeID().NodeTypeID_2,
                                               Node->getTypeID().NodeTypeID_3,
-                                              Node->getTypeID().NodeTypeID_4);
+                                              Node->getTypeID().NodeTypeID_4,
+                                              Node->getTypeID().NodeTypeID_5,
+                                              Node->getTypeID().NodeTypeID_6,
+                                              true);
+
+                  MIB.getInstr()->setMITypeID(MINode);
                   //MIB.getInstr()->print(outs());
                   //outs() << " Node TypeID: " << Node->getTypeID() << "\n";
 
                   outs() <<"\n";
+
+                  std::error_code EC;
+                  llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+                  file << "EmitMachineNode::\n" ;
+                  Node->print(file); file << "\n";
+                  MIB.getInstr()->print(file); file << "\n";
                   
                 }
             }

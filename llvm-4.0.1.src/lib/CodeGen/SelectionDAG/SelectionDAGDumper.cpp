@@ -708,6 +708,8 @@ void SDNode::print(raw_ostream &OS, const SelectionDAG *G) const {
   "]" << NodeTID.NodeTypeID_1 << "," << 
   NodeTID.NodeTypeID_2 << "," << 
   NodeTID.NodeTypeID_3 << "," << 
-  NodeTID.NodeTypeID_4 << "]";
+  NodeTID.NodeTypeID_4 << "," <<
+  NodeTID.NodeTypeID_5 << "," <<
+  NodeTID.NodeTypeID_6 << "]";
 
 }

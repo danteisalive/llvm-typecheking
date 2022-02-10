@@ -892,7 +892,7 @@ void AsmPrinter::EmitFunctionBody() {
     for (auto &MI : MBB) {      
 
 
-      if (MI.getMITypeID().valid && MI.getDesc().isCall()) {
+      if (MI.getMITypeID().isValid() && MI.getDesc().isCall()) {
 
         for (const MachineOperand &MO : MI.operands())
         {
@@ -910,25 +910,29 @@ void AsmPrinter::EmitFunctionBody() {
                     name == "_ZdlPv" || // delete
                     name == "_ZdaPv"*/) // delete[] (nothrow)
                 {
+
+                  std::error_code EC;
+                  llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+                  
+                  file << "EmitFunctionBody::\n" ;
+                  MI.print(file); file << "\n";
+
+
                   outs() << "ASM Printer Phase: " << "\n";
                   outs() << name << " " << (uint64_t)(&MI) << "\n";
                   MI.print(outs());
-                  outs() << "MI Type ID: " << 
-                            MI.getMITypeID().NodeTypeID_1 << " " << 
-                            MI.getMITypeID().NodeTypeID_2 << " " << 
-                            MI.getMITypeID().NodeTypeID_3 << " " << 
-                            MI.getMITypeID().NodeTypeID_4 << "\n";
+                  outs() << "MI Type ID: " << MI.getMITypeID().dump() << "\n";
                   outs() << "MI Type ID Location (Inlined): [" << 
                             MI.getDebugLoc().getInlinedLocation().first << "," <<
                             MI.getDebugLoc().getInlinedLocation().second << "]\n";
-                  std::stringstream ss;
-                  ss << std::dec << MI.getMITypeID().NodeTypeID_1  << "#" <<
-                                    MI.getMITypeID().NodeTypeID_2 << "#" << 
-                                    MI.getMITypeID().NodeTypeID_3 << "#" << 
-                                    MI.getMITypeID().NodeTypeID_4;
-                  MCSymbol *CSLabel = getTempSymbol("TYCHE_SYMS#" + 
-                                                    getModuleIdentifier() + "#" + 
-                                                    std::string(name) + "#" + ss.str());
+                  
+                  std::string symbol_name = "TYCHE_SYMS#" + 
+                                          getModuleIdentifier() + "#" + 
+                                          std::string(name) + "#" + 
+                                          MI.getMITypeID().dump();
+                  file << "Dumping Symbol Name: " << symbol_name << "\n"; 
+
+                  MCSymbol *CSLabel = getTempSymbol(symbol_name);
                   
                   OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Internal);
                   OutStreamer->EmitLabel(CSLabel);
@@ -2434,7 +2438,7 @@ MCSymbol *AsmPrinter::getTempSymbol(StringRef Name, unsigned ID) const {
 /// getTempSymbol - Return an assembler temporary label with the specified
 /// stem.
 MCSymbol *AsmPrinter::getTempSymbol(StringRef Name) const {
-  return OutContext.getOrCreateSymbol("TYCHE_" + Name);
+  return OutContext.getOrCreateSymbol( Name);
 }
 
 

@@ -5939,7 +5939,10 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           Result.first.getNode()->setTypeID(std::stoull(MDS1->getString()), 
                                             std::stoull(MDS2->getString()),
                                             std::stoull(MDS3->getString()),
-                                            std::stoull(MDS4->getString())
+                                            std::stoull(MDS4->getString()),
+                                            //std::stoull(MDS5->getString())
+                                            (uint64_t)Inst,
+                                            (uint64_t)Inst->getParent()
                                             );
 
           Result.first.getNode()->print(outs());
