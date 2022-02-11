@@ -927,8 +927,7 @@ void AsmPrinter::EmitFunctionBody() {
                             MI.getDebugLoc().getInlinedLocation().second << "]\n";
                   
                   std::string symbol_name = "TYCHE_SYMS#" + 
-                                          getModuleIdentifier() + "#" + 
-                                          std::string(name) + "#" + 
+                                          getModuleIdentifier() + "#" +
                                           MI.getMITypeID().dump();
                   file << "Dumping Symbol Name: " << symbol_name << "\n"; 
 

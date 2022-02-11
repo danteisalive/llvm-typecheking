@@ -541,11 +541,12 @@ public:
   {
     private:
       std::vector<uint64_t> Nodes;
-      bool valid;
+      std::vector<std::string> Names;
+      bool Valid;
 
     public:
-      NodeTypeID(std::vector<uint64_t> _nodes, bool _valid) : 
-      Nodes(_nodes), valid(_valid) {}
+      NodeTypeID(std::vector<uint64_t> _nodes, std::vector<std::string> _names, bool _valid) : 
+      Nodes(_nodes), Names(_names) , Valid(_valid) {}
     
       NodeTypeID& operator = (const NodeTypeID& mi_node)
       {
@@ -553,7 +554,8 @@ public:
           return *this;
 
         this->Nodes = mi_node.Nodes;
-        this->valid = mi_node.valid;
+        this->Valid = mi_node.Valid;
+        this->Names = mi_node.Names;
 
         return *this;
       }
@@ -565,12 +567,17 @@ public:
         {
             ss << std::dec << Nodes[i] << "#";
         }
+        for (size_t i = 0; i < Names.size(); i++)
+        {
+            ss << Names[i] << "#";
+        }
           
         return ss.str();
       }
       
-      bool isValid() const {return valid;}
+      bool isValid() const {return Valid;}
       std::vector<uint64_t> getNodesVector() const {return Nodes;}
+      std::vector<std::string> getNamesVector() const {return Names;}
       
   };
 
@@ -949,7 +956,7 @@ protected:
       : NodeType(Opc), NodeId(-1), OperandList(nullptr), ValueList(VTs.VTs),
         UseList(nullptr), NumOperands(0), NumValues(VTs.NumVTs), IROrder(Order),
         debugLoc(std::move(dl)), 
-        NodeTID(SDNode::NodeTypeID(std::vector<uint64_t>(), false)) 
+        NodeTID(SDNode::NodeTypeID(std::vector<uint64_t>(), std::vector<std::string>(), false)) 
   {
 
     memset(&RawSDNodeBits, 0, sizeof(RawSDNodeBits));

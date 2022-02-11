@@ -5922,31 +5922,31 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "\n";
 
 
-          //Inst->print(outs()); outs() << "\n"; 
-          //if (Metadata->getNumOperands() != 4) {llvm_unreachable("wrong number of tyche operand metadata!\n");}
-          llvm::Metadata *MD1 = Metadata->getOperand(0).get();
-          llvm::Metadata *MD2 = Metadata->getOperand(1).get();
-          llvm::Metadata *MD3 = Metadata->getOperand(2).get();
-          llvm::Metadata *MD4 = Metadata->getOperand(3).get();
-          llvm::Metadata *MD5 = Metadata->getOperand(4).get();
-          //MD->print(outs());
-          //outs() << "\n";
-          MDString *MDS1 = dyn_cast<MDString>(MD1);
-          MDString *MDS2 = dyn_cast<MDString>(MD2);
-          MDString *MDS3 = dyn_cast<MDString>(MD3);
-          MDString *MDS4 = dyn_cast<MDString>(MD4);
-          MDString *MDS5 = dyn_cast<MDString>(MD5);
+
+
+
 
           std::vector<uint64_t> nodes;
-          nodes.push_back(std::stoull(MDS1->getString()));
-          nodes.push_back(std::stoull(MDS2->getString()));
-          nodes.push_back(std::stoull(MDS3->getString()));
-          nodes.push_back(std::stoull(MDS4->getString()));
-          nodes.push_back(std::stoull(MDS5->getString()));
+          // the last two operands are string
+          for (size_t i = 0; i < Metadata->getNumOperands() - 2 ; i++)
+          {
+              llvm::Metadata *MD = Metadata->getOperand(i).get();
+              MDString *MDS = dyn_cast<MDString>(MD);
+              nodes.push_back(std::stoull(MDS->getString()));
+          }
           nodes.push_back((uint64_t)Inst);
           nodes.push_back((uint64_t)Inst->getParent());
 
-          llvm::SDNode::NodeTypeID temp = llvm::SDNode::NodeTypeID(nodes, true);                        
+          std::vector<std::string> names;
+          // the last two operands are string
+          for (size_t i = Metadata->getNumOperands() - 2; i < Metadata->getNumOperands() ; i++)
+          {
+              llvm::Metadata *MD = Metadata->getOperand(i).get();
+              MDString *MDS = dyn_cast<MDString>(MD);
+              names.push_back(std::string(MDS->getString()));
+          }      
+
+          llvm::SDNode::NodeTypeID temp = llvm::SDNode::NodeTypeID(nodes, names, true);                        
 
           Result.first.getNode()->setTypeID(temp);
 
@@ -5961,11 +5961,11 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           file << "LowerCallTo::\nLLVM IR Location (Inlined): [" << M->getSourceFileName() << 
                     "][Caller Name: " << CallerName  <<
                     "][Allocator Name: " <<  std::string(name) << 
-                    "][Location: " << std::stoull(MDS3->getString()) << "," << std::stoull(MDS4->getString()) << 
+                    "][Location: " << ((nodes.size() >= 5)? nodes[3] : 0) << "," << ((nodes.size() >= 5)? nodes[4] : 0) << 
                     "][Inlined Location: " << Inst->getDebugLoc().getInlinedLocation().first << "," << Inst->getDebugLoc().getInlinedLocation().second << 
                     "][BB ID: " << (uint64_t)Inst->getParent() << 
                     "][Inst ID: " << (uint64_t)Inst << 
-                    "][Prev. Inst ID: " << MDS5->getString() << 
+                    "][Prev. Inst ID: " << ((nodes.size() >= 6)? nodes[5] : 0)  << 
                     "]\n";
 
           Inst->print(file); file << "\n";

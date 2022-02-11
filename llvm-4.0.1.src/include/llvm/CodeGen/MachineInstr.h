@@ -80,12 +80,16 @@ public:
   {
     private:
       std::vector<uint64_t> Nodes;
+      std::vector<std::string> Names;
       bool Valid;
     public:
-      MINodeTypeID(std::vector<uint64_t> _nodes, bool _valid) : 
-                Nodes(_nodes)  , Valid(_valid) {}
+      MINodeTypeID(std::vector<uint64_t> _nodes, 
+                  std::vector<std::string> _names, 
+                  bool _valid) : 
+                Nodes(_nodes), Names(_names), Valid(_valid) {}
 
       std::vector<uint64_t> getNodesVector() const {return Nodes; }
+      std::vector<std::string> getNamesVector() const {return Names; }
     
       MINodeTypeID& operator = (const MINodeTypeID& mi_node)
       {
@@ -94,6 +98,7 @@ public:
 
         this->Nodes = mi_node.Nodes;
         this->Valid = mi_node.Valid;
+        this->Names = mi_node.Names;
 
         return *this;
       }
@@ -105,7 +110,10 @@ public:
         {
           ss << std::dec << Nodes[i] << "#";
         }
-          
+        for (size_t i = 0; i < Names.size(); i++)
+        {
+          ss << Names[i] << "#";
+        }
         return ss.str();
       }
       

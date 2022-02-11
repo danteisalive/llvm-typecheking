@@ -942,7 +942,9 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
                 {
                   outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID().dump();
                   Node->print(outs());
-                  auto MINode = llvm::MachineInstr::MINodeTypeID(Node->getTypeID().getNodesVector(), true);
+                  auto MINode = llvm::MachineInstr::MINodeTypeID(Node->getTypeID().getNodesVector(), 
+                                                                Node->getTypeID().getNamesVector(),
+                                                                true);
 
                   MIB.getInstr()->setMITypeID(MINode);
                   //MIB.getInstr()->print(outs());
