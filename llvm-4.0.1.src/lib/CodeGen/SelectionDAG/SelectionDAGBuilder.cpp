@@ -5936,14 +5936,19 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           MDString *MDS3 = dyn_cast<MDString>(MD3);
           MDString *MDS4 = dyn_cast<MDString>(MD4);
           MDString *MDS5 = dyn_cast<MDString>(MD5);
-          Result.first.getNode()->setTypeID(std::stoull(MDS1->getString()), 
-                                            std::stoull(MDS2->getString()),
-                                            std::stoull(MDS3->getString()),
-                                            std::stoull(MDS4->getString()),
-                                            //std::stoull(MDS5->getString())
-                                            (uint64_t)Inst,
-                                            (uint64_t)Inst->getParent()
-                                            );
+
+          std::vector<uint64_t> nodes;
+          nodes.push_back(std::stoull(MDS1->getString()));
+          nodes.push_back(std::stoull(MDS2->getString()));
+          nodes.push_back(std::stoull(MDS3->getString()));
+          nodes.push_back(std::stoull(MDS4->getString()));
+          nodes.push_back(std::stoull(MDS5->getString()));
+          nodes.push_back((uint64_t)Inst);
+          nodes.push_back((uint64_t)Inst->getParent());
+
+          llvm::SDNode::NodeTypeID temp = llvm::SDNode::NodeTypeID(nodes, true);                        
+
+          Result.first.getNode()->setTypeID(temp);
 
           Result.first.getNode()->print(outs());
           outs() << "\n";

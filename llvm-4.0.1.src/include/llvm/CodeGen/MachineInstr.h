@@ -79,40 +79,21 @@ public:
   class MINodeTypeID
   {
     private:
-      uint64_t NodeTypeID_1;
-      uint64_t NodeTypeID_2;
-      uint64_t NodeTypeID_3;
-      uint64_t NodeTypeID_4;
-      uint64_t NodeTypeID_5;
-      uint64_t NodeTypeID_6;
-      bool valid;
+      std::vector<uint64_t> Nodes;
+      bool Valid;
     public:
-      MINodeTypeID(uint64_t tid_1, 
-                  uint64_t tid_2, uint64_t tid_3, 
-                  uint64_t tid_4, uint64_t tid_5, 
-                  uint64_t tid_6, bool _valid) : 
-                  NodeTypeID_1(tid_1), 
-                  NodeTypeID_2(tid_2), 
-                  NodeTypeID_3(tid_3), 
-                  NodeTypeID_4(tid_4), 
-                  NodeTypeID_5(tid_5), 
-                  NodeTypeID_6(tid_6), 
-                  valid(_valid) {}
+      MINodeTypeID(std::vector<uint64_t> _nodes, bool _valid) : 
+                Nodes(_nodes)  , Valid(_valid) {}
 
-      // MINodeTypeID() : valid(false) {}
+      std::vector<uint64_t> getNodesVector() const {return Nodes; }
     
       MINodeTypeID& operator = (const MINodeTypeID& mi_node)
       {
         if (this == &mi_node)
           return *this;
 
-        this->NodeTypeID_1 = mi_node.NodeTypeID_1;
-        this->NodeTypeID_2 = mi_node.NodeTypeID_2;
-        this->NodeTypeID_3 = mi_node.NodeTypeID_3;
-        this->NodeTypeID_4 = mi_node.NodeTypeID_4;
-        this->NodeTypeID_5 = mi_node.NodeTypeID_5;
-        this->NodeTypeID_6 = mi_node.NodeTypeID_6;
-        this->valid = mi_node.valid;
+        this->Nodes = mi_node.Nodes;
+        this->Valid = mi_node.Valid;
 
         return *this;
       }
@@ -120,17 +101,15 @@ public:
       std::string dump() const
       {
         std::stringstream ss;
-        ss << std::dec << NodeTypeID_1  << "#" <<
-                          NodeTypeID_2 << "#" << 
-                          NodeTypeID_3 << "#" << 
-                          NodeTypeID_4 << "#" << 
-                          NodeTypeID_5 << "#" << 
-                          NodeTypeID_6;
+        for (size_t i = 0; i < Nodes.size(); i++)
+        {
+          ss << std::dec << Nodes[i] << "#";
+        }
           
         return ss.str();
       }
       
-      bool isValid() const {return valid;}
+      bool isValid() const {return Valid;}
       
   };
 

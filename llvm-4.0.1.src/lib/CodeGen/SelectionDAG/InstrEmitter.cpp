@@ -940,16 +940,9 @@ EmitMachineNode(SDNode *Node, bool IsClone, bool IsCloned,
                     name == "_ZdlPv" || // delete
                     name == "_ZdaPv"*/) // delete[] (nothrow)
                 {
-                  outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID().NodeTypeID_1 << " " << Node->getTypeID().NodeTypeID_2;
+                  outs() << "Instr Emitter Phase: Node OpCode: " << Node->getOpcode() << " " << Node->getTypeID().dump();
                   Node->print(outs());
-                  auto MINode = llvm::MachineInstr::MINodeTypeID(
-                                              Node->getTypeID().NodeTypeID_1, 
-                                              Node->getTypeID().NodeTypeID_2,
-                                              Node->getTypeID().NodeTypeID_3,
-                                              Node->getTypeID().NodeTypeID_4,
-                                              Node->getTypeID().NodeTypeID_5,
-                                              Node->getTypeID().NodeTypeID_6,
-                                              true);
+                  auto MINode = llvm::MachineInstr::MINodeTypeID(Node->getTypeID().getNodesVector(), true);
 
                   MIB.getInstr()->setMITypeID(MINode);
                   //MIB.getInstr()->print(outs());

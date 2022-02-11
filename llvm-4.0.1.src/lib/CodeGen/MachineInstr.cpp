@@ -707,7 +707,7 @@ MachineInstr::MachineInstr(MachineFunction &MF, const MCInstrDesc &tid,
     : MCID(&tid), Parent(nullptr), Operands(nullptr), NumOperands(0), Flags(0),
       AsmPrinterFlags(0), NumMemRefs(0), MemRefs(nullptr),
       debugLoc(std::move(dl)),
-      MINodeTID(MachineInstr::MINodeTypeID(0, 0, 0 , 0, 0, 0, false)) {
+      MINodeTID(MachineInstr::MINodeTypeID(std::vector<uint64_t>(), false)) {
   assert(debugLoc.hasTrivialDestructor() && "Expected trivial destructor");
 
   // Reserve space for the expected number of operands.

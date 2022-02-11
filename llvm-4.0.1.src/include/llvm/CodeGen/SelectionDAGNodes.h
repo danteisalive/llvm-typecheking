@@ -50,6 +50,7 @@
 #include <iterator>
 #include <string>
 #include <tuple>
+#include <sstream>
 
 namespace llvm {
 
@@ -536,45 +537,52 @@ public:
   /// Used for debug printing.
   uint16_t PersistentId;
 
-  struct NodeTypeID
+  class NodeTypeID
   {
-    uint64_t NodeTypeID_1;
-    uint64_t NodeTypeID_2;
-    uint64_t NodeTypeID_3;
-    uint64_t NodeTypeID_4;
-    uint64_t NodeTypeID_5;
-    uint64_t NodeTypeID_6;
-    bool valid;
+    private:
+      std::vector<uint64_t> Nodes;
+      bool valid;
 
-    NodeTypeID(uint64_t tid_1, uint64_t tid_2, 
-              uint64_t tid_3, uint64_t tid_4, 
-              uint64_t tid_5, uint64_t tid_6) : 
-              NodeTypeID_1(tid_1), NodeTypeID_2(tid_2), 
-              NodeTypeID_3(tid_3), NodeTypeID_4(tid_4), 
-              NodeTypeID_5(tid_5), NodeTypeID_6(tid_6),
-              valid(true) {}
+    public:
+      NodeTypeID(std::vector<uint64_t> _nodes, bool _valid) : 
+      Nodes(_nodes), valid(_valid) {}
+    
+      NodeTypeID& operator = (const NodeTypeID& mi_node)
+      {
+        if (this == &mi_node)
+          return *this;
 
-    NodeTypeID() : valid(false) {}
+        this->Nodes = mi_node.Nodes;
+        this->valid = mi_node.valid;
 
-  } NodeTID;
+        return *this;
+      }
 
-  //===--------------------------------------------------------------------===//
-  //  Accessors
-  //
-  // set TID
-  void setTypeID(uint64_t tid_1, uint64_t tid_2, 
-                uint64_t tid_3, uint64_t tid_4, 
-                uint64_t tid_5, uint64_t tid_6) 
-  {
-                NodeTID.NodeTypeID_1 = tid_1; 
-                NodeTID.NodeTypeID_2 = tid_2; 
-                NodeTID.NodeTypeID_3 = tid_3; 
-                NodeTID.NodeTypeID_4 = tid_4; 
-                NodeTID.NodeTypeID_5 = tid_5; 
-                NodeTID.NodeTypeID_6 = tid_6; 
-                NodeTID.valid = true;
-  }
-  void setTypeID(NodeTypeID tid) {NodeTID = tid;}
+      std::string dump() const
+      {
+        std::stringstream ss;
+        for (size_t i = 0; i < Nodes.size(); i++)
+        {
+            ss << std::dec << Nodes[i] << "#";
+        }
+          
+        return ss.str();
+      }
+      
+      bool isValid() const {return valid;}
+      std::vector<uint64_t> getNodesVector() const {return Nodes;}
+      
+  };
+
+  typedef NodeTypeID NodeTypeID;
+
+  private:
+  NodeTypeID NodeTID;
+  
+  
+  public:
+
+  void setTypeID(NodeTypeID& tid) {NodeTID = tid;}
   NodeTypeID getTypeID() const {return NodeTID;}
 
   /// Return the SelectionDAG opcode value for this node. For
@@ -940,9 +948,10 @@ protected:
   SDNode(unsigned Opc, unsigned Order, DebugLoc dl, SDVTList VTs)
       : NodeType(Opc), NodeId(-1), OperandList(nullptr), ValueList(VTs.VTs),
         UseList(nullptr), NumOperands(0), NumValues(VTs.NumVTs), IROrder(Order),
-        debugLoc(std::move(dl)) {
+        debugLoc(std::move(dl)), 
+        NodeTID(SDNode::NodeTypeID(std::vector<uint64_t>(), false)) 
+  {
 
-    NodeTID = NodeTypeID();
     memset(&RawSDNodeBits, 0, sizeof(RawSDNodeBits));
     assert(debugLoc.hasTrivialDestructor() && "Expected trivial destructor");
     assert(NumValues == VTs.NumVTs &&

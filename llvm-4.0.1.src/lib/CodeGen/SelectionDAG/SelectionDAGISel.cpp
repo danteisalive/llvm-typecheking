@@ -2822,7 +2822,7 @@ void SelectionDAGISel::SelectCodeCommon(SDNode *NodeToMatch,
                                         const unsigned char *MatcherTable,
                                         unsigned TableSize) {
 
-  if (NodeToMatch->getTypeID().valid)
+  if (NodeToMatch->getTypeID().isValid())
   {
     outs() << "SelectCodeCommon Phase! OpCode: " << NodeToMatch->getOpcode() << " ";
     NodeToMatch->print(outs());
