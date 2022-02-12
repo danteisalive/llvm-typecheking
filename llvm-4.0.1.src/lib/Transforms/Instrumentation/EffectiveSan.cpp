@@ -4203,7 +4203,7 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
         M.getSourceFileName()  <<
         "#" << loc << 
         "#" << tInfo.names.find(type_meta)->second << 
-        "#" << Meta <<
+        "#" << std::to_string((uint64_t)(Meta)) <<
         "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
         "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
         "#" << std::string(Name) <<
@@ -4231,8 +4231,10 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)((uint64_t)I.getParent()))));
     Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
     Ops.push_back(llvm::MDString::get(C, std::to_string(tid))); 
+    Ops.push_back(llvm::MDString::get(C, Name));
     Ops.push_back(llvm::MDString::get(C, tInfo.names.find(type_meta)->second));
     Ops.push_back(llvm::MDString::get(C, CallerName));
+
     
     auto *N =  llvm::MDTuple::get(C, Ops);
     //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
@@ -4317,7 +4319,7 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
         M.getSourceFileName()  <<
         "#" << loc << 
         "#" << tInfo.names.find(type_meta)->second << 
-        "#" << Meta <<
+        "#" << std::to_string((uint64_t)(Meta)) <<
         "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
         "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
         "#" << std::string(Name) <<
@@ -4345,6 +4347,7 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)((uint64_t)I.getParent()))));
     Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
     Ops.push_back(llvm::MDString::get(C, std::to_string(tid))); 
+    Ops.push_back(llvm::MDString::get(C, Name));
     Ops.push_back(llvm::MDString::get(C, tInfo.names.find(type_meta)->second));
     Ops.push_back(llvm::MDString::get(C, CallerName));
     

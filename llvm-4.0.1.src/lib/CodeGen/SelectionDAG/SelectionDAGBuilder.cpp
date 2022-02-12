@@ -5928,7 +5928,7 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
 
           std::vector<uint64_t> nodes;
           // the last two operands are string
-          for (size_t i = 0; i < Metadata->getNumOperands() - 2 ; i++)
+          for (size_t i = 0; i < Metadata->getNumOperands() - 3 ; i++)
           {
               llvm::Metadata *MD = Metadata->getOperand(i).get();
               MDString *MDS = dyn_cast<MDString>(MD);
@@ -5939,7 +5939,7 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
 
           std::vector<std::string> names;
           // the last two operands are string
-          for (size_t i = Metadata->getNumOperands() - 2; i < Metadata->getNumOperands() ; i++)
+          for (size_t i = Metadata->getNumOperands() - 3; i < Metadata->getNumOperands() ; i++)
           {
               llvm::Metadata *MD = Metadata->getOperand(i).get();
               MDString *MDS = dyn_cast<MDString>(MD);
