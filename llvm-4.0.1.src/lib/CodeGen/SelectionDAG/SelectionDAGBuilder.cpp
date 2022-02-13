@@ -5896,6 +5896,32 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
       .setConvergent(CS.isConvergent());
   std::pair<SDValue, SDValue> Result = lowerInvokable(CLI, EHPadBB);
 
+  std::error_code EC;
+  llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+  //llvm::MDNode *TempMeta = CS.getInstruction()->getMetadata("TYCHE_MD");
+  const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Callee.getNode());
+  if (GADN != nullptr)
+  {  
+      auto name = std::string(GADN->getGlobal()->getName());
+      if (name == "malloc" || 
+                    name == "_Znwm" || // new
+                    name == "_Znam" ||                   // new[]
+                    name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+                    name == "_ZnamRKSt9nothrow_t" || 
+                    name == "calloc" ) // delete[] (nothrow)
+    {
+      CS.getInstruction()->print(file); 
+      file << "\n";
+      llvm::MDNode *Metadata = CS.getInstruction()->getMetadata("TYCHE_MD");
+      if (Metadata == nullptr)
+      {
+        file << "------------------------MODULE DUMP START!----------------------------------------\n";
+        CS.getInstruction()->getModule()->print(file, nullptr);
+        file << "------------------------MODULE DUMP END!----------------------------------------\n";
+      }
+    }
+
+  }
 
   if (Result.first.getNode()) {
     const Instruction *Inst = CS.getInstruction();
@@ -5917,14 +5943,6 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
                     name == "free" || 
                     name == "_ZdlPv" || // delete
                     name == "_ZdaPv" */); // delete[] (nothrow)
-                
-          outs() << "SelectionDAG Phase: ";
-          outs() << "TyCHE MD Size: " << Metadata->getNumOperands() << "\n";
-
-
-
-
-
 
           std::vector<uint64_t> nodes;
           // the last two operands are string
@@ -5953,8 +5971,6 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           Result.first.getNode()->print(outs());
           outs() << "\n";
 
-          std::error_code EC;
-          llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
           const llvm::Function * caller =  Inst->getParent()->getParent();
           const llvm::Module   * M = caller->getParent();
           auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
@@ -5969,13 +5985,6 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
                     "]\n";
 
           Inst->print(file); file << "\n";
-          // if (CallerName == "do_type")
-          // {
-          //   file << "Module:\n";
-          //             M->print(file, nullptr);
-          //             file << "\n";
-
-          // }
           
 
       }

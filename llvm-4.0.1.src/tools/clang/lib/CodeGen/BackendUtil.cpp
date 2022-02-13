@@ -709,6 +709,23 @@ void EmitAssemblyHelper::EmitAssembly(BackendAction Action,
   // Run passes. For now we do all passes at once, but eventually we
   // would like to have the option of streaming code generation.
 
+
+  {
+    PrettyStackTraceString CrashInfo("Per-function optimization");
+
+    PerFunctionPasses.doInitialization();
+    for (Function &F : *TheModule)
+      if (!F.isDeclaration())
+        PerFunctionPasses.run(F);
+    PerFunctionPasses.doFinalization();
+  }
+
+  {
+    PrettyStackTraceString CrashInfo("Per-module optimization passes");
+    PerModulePasses.run(*TheModule);
+  }
+
+
   //if (LangOpts.Sanitize.has(SanitizerKind::Effective)) {
     // EFFECTIVE: Currently EffectiveSan must be run before the function passes.
     legacy::PassManager MPM;
@@ -725,28 +742,13 @@ void EmitAssemblyHelper::EmitAssembly(BackendAction Action,
     // Optimization to reduce the number of memory operations and thus
     // the number of type/bounds checks.  The optimization passes have been
     // modified to preserve the effectiveSan metadata.
-    MPM.add(createFunctionInliningPass());
-    MPM.add(createPromoteMemoryToRegisterPass());
-    MPM.add(createGVNPass());
+    // MPM.add(createFunctionInliningPass());
+    // MPM.add(createPromoteMemoryToRegisterPass());
+    // MPM.add(createGVNPass());
 
     MPM.add(createEffectiveSanPass());
     MPM.run(*TheModule);
   //}
-
-  {
-    PrettyStackTraceString CrashInfo("Per-function optimization");
-
-    PerFunctionPasses.doInitialization();
-    for (Function &F : *TheModule)
-      if (!F.isDeclaration())
-        PerFunctionPasses.run(F);
-    PerFunctionPasses.doFinalization();
-  }
-
-  {
-    PrettyStackTraceString CrashInfo("Per-module optimization passes");
-    PerModulePasses.run(*TheModule);
-  }
 
   {
     PrettyStackTraceString CrashInfo("Code generation");
