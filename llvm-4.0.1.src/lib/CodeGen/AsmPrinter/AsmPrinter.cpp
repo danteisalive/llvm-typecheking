@@ -904,11 +904,11 @@ void AsmPrinter::EmitFunctionBody() {
                     name == "_Znam" ||                   // new[]
                     name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
                     name == "_ZnamRKSt9nothrow_t" || 
-                    name == "calloc" /*||
+                    name == "calloc" ||
                     name == "realloc" ||
                     name == "free" || 
                     name == "_ZdlPv" || // delete
-                    name == "_ZdaPv"*/) // delete[] (nothrow)
+                    name == "_ZdaPv") // delete[] (nothrow)
                 {
 
                   std::error_code EC;
@@ -918,19 +918,19 @@ void AsmPrinter::EmitFunctionBody() {
                   MI.print(file); file << "\n";
 
 
-                  outs() << "ASM Printer Phase: " << "\n";
-                  outs() << name << " " << (uint64_t)(&MI) << "\n";
-                  MI.print(outs());
-                  outs() << "MI Type ID: " << MI.getMITypeID().dump() << "\n";
-                  outs() << "MI Type ID Location (Inlined): [" << 
-                            MI.getDebugLoc().getInlinedLocation().first << "," <<
-                            MI.getDebugLoc().getInlinedLocation().second << "]\n";
+                  // outs() << "ASM Printer Phase: " << "\n";
+                  // outs() << name << " " << (uint64_t)(&MI) << "\n";
+                  // MI.print(outs());
+                  // outs() << "MI Type ID: " << MI.getMITypeID().dump() << "\n";
+                  // outs() << "MI Type ID Location (Inlined): [" << 
+                  //           MI.getDebugLoc().getInlinedLocation().first << "," <<
+                  //           MI.getDebugLoc().getInlinedLocation().second << "]\n";
                   
                   std::string symbol_name = "TYCHE_SYMS#" + 
                                           getModuleIdentifier() + "#" +
                                           MI.getMITypeID().dump();
                   file << "Dumping Symbol Name: " << symbol_name << "\n"; 
-
+                  file << "---------------------------------------------------------------------------------------\n";
                   MCSymbol *CSLabel = getTempSymbol(symbol_name);
                   
                   OutStreamer->EmitSymbolAttribute(CSLabel, MCSA_Internal);

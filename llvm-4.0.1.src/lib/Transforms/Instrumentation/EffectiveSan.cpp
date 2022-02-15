@@ -192,6 +192,16 @@ static uint64_t TypeId = 0;
 static uint64_t TYCHE_TYPE_ID = 0;
 
 std::string APFileName = "allocation_points.hash";
+
+
+
+std::string ReallocMetaID = "APSIZE 1\nOFFSET 0\nCORECED N\nLB 18446744056529682432\nUB 17179869184\nFAM N\nNAME int8_t\nVPTR N\nMETATYPE NOMETA\nPARENTTYPE NOPARENT\n";
+std::string FreeMetaID =    "APSIZE 1\nOFFSET 0\nCORECED N\nLB 18446744056529682432\nUB 17179869184\nFAM N\nNAME int8_t\nVPTR N\nMETATYPE NOMETA\nPARENTTYPE NOPARENT\n";
+
+uint64_t    ReallocTID = UINT64_MAX;
+uint64_t    FreeTID = UINT64_MAX;
+
+
 /*
  * Type information.
  */
@@ -4367,6 +4377,86 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     //     builder.getInt64Ty(), nullptr);
     // size = getSize(I.getOperand(1));
     // Bounds = builder.CreateCall(NewFn, {I.getOperand(0), I.getOperand(1)});
+    std::ofstream APfile(APFileName, std::ios::app);
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+
+    const llvm::DebugLoc &location = I.getDebugLoc();
+    std::string loc = "";
+    uint64_t line;
+    uint64_t col;
+    if (location) {
+      line = location.getLine();
+      col = location.getCol();
+    }
+    else 
+    {
+      std::srand(std::time(0));
+      line  = UINT64_MAX;
+      col = UINT64_MAX;
+    }
+
+    loc += std::to_string(line) + "#" + std::to_string(col);
+
+    llvm::Function * caller =  I.getParent()->getParent();
+    auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+    file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+              "][Caller Name: " << CallerName  <<
+              "][Allocator Name: " <<  std::string(Name) << 
+              "][isCall: " << Call.isCall() << 
+              "][isInvoke: " << Call.isInvoke() << 
+              "][isMustTailCall: " << Call.isMustTailCall() << 
+              "][isTailCall: " << Call.isTailCall() << 
+              "][Location: " << line << "," << col << 
+              "][Inlined Location: " << I.getDebugLoc().getInlinedLocation().first << "," << I.getDebugLoc().getInlinedLocation().second << 
+              "][BB ID: " << (uint64_t)I.getParent() << 
+              "][Inst ID: " << (uint64_t)(&I) <<
+              "]\n";
+
+    I.print(file); file << "\n";
+    
+    APfile << "FILENAME " << M.getSourceFileName() << "\n" << ReallocMetaID;
+    APfile << std::dec << "METAID " << 
+        M.getSourceFileName()  <<
+        "#" << loc << 
+        "#" << "REALLOC" << 
+        "#" << 0 <<
+        "#" << 0 <<
+        "#" << 0 << 
+        "#" << std::string(Name) <<
+        "#" << CallerName <<
+        "#" << I.getDebugLoc().getInlinedLocation().first << 
+        "#" << I.getDebugLoc().getInlinedLocation().second << 
+        "#" << (uint64_t)I.getParent() << 
+        "#" << (uint64_t)(&I) <<
+        "#" << ReallocTID <<  
+        "\n" ;
+
+
+
+    file.close();
+
+    llvm::LLVMContext& C = I.getContext();
+    llvm::SmallVector<llvm::Metadata *, 32> Ops;
+    Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(/*Meta*/ 0)))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(/*tInfo.hashes.find(type_meta)->second.i64[0]*/ 0)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(/*tInfo.hashes.find(type_meta)->second.i64[1]*/ 0))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().first)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().second))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)((uint64_t)I.getParent()))));
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(ReallocTID))); 
+    Ops.push_back(llvm::MDString::get(C, Name));
+    Ops.push_back(llvm::MDString::get(C, /*tInfo.names.find(type_meta)->second*/ "REALLOC"));
+    Ops.push_back(llvm::MDString::get(C, CallerName));
+
+    
+    auto *N =  llvm::MDTuple::get(C, Ops);
+    //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
+    I.setMetadata("TYCHE_MD", N);
+
   } else if (Call.getNumArgOperands() == 1 &&
              (Name == "free" || Name == "_ZdlPv" || // delete
               Name == "_ZdaPv"))                    // delete[]
@@ -4379,6 +4469,86 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     // builder.CreateCall(NewFn, {I.getOperand(0)});
     // Dels.push_back(&I);
     // return;
+    std::ofstream APfile(APFileName, std::ios::app);
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+
+    const llvm::DebugLoc &location = I.getDebugLoc();
+    std::string loc = "";
+    uint64_t line;
+    uint64_t col;
+    if (location) {
+      line = location.getLine();
+      col = location.getCol();
+    }
+    else 
+    {
+      std::srand(std::time(0));
+      line  = UINT64_MAX;
+      col = UINT64_MAX;
+    }
+
+    loc += std::to_string(line) + "#" + std::to_string(col);
+
+    llvm::Function * caller =  I.getParent()->getParent();
+    auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+    file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+              "][Caller Name: " << CallerName  <<
+              "][Allocator Name: " <<  std::string(Name) << 
+              "][isCall: " << Call.isCall() << 
+              "][isInvoke: " << Call.isInvoke() << 
+              "][isMustTailCall: " << Call.isMustTailCall() << 
+              "][isTailCall: " << Call.isTailCall() << 
+              "][Location: " << line << "," << col << 
+              "][Inlined Location: " << I.getDebugLoc().getInlinedLocation().first << "," << I.getDebugLoc().getInlinedLocation().second << 
+              "][BB ID: " << (uint64_t)I.getParent() << 
+              "][Inst ID: " << (uint64_t)(&I) <<
+              "]\n";
+
+    I.print(file); file << "\n";
+    
+    APfile << "FILENAME " << M.getSourceFileName() << "\n" <<  FreeMetaID;
+    APfile << std::dec << "METAID " << 
+        M.getSourceFileName()  <<
+        "#" << loc << 
+        "#" << "FREE" << 
+        "#" << 0 <<
+        "#" << 0 <<
+        "#" << 0 << 
+        "#" << std::string(Name) <<
+        "#" << CallerName <<
+        "#" << I.getDebugLoc().getInlinedLocation().first << 
+        "#" << I.getDebugLoc().getInlinedLocation().second << 
+        "#" << (uint64_t)I.getParent() << 
+        "#" << (uint64_t)(&I) <<
+        "#" << FreeTID <<  
+        "\n" ;
+
+
+
+    file.close();
+
+    llvm::LLVMContext& C = I.getContext();
+    llvm::SmallVector<llvm::Metadata *, 32> Ops;
+    Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(/*Meta*/ 0)))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(/*tInfo.hashes.find(type_meta)->second.i64[0])*/ 0)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(/*tInfo.hashes.find(type_meta)->second.i64[1])*/ 0))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().first)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().second))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)((uint64_t)I.getParent()))));
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(FreeTID))); 
+    Ops.push_back(llvm::MDString::get(C, Name));
+    Ops.push_back(llvm::MDString::get(C, /*tInfo.names.find(type_meta)->second*/ "FREE"));
+    Ops.push_back(llvm::MDString::get(C, CallerName));
+
+    
+    auto *N =  llvm::MDTuple::get(C, Ops);
+    //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
+    I.setMetadata("TYCHE_MD", N);
+
   } else
     return;
 

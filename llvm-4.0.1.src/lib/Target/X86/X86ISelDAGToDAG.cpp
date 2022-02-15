@@ -2001,36 +2001,44 @@ void X86DAGToDAGISel::Select(SDNode *Node) {
 
     std::error_code EC;
     llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
-    file << "X86DAGToDAGISel::\n" ;
-
-    outs() << "Start: X86DAGToDAGISel Phase! OpCode: " << Node->getOpcode() << " " << Node->getNodeId() << " ";
-    Node->print(outs());
-    outs() << "\n";
-
+    file << "X86DAGToDAGISel:: " << Node->getNumOperands() << "\n" ;
+    file << "Node: ";  Node->print(file); file << "\n";
+    for (int i = 0; i < Node->getNumOperands(); i++)
+    {
+        const SDValue n1 = Node->getOperand(i);
+        n1.getNode()->print(file);
+        file << "\n";
+    }
     const SDValue n1 = Node->getOperand(0);
-    n1.getNode()->print(outs());
-    outs() << "\n";
-    n1.getNode()->print(file);
-    file << "\n";
-
     const SDValue n2 = n1.getNode()->getOperand(0);
-    n2.getNode()->print(outs());
-    outs() << "\n";
     n2.getNode()->print(file);
     file << "\n";
     auto temp  = Node->getTypeID();
     n2.getNode()->setTypeID(temp);
     n2.getNode()->print(file);
     file << "\n";
-    // if (const GlobalAddressSDNode *GADN = dyn_cast<GlobalAddressSDNode>(Node))
-    // {
+  }
+  else if (Node->getOpcode() == ISD::CALLSEQ_END && Node->getTypeID().isValid())
+  {
+      std::error_code EC;
+      llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+      file << "X86DAGToDAGISel:: " << Node->getNumOperands() << "\n" ;
+      file << "Node: ";  Node->print(file); file << "\n";
+      for (int i = 0; i < Node->getNumOperands(); i++)
+      {
+        const SDValue n1 = Node->getOperand(i);
+        n1.getNode()->print(file);
+        file << "\n";
+      }
+      const SDValue n1 = Node->getOperand(0);
+      // const SDValue n2 = n1.getNode()->getOperand(0);
+      // n2.getNode()->print(file);
+      // file << "\n";
+      auto temp  = Node->getTypeID();
+      n1.getNode()->setTypeID(temp);
+      n1.getNode()->print(file);
+      file << "\n";
 
-    //     outs() << "Here!\n";
-    //     if (GADN->getGlobal()->hasName())
-    //     {
-    //         outs() << GADN->getGlobal()->getName() << " CATCHED YOU BITCH!\n";
-    //     }
-    // }
   }
 
 

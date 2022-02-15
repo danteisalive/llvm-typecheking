@@ -5908,7 +5908,11 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
                     name == "_Znam" ||                   // new[]
                     name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
                     name == "_ZnamRKSt9nothrow_t" || 
-                    name == "calloc" ) // delete[] (nothrow)
+                    name == "calloc" ||
+                    name == "realloc" ||
+                    name == "free" || 
+                    name == "_ZdlPv" || // delete
+                    name == "_ZdaPv") // delete[] (nothrow)
     {
       CS.getInstruction()->print(file); 
       file << "\n";
@@ -5918,6 +5922,19 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
         file << "------------------------MODULE DUMP START!----------------------------------------\n";
         CS.getInstruction()->getModule()->print(file, nullptr);
         file << "------------------------MODULE DUMP END!----------------------------------------\n";
+      }
+      else 
+      {
+          file << "Calle Node: "; Callee.getNode()->print(file); file << "\n";
+          if (Result.first.getNode()) 
+          {
+            file << "First Node: "; Result.first.getNode()->print(file); file << "\n";
+          } 
+          if (Result.second.getNode())
+          {
+            file << "Second Node: "; Result.second.getNode()->print(file); file << "\n";
+          }
+          
       }
     }
 
@@ -5933,16 +5950,13 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
           assert(GADN != nullptr);
           
           StringRef name =  GADN->getGlobal()->getName();
-          assert (name == "malloc" || 
-                    name == "_Znwm" || // new
-                    name == "_Znam" ||                   // new[]
-                    name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
-                    name == "_ZnamRKSt9nothrow_t" || 
-                    name == "calloc" /*||
-                    name == "realloc" ||
-                    name == "free" || 
-                    name == "_ZdlPv" || // delete
-                    name == "_ZdaPv" */); // delete[] (nothrow)
+          // assert (name == "malloc" || 
+          //           name == "_Znwm" || // new
+          //           name == "_Znam" ||                   // new[]
+          //           name == "_ZnwmRKSt9nothrow_t" || // new (nothrow)
+          //           name == "_ZnamRKSt9nothrow_t" || 
+          //           name == "calloc" ||
+          //           name == "realloc"  ); // delete[] (nothrow)
 
           std::vector<uint64_t> nodes;
           // the last two operands are string
@@ -5968,8 +5982,8 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
 
           Result.first.getNode()->setTypeID(temp);
 
-          Result.first.getNode()->print(outs());
-          outs() << "\n";
+          Result.first.getNode()->print(file);
+          file << "\n";
 
           const llvm::Function * caller =  Inst->getParent()->getParent();
           const llvm::Module   * M = caller->getParent();
@@ -5993,6 +6007,70 @@ void SelectionDAGBuilder::LowerCallTo(ImmutableCallSite CS, SDValue Callee,
 
     Result.first = lowerRangeToAssertZExt(DAG, *Inst, Result.first);
     setValue(Inst, Result.first);
+  }
+  else if (Result.second.getNode())
+  {
+
+    if (GADN != nullptr)
+    {  
+          auto name = std::string(GADN->getGlobal()->getName());
+          if (name == "free" || 
+              name == "_ZdlPv" || // delete
+              name == "_ZdaPv") // delete[] (nothrow)
+        {
+            llvm::MDNode *Metadata = CS.getInstruction()->getMetadata("TYCHE_MD");
+            if (Metadata != nullptr)
+            {
+                  const Instruction *Inst = CS.getInstruction();
+                  std::vector<uint64_t> nodes;
+                  // the last two operands are string
+                  for (size_t i = 0; i < Metadata->getNumOperands() - 3 ; i++)
+                  {
+                      llvm::Metadata *MD = Metadata->getOperand(i).get();
+                      MDString *MDS = dyn_cast<MDString>(MD);
+                      nodes.push_back(std::stoull(MDS->getString()));
+                  }
+                  nodes.push_back((uint64_t)Inst);
+                  nodes.push_back((uint64_t)Inst->getParent());
+
+                  std::vector<std::string> names;
+                  // the last two operands are string
+                  for (size_t i = Metadata->getNumOperands() - 3; i < Metadata->getNumOperands() ; i++)
+                  {
+                      llvm::Metadata *MD = Metadata->getOperand(i).get();
+                      MDString *MDS = dyn_cast<MDString>(MD);
+                      names.push_back(std::string(MDS->getString()));
+                  }      
+
+                  llvm::SDNode::NodeTypeID temp = llvm::SDNode::NodeTypeID(nodes, names, true);                        
+
+                  Result.second.getNode()->setTypeID(temp);
+
+                  const llvm::Function * caller =  Inst->getParent()->getParent();
+                  const llvm::Module   * M = caller->getParent();
+                  auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+                  file << "LowerCallTo::\nLLVM IR Location (Inlined): [" << M->getSourceFileName() << 
+                            "][Caller Name: " << CallerName  <<
+                            "][Allocator Name: " <<  std::string(name) << 
+                            "][Location: " << ((nodes.size() >= 5)? nodes[3] : 0) << "," << ((nodes.size() >= 5)? nodes[4] : 0) << 
+                            "][Inlined Location: " << Inst->getDebugLoc().getInlinedLocation().first << "," << Inst->getDebugLoc().getInlinedLocation().second << 
+                            "][BB ID: " << (uint64_t)Inst->getParent() << 
+                            "][Inst ID: " << (uint64_t)Inst << 
+                            "][Prev. Inst ID: " << ((nodes.size() >= 6)? nodes[5] : 0)  << 
+                            "]\n";
+
+                  Inst->print(file); file << "\n";
+                  Result.second.getNode()->print(file); file << "\n";
+            } 
+            else 
+            {
+              file << "------------------------MODULE DUMP START!----------------------------------------\n";
+              CS.getInstruction()->getModule()->print(file, nullptr);
+              file << "------------------------MODULE DUMP END!----------------------------------------\n";
+            }
+        }
+    }
+
   }
 
 
