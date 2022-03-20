@@ -916,15 +916,6 @@ void AsmPrinter::EmitFunctionBody() {
                   
                   file << "EmitFunctionBody::\n" ;
                   MI.print(file); file << "\n";
-
-
-                  // outs() << "ASM Printer Phase: " << "\n";
-                  // outs() << name << " " << (uint64_t)(&MI) << "\n";
-                  // MI.print(outs());
-                  // outs() << "MI Type ID: " << MI.getMITypeID().dump() << "\n";
-                  // outs() << "MI Type ID Location (Inlined): [" << 
-                  //           MI.getDebugLoc().getInlinedLocation().first << "," <<
-                  //           MI.getDebugLoc().getInlinedLocation().second << "]\n";
                   
                   std::string symbol_name = "TYCHE_SYMS#" + 
                                           getModuleIdentifier() + "#" +

@@ -287,6 +287,8 @@ namespace llvm {
   /// \brief This pass implements the "patchable-function" attribute.
   extern char &PatchableFunctionID;
 
+  extern char &DumpTyCHEStackObjectsID;
+
   /// createStackProtectorPass - This pass adds stack protectors to functions.
   ///
   FunctionPass *createStackProtectorPass(const TargetMachine *TM);

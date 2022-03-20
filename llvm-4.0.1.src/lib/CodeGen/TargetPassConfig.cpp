@@ -671,6 +671,8 @@ void TargetPassConfig::addMachinePasses() {
   addPass(&XRayInstrumentationID, false);
   addPass(&PatchableFunctionID, false);
 
+  addPass(&DumpTyCHEStackObjectsID, false);
+
   AddingMachinePasses = false;
 }
 

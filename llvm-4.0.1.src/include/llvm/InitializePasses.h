@@ -270,6 +270,7 @@ void initializePhysicalRegisterUsageInfoPass(PassRegistry &);
 void initializePartialInlinerLegacyPassPass(PassRegistry &);
 void initializePartiallyInlineLibCallsLegacyPassPass(PassRegistry &);
 void initializePatchableFunctionPass(PassRegistry &);
+void initializeDumpTyCHEStackObjectsPass(PassRegistry &);
 void initializePeepholeOptimizerPass(PassRegistry&);
 void initializePlaceBackedgeSafepointsImplPass(PassRegistry&);
 void initializePlaceSafepointsPass(PassRegistry&);

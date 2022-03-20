@@ -919,6 +919,54 @@ unsigned MachineFrameInfo::estimateStackSize(const MachineFunction &MF) const {
   return (unsigned)Offset;
 }
 
+
+void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS) const{
+  if (Objects.empty()) return;
+
+  const TargetFrameLowering *FI = MF.getSubtarget().getFrameLowering();
+  int ValOffset = (FI ? FI->getOffsetOfLocalArea() : 0);
+
+  OS << "Frame Objects:\n";
+
+  for (unsigned i = 0, e = Objects.size(); i != e; ++i) {
+    const StackObject &SO = Objects[i];
+    OS << "  fi#" << (int)(i-NumFixedObjects) << ": ";
+    if (SO.Size == ~0ULL) {
+      OS << "dead\n";
+      continue;
+    }
+
+    OS << "SpilSlot=" << SO.isSpillSlot;
+    
+    if (SO.Size == 0)
+      OS << ", variable sized";
+    else
+      OS << ", size=" << SO.Size;
+    OS << ", align=" << SO.Alignment;
+
+    if (i < NumFixedObjects)
+      OS << ", fixed";
+    if (i < NumFixedObjects || SO.SPOffset != -1) {
+      int64_t Off = SO.SPOffset - ValOffset;
+      OS << ", at location [SP";
+      if (Off > 0)
+        OS << "+" << Off;
+      else if (Off < 0)
+        OS << Off;
+      OS << "]";
+    }
+    OS << "\n";
+
+    const AllocaInst * allocInst = SO.Alloca;
+    if (allocInst != NULL)
+    {
+      allocInst->print(OS);
+      OS << "\n";
+    }
+
+  }
+}
+
 void MachineFrameInfo::print(const MachineFunction &MF, raw_ostream &OS) const{
   if (Objects.empty()) return;
 

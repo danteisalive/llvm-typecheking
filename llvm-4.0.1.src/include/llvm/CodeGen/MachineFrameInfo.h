@@ -662,6 +662,8 @@ public:
 
   /// dump - Print the function to stderr.
   void dump(const MachineFunction &MF) const;
+
+  void dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS) const;
 };
 
 } // End llvm namespace

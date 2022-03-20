@@ -62,6 +62,7 @@ void llvm::initializeCodeGen(PassRegistry &Registry) {
   initializeMachineVerifierPassPass(Registry);
   initializeXRayInstrumentationPass(Registry);
   initializePatchableFunctionPass(Registry);
+  initializeDumpTyCHEStackObjectsPass(Registry);
   initializeOptimizePHIsPass(Registry);
   initializePEIPass(Registry);
   initializePHIEliminationPass(Registry);
