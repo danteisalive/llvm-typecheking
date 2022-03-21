@@ -192,6 +192,7 @@ static uint64_t TypeId = 0;
 static uint64_t TYCHE_TYPE_ID = 0;
 
 std::string APFileName = "allocation_points.hash";
+std::string StackAPFileName = "stack_allocation_points.hash";
 
 
 
@@ -4600,11 +4601,12 @@ static void replaceAlloca(llvm::Module &M, llvm::Function &F,
                           CheckInfo &cInfo,
                           std::set<llvm::Instruction *> &Ignore,
                           std::vector<llvm::Instruction *> &Dels) {
-  if (option_no_stack)
-    return;
+  // if (option_no_stack)
+  //   return;
   auto Alloca = llvm::dyn_cast<llvm::AllocaInst>(&I);
   if (Alloca == nullptr)
     return;
+
   auto i = Ignore.find(Alloca);
   if (i != Ignore.end())
     return;
@@ -4620,8 +4622,8 @@ static void replaceAlloca(llvm::Module &M, llvm::Function &F,
   if (!Ty->isSized())
     return;
 
-  auto j = nextInsertPoint(F, Alloca);
-  llvm::IRBuilder<> builder(j.bb, j.itr);
+  //auto j = nextInsertPoint(F, Alloca);
+  //llvm::IRBuilder<> builder(j.bb, j.itr);
   llvm::Value *Offset = nullptr, *AllocedPtr = nullptr;
   llvm::Value *NoReplace1 = nullptr, *NoReplace2 = nullptr,
               *NoReplace3 = nullptr;
@@ -4632,119 +4634,214 @@ static void replaceAlloca(llvm::Module &M, llvm::Function &F,
 
   // Aligned allocas not supported.
   // TODO: aligned(16) will be ignored!
-  if (Alloca->getAlignment() > 16)
-    return;
+  // if (Alloca->getAlignment() > 16)
+  //   return;
 
   // Simple+common case: fixed sized alloca:
   len = ISize->getZExtValue();
-  objSize = DL.getTypeAllocSize(Ty) * len;
-  allocSize = objSize + sizeof(EFFECTIVE_META);
+  allocSize = objSize = DL.getTypeAllocSize(Ty) * len;
+  allocSize = allocSize; objSize = objSize;
+  // allocSize = objSize + sizeof(EFFECTIVE_META);
 
   // STEP (1): Align the stack:
-  size_t idx = (allocSize == 0 ? 64 : EFFECTIVE_CLZLL(allocSize));
-  ssize_t offset = lowfat_stack_offsets[idx];
-  if (idx > 64 || offset == 0)
-    return;
-  size_t align = ~lowfat_stack_masks[idx] + 1;
-  if (align > Alloca->getAlignment())
-    Alloca->setAlignment(align);
+  // size_t idx = (allocSize == 0 ? 64 : EFFECTIVE_CLZLL(allocSize));
+  // ssize_t offset = lowfat_stack_offsets[idx];
+  // if (idx > 64 || offset == 0)
+  //   return;
+  // size_t align = ~lowfat_stack_masks[idx] + 1;
+  // if (align > Alloca->getAlignment())
+  //   Alloca->setAlignment(align);
 
   // STEP (2): Adjust the allocation size:
-  size_t newSize = lowfat_stack_sizes[idx];
-  if (newSize != allocSize) {
-    LifetimeSize = builder.getInt64(newSize);
-    llvm::AllocaInst *NewAlloca =
-        builder.CreateAlloca(builder.getInt8Ty(), LifetimeSize);
-    Ignore.insert(NewAlloca);
-    NewAlloca->setAlignment(Alloca->getAlignment());
-    AllocedPtr = NewAlloca;
-    delAlloca = true;
-  } else
-    AllocedPtr = builder.CreateBitCast(Alloca, builder.getInt8PtrTy());
-  CastAlloca = AllocedPtr;
-  NoReplace1 = AllocedPtr;
-  Offset = builder.getInt64(offset);
+  // size_t newSize = lowfat_stack_sizes[idx];
+  // if (newSize != allocSize) {
+  //   LifetimeSize = builder.getInt64(newSize);
+  //   llvm::AllocaInst *NewAlloca =
+  //       builder.CreateAlloca(builder.getInt8Ty(), LifetimeSize);
+  //   Ignore.insert(NewAlloca);
+  //   NewAlloca->setAlignment(Alloca->getAlignment());
+  //   AllocedPtr = NewAlloca;
+  //   delAlloca = true;
+  // } else
+  //   AllocedPtr = builder.CreateBitCast(Alloca, builder.getInt8PtrTy());
+  // CastAlloca = AllocedPtr;
+  // NoReplace1 = AllocedPtr;
+  // Offset = builder.getInt64(offset);
 
   // STEP (3): Teleport the pointer into a low-fat region:
-  llvm::Constant *MirrorFunc = M.getOrInsertFunction(
-      "lowfat_stack_mirror_2", builder.getInt8PtrTy(), builder.getInt8PtrTy(),
-      builder.getInt64Ty(), nullptr);
-  llvm::Value *MirroredPtr =
-      builder.CreateCall(MirrorFunc, {AllocedPtr, Offset});
-  if (auto *Call = llvm::dyn_cast<llvm::CallInst>(MirroredPtr))
-    Ignore.insert(Call);
-  NoReplace3 = MirroredPtr;
-  llvm::Value *Ptr0 =
-      builder.CreateGEP(MirroredPtr, builder.getInt32(sizeof(EFFECTIVE_META)));
-  llvm::Value *Ptr = builder.CreateBitCast(Ptr0, Alloca->getType());
+  // llvm::Constant *MirrorFunc = M.getOrInsertFunction(
+  //     "lowfat_stack_mirror_2", builder.getInt8PtrTy(), builder.getInt8PtrTy(),
+  //     builder.getInt64Ty(), nullptr);
+  // llvm::Value *MirroredPtr =
+  //     builder.CreateCall(MirrorFunc, {AllocedPtr, Offset});
+  // if (auto *Call = llvm::dyn_cast<llvm::CallInst>(MirroredPtr))
+  //   Ignore.insert(Call);
+  // NoReplace3 = MirroredPtr;
+  // llvm::Value *Ptr0 =
+  //     builder.CreateGEP(MirroredPtr, builder.getInt32(sizeof(EFFECTIVE_META)));
+  // llvm::Value *Ptr = builder.CreateBitCast(Ptr0, Alloca->getType());
 
-  // STEP (4) Insert the object meta data:
-  llvm::DIType *AllocTy = nullptr;
-  TypeEntry entry;
-  llvm::Constant *Meta = getDeclaredType(entry, M, &I, tInfo, &AllocTy, true);
-  if (Meta == nullptr) {
-    // Fall back on type inference.
-    Meta = inferMallocType(entry, M, F, &I, tInfo, &AllocTy);
-  }
-  Meta = (Meta == nullptr ? Int8TyMeta : Meta);
-  llvm::Value *MetaPtr =
-      builder.CreateBitCast(MirroredPtr, ObjMetaTy->getPointerTo());
-  llvm::Value *TypePtr =
-      builder.CreateGEP(MetaPtr, {builder.getInt32(0), builder.getInt32(0)});
-  llvm::StoreInst *Store =
-      builder.CreateAlignedStore(Meta, TypePtr, sizeof(void *));
-  Ignore.insert(Store);
-  llvm::Value *SizePtr =
-      builder.CreateGEP(MetaPtr, {builder.getInt32(0), builder.getInt32(1)});
-  Store = builder.CreateAlignedStore(builder.getInt64(objSize), SizePtr,
-                                     sizeof(void *));
-  Ignore.insert(Store);
+
+    std::ofstream StackAPfile(StackAPFileName, std::ios::app);
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+
+    // STEP (4) Insert the object meta data:
+    llvm::DIType *AllocTy = nullptr;
+    TypeEntry entry;
+    llvm::Constant *Meta = getDeclaredType(entry, M, &I, tInfo, &AllocTy, true);
+    if (Meta == nullptr) {
+      // Fall back on type inference.
+      Meta = inferMallocType(entry, M, F, &I, tInfo, &AllocTy);
+    }
+    Meta = (Meta == nullptr ? Int8TyMeta : Meta);
+
+
+    llvm::DIType* type_meta = nullptr;
+    bool found = false;
+    uint64_t tid = 0;
+    for (auto &elem : tInfo.cache)
+    {
+      if (elem.second.typeMeta == Meta)
+      {
+          type_meta = elem.first;
+          tid = elem.second.type_id;     
+          found = true;
+      }
+
+    }
+
+
+
+    const llvm::DebugLoc &location = I.getDebugLoc();
+    std::string loc = "";
+    uint64_t line;
+    uint64_t col;
+    if (location) {
+      line = location.getLine();
+      col = location.getCol();
+    }
+    else 
+    {
+      std::srand(std::time(0));
+      line  = UINT64_MAX;
+      col = UINT64_MAX;
+    }
+
+    loc += std::to_string(line) + "#" + std::to_string(col);
+
+    llvm::Function * caller =  I.getParent()->getParent();
+    auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+    file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+              "][Caller Name: " << CallerName  <<
+              "][Allocator Name: " <<  "Alloca" << 
+              "][Location: " << line << "," << col << 
+              "][Inlined Location: " << I.getDebugLoc().getInlinedLocation().first << "," << I.getDebugLoc().getInlinedLocation().second << 
+              "][BB ID: " << (uint64_t)I.getParent() << 
+              "][Inst ID: " << (uint64_t)(&I) <<
+              "]\n";
+
+    I.print(file); file << "\n";
+    
+    StackAPfile << TypeIDCache[tid-1];
+    StackAPfile << std::dec << "METAID " << 
+        M.getSourceFileName()  <<
+        "#" << loc << 
+        "#" << tInfo.names.find(type_meta)->second << 
+        "#" << std::to_string((uint64_t)(Meta)) <<
+        "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
+        "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+        "#" << "Alloca" <<
+        "#" << CallerName <<
+        "#" << I.getDebugLoc().getInlinedLocation().first << 
+        "#" << I.getDebugLoc().getInlinedLocation().second << 
+        "#" << (uint64_t)I.getParent() << 
+        "#" << (uint64_t)(&I) <<
+        "#" << tid <<  
+        "\n" ;
+
+
+
+    file.close();
+
+    llvm::LLVMContext& C = I.getContext();
+    llvm::SmallVector<llvm::Metadata *, 32> Ops;
+    Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(Meta)))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().first)));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().second))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)((uint64_t)I.getParent()))));
+    Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tid))); 
+    Ops.push_back(llvm::MDString::get(C, "Alloca"));
+    Ops.push_back(llvm::MDString::get(C, tInfo.names.find(type_meta)->second));
+    Ops.push_back(llvm::MDString::get(C, CallerName));
+
+    
+    auto *N =  llvm::MDTuple::get(C, Ops);
+    //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
+    I.setMetadata("TYCHE_MD", N);
+  // llvm::Value *MetaPtr =
+  //     builder.CreateBitCast(MirroredPtr, ObjMetaTy->getPointerTo());
+  // llvm::Value *TypePtr =
+  //     builder.CreateGEP(MetaPtr, {builder.getInt32(0), builder.getInt32(0)});
+  // llvm::StoreInst *Store =
+  //     builder.CreateAlignedStore(Meta, TypePtr, sizeof(void *));
+  // Ignore.insert(Store);
+  // llvm::Value *SizePtr =
+  //     builder.CreateGEP(MetaPtr, {builder.getInt32(0), builder.getInt32(1)});
+  // Store = builder.CreateAlignedStore(builder.getInt64(objSize), SizePtr,
+  //                                    sizeof(void *));
+  // Ignore.insert(Store);
 
   // STEP (5): Calculate bounds:
-  llvm::Value *LB = builder.CreatePtrToInt(Ptr0, builder.getInt64Ty());
-  if (auto *Ptr2Int = llvm::dyn_cast<llvm::PtrToIntInst>(LB))
-    Ignore.insert(Ptr2Int);
-  llvm::Value *Undef = llvm::UndefValue::get(BoundsTy);
-  llvm::Value *Bounds =
-      builder.CreateInsertElement(Undef, LB, builder.getInt32(0));
-  llvm::Value *UB = builder.CreateGEP(Ptr0, builder.getInt32(objSize));
-  UB = builder.CreatePtrToInt(UB, builder.getInt64Ty());
-  if (auto *Ptr2Int = llvm::dyn_cast<llvm::PtrToIntInst>(UB))
-    Ignore.insert(Ptr2Int);
-  Bounds = builder.CreateInsertElement(Bounds, UB, builder.getInt32(1));
-  CheckEntry Entry = {Bounds, AllocTy, objSize};
-  cInfo.insert(std::make_pair(Ptr, Entry));
+  // llvm::Value *LB = builder.CreatePtrToInt(Ptr0, builder.getInt64Ty());
+  // if (auto *Ptr2Int = llvm::dyn_cast<llvm::PtrToIntInst>(LB))
+  //   Ignore.insert(Ptr2Int);
+  // llvm::Value *Undef = llvm::UndefValue::get(BoundsTy);
+  // llvm::Value *Bounds =
+  //     builder.CreateInsertElement(Undef, LB, builder.getInt32(0));
+  // llvm::Value *UB = builder.CreateGEP(Ptr0, builder.getInt32(objSize));
+  // UB = builder.CreatePtrToInt(UB, builder.getInt64Ty());
+  // if (auto *Ptr2Int = llvm::dyn_cast<llvm::PtrToIntInst>(UB))
+  //   Ignore.insert(Ptr2Int);
+  // Bounds = builder.CreateInsertElement(Bounds, UB, builder.getInt32(1));
+  // CheckEntry Entry = {Bounds, AllocTy, objSize};
+  // cInfo.insert(std::make_pair(Ptr, Entry));
 
   // Replace all uses of `Alloca' with the (now low-fat) `Ptr'.
   // (except for lifetime intrinsics).
-  std::vector<llvm::User *> Replace; // Lifetimes;
-  for (llvm::User *Usr : Alloca->users()) {
-    if (Usr == NoReplace1 || Usr == NoReplace2 || Usr == NoReplace3)
-      continue;
-    if (auto Intr = llvm::dyn_cast<llvm::IntrinsicInst>(Usr)) {
-      if (Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_start ||
-          Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_end) {
-        Dels.push_back(Intr);
-        continue;
-      }
-    }
-    if (auto Cast = llvm::dyn_cast<llvm::BitCastInst>(Usr)) {
-      for (llvm::User *Usr2 : Cast->users()) {
-        auto Intr = llvm::dyn_cast<llvm::IntrinsicInst>(Usr2);
-        if (Intr == nullptr)
-          continue;
-        if (Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_start ||
-            Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_end)
-          Dels.push_back(Intr);
-      }
-    }
-    Replace.push_back(Usr);
-  }
-  for (llvm::User *Usr : Replace)
-    Usr->replaceUsesOfWith(Alloca, Ptr);
+  // std::vector<llvm::User *> Replace; // Lifetimes;
+  // for (llvm::User *Usr : Alloca->users()) {
+  //   if (Usr == NoReplace1 || Usr == NoReplace2 || Usr == NoReplace3)
+  //     continue;
+  //   if (auto Intr = llvm::dyn_cast<llvm::IntrinsicInst>(Usr)) {
+  //     if (Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_start ||
+  //         Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_end) {
+  //       Dels.push_back(Intr);
+  //       continue;
+  //     }
+  //   }
+  //   if (auto Cast = llvm::dyn_cast<llvm::BitCastInst>(Usr)) {
+  //     for (llvm::User *Usr2 : Cast->users()) {
+  //       auto Intr = llvm::dyn_cast<llvm::IntrinsicInst>(Usr2);
+  //       if (Intr == nullptr)
+  //         continue;
+  //       if (Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_start ||
+  //           Intr->getIntrinsicID() == llvm::Intrinsic::lifetime_end)
+  //         Dels.push_back(Intr);
+  //     }
+  //   }
+  //   Replace.push_back(Usr);
+  // }
+  // for (llvm::User *Usr : Replace)
+  //   Usr->replaceUsesOfWith(Alloca, Ptr);
 
-  if (delAlloca)
-    Dels.push_back(Alloca);
+  // if (delAlloca)
+  //   Dels.push_back(Alloca);
 }
 
 static EFFECTIVE_NOINLINE void
@@ -4755,8 +4852,8 @@ replaceAllocas(llvm::Module &M, llvm::Function &F, TypeInfo &tInfo,
     for (auto &I : BB)
       replaceAlloca(M, F, I, tInfo, cInfo, Ignore, Dels);
   }
-  for (auto I : Dels)
-    I->eraseFromParent();
+  // for (auto I : Dels)
+  //   I->eraseFromParent();
 }
 
 /*
@@ -5146,9 +5243,7 @@ struct EffectiveSan : public llvm::ModulePass {
     Module = &M;
     llvm::LLVMContext &Cxt = M.getContext();
 
-    //std::error_code EC;
-    //llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
-    // file << "MODULE " << std::string(M.getName()) << "\n";
+
 
     /*
      * Generate EffectiveSan meta data types and constants.
@@ -5241,46 +5336,6 @@ struct EffectiveSan : public llvm::ModulePass {
         {llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), 0),
          llvm::ConstantInt::get(llvm::Type::getInt64Ty(Cxt), INTPTR_MAX)});
 
-    /*
-    for (auto &F : M) {
-        if (F.isDeclaration())
-          continue;
-        if (isBlacklisted("fun", F.getName()))
-          continue;
-        
-        //emitTyCHEInfo(F);
-        std::error_code EC;
-        llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
-        
-        int numArgs = 0;
-        for (auto i = F.getArgumentList().begin(); i != F.getArgumentList().end(); ++i)
-        {
-          numArgs++;
-        }
-        file << "Filename: " <<  M.getSourceFileName() << "\n";
-        file << "\tFunction Name: " << F.getName() << "[" << F.isVarArg() << "][" << numArgs << "]" << "\n";
-        
-        for (auto i = F.getArgumentList().begin(); i != F.getArgumentList().end(); ++i)
-        {
-          llvm::Value *Ptr = &*i;
-          bool isPointer = false;
-          // TypeEntry entry;
-          //llvm::Constant *Meta = getDeclaredType(entry, M, Ptr, tInfo, &AllocTy, false);
-          llvm::DIType *Ty = getDeclaredTypeAnnotation(Ptr, &isPointer);
-          if (Ty != nullptr)
-          {
-            file << "\tPointee Type: "; Ty->print(file); file << "\n";
-          }
-          if (isPointer)
-          {
-            file << "\tPointer Type: "; Ty->print(file); file << "\n";
-          }  
-        }
-
-    
-        
-    }
-    */
 
     /*
      * Main instrumentation loop:
@@ -5302,7 +5357,7 @@ struct EffectiveSan : public llvm::ModulePass {
         /*
         * Step #2: Replace allocas with typed version:
         */
-        //replaceAllocas(M, F, tInfo, cInfo, Ignore);
+        replaceAllocas(M, F, tInfo, cInfo, Ignore);
 
         /*
         * Step #3: Do bounds-check/type-check instrumentation:

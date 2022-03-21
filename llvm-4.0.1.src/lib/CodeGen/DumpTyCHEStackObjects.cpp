@@ -139,7 +139,7 @@ bool DumpTyCHEStackObjects::runOnMachineFunction(MachineFunction &MF) {
   std::error_code EC;
   llvm::raw_fd_ostream file("stack_objects.hash", EC, llvm::sys::fs::F_Append);
   llvm::MachineFrameInfo FrameInfo = MF.getFrameInfo();
-  file << MF.getName() << "\n";
+  file << "FN " << MF.getName() << "\n";
   FrameInfo.dumpFrameInfo(MF, file);
 
   return true;
