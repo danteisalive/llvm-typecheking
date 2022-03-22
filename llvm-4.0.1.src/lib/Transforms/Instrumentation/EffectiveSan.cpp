@@ -4766,19 +4766,23 @@ static void replaceAlloca(llvm::Module &M, llvm::Function &F,
 
     llvm::LLVMContext& C = I.getContext();
     llvm::SmallVector<llvm::Metadata *, 32> Ops;
+
+    Ops.push_back(llvm::MDString::get(C, M.getSourceFileName()));
     Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
     Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+    Ops.push_back(llvm::MDString::get(C, tInfo.names.find(type_meta)->second));
     Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(Meta)))); 
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])));
     Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]))); 
+    Ops.push_back(llvm::MDString::get(C, "Alloca"));
+    Ops.push_back(llvm::MDString::get(C, CallerName));
     Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().first)));
-    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().second))); 
+    Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().second)));
     Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)((uint64_t)I.getParent()))));
     Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
-    Ops.push_back(llvm::MDString::get(C, std::to_string(tid))); 
-    Ops.push_back(llvm::MDString::get(C, "Alloca"));
-    Ops.push_back(llvm::MDString::get(C, tInfo.names.find(type_meta)->second));
-    Ops.push_back(llvm::MDString::get(C, CallerName));
+    Ops.push_back(llvm::MDString::get(C, std::to_string(tid)));
+
+
 
     
     auto *N =  llvm::MDTuple::get(C, Ops);

@@ -946,12 +946,31 @@ void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS)
     }
     OS << "\n";
 
-    // const AllocaInst * allocInst = SO.Alloca;
-    // if (allocInst != NULL)
-    // {
-    //   allocInst->print(OS);
-    //   OS << "\n";
-    // }
+    const AllocaInst * allocInst = SO.Alloca;
+    if (allocInst != NULL)
+    {
+        llvm::MDNode *Metadata = allocInst->getMetadata("TYCHE_MD");
+        std::string meta = "METAID ";
+        if (Metadata != nullptr)
+        {
+            //const Instruction *Inst = llvm::dyn_cast<llvm::AllocaInst>(allocInst);
+            // just concatante all the operands together
+            
+            for (size_t i = 0; i < Metadata->getNumOperands() ; i++)
+            {
+                llvm::Metadata *MD = Metadata->getOperand(i).get();
+                MDString *MDS = dyn_cast<MDString>(MD);
+                llvm::StringRef str = MDS->getString();
+                meta += std::string(str) + "#";
+            }
+          
+        }
+        OS << meta << "\n";
+    }
+    else 
+    {
+      OS << "NOMETA\n";
+    }
 
   }
 }
