@@ -923,9 +923,32 @@ unsigned MachineFrameInfo::estimateStackSize(const MachineFunction &MF) const {
 void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS) const{
   
   
-  auto fn = MF.getFunction(); fn = fn;
+  const llvm::Function *F = MF.getFunction();
+  MDNode *Metadata = F->getMetadata("TYCHE_MD_ARGS");
+  
+  OS << "NUM " << Objects.size() << " " << 
+                  ((Metadata == nullptr) ? 0 : Metadata->getNumOperands()) << " " << 
+                  1 << "\n";
 
-  OS << "NUM " << Objects.size() << " " << "\n";
+  if (Metadata == nullptr)
+  {
+      OS << "ARGMETA NOMETA\n";
+  }
+  else 
+  {
+      for (int idx = 0; idx < Metadata->getNumOperands(); idx++)
+      {
+          auto *MD = Metadata->getOperand(idx).get();
+          std::string meta = "ARGMETA ";
+          MDString *MDS = dyn_cast<MDString>(MD);
+          llvm::StringRef str = MDS->getString();
+          meta += std::string(str);
+          OS << meta << "\n";
+      }
+  }
+
+
+
   
   if (Objects.empty()) 
   {
