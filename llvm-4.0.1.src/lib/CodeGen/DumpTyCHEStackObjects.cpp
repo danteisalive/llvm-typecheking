@@ -122,20 +122,7 @@ void DumpTyCHEStackObjects::getAnalysisUsage(AnalysisUsage &AU) const {
 
 /// Calculate the liveness information for the given machine function.
 bool DumpTyCHEStackObjects::runOnMachineFunction(MachineFunction &MF) {
-  // if (!EnablePatchPointLiveness)
-  //   return false;
 
-  // DEBUG(dbgs() << "********** COMPUTING STACKMAP LIVENESS: " << MF.getName()
-  //              << " **********\n");
-  // TRI = MF.getSubtarget().getRegisterInfo();
-  // ++NumStackMapFuncVisited;
-
-  // // Skip this function if there are no patchpoints to process.
-  // if (!MF.getFrameInfo().hasPatchPoint()) {
-  //   ++NumStackMapFuncSkipped;
-  //   return false;
-  // }
-  // return calculateLiveness(MF);
   std::error_code EC;
   llvm::raw_fd_ostream file("stack_objects.hash", EC, llvm::sys::fs::F_Append);
   llvm::MachineFrameInfo FrameInfo = MF.getFrameInfo();

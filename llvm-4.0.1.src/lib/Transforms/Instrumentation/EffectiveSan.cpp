@@ -3047,111 +3047,6 @@ static llvm::Constant *getDeclaredType(TypeEntry &entry,
 
 
 
-static void emitTyCHEFunctionInfo(llvm::Module &M, llvm::Function &FuncTy, TypeInfo &tInfo,
-               CheckInfo &cInfo, std::set<llvm::Instruction *> &Ignore)
-{
-
-    
-    std::ofstream StackAPfile(StackAPFileName, std::ios::app);
-    std::error_code EC;
-    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
-    std::vector<llvm::Metadata *> ArgMetas;
-    llvm::LLVMContext& C = FuncTy.getContext();
-    for (auto itr = FuncTy.getArgumentList().begin(); 
-              itr != FuncTy.getArgumentList().end(); itr++)
-    {
-        llvm::Value *ArgValue = &*itr;
-
-        llvm::DIType *ArgTy = nullptr;
-        TypeEntry entry;
-        llvm::Constant *Meta = getDeclaredType(entry, M, ArgValue, tInfo, &ArgTy, true);
-        Meta = (Meta == nullptr ? Int8TyMeta : Meta);
-
-        llvm::Argument *Arg = llvm::dyn_cast<llvm::Argument>(ArgValue);
-        unsigned idx = Arg->getArgNo();
-        
-
-        llvm::DIType* type_meta = nullptr;
-        bool found = false;
-        uint64_t tid = 0;
-        for (auto &elem : tInfo.cache)
-        {
-          if (elem.second.typeMeta == Meta)
-          {
-              type_meta = elem.first;
-              tid = elem.second.type_id;     
-              found = true;
-          }
-
-        }
-
-        std::string loc = "";
-        uint64_t line;
-        uint64_t col;
-
-        std::srand(std::time(0));
-        line  = UINT64_MAX;
-        col = UINT64_MAX;
-    
-        loc += std::to_string(line) + "#" + std::to_string(col);
-
-        auto CallerName = std::string(FuncTy.getName());
-        file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
-                  "][Caller Name: " << CallerName  <<
-                  "][Allocator Name: " <<  "Argument" << 
-                  "][Location: " << line << "," << col << 
-                  "][Inlined Location: " << 0 << "," << 0 << 
-                  "][BB ID: " << (uint64_t)ArgValue << 
-                  "][Inst ID: " << (uint64_t)(ArgValue) <<
-                  "]\n";
-
-        // I.print(file); file << "\n";
-        
-        StackAPfile << TypeIDCache[tid-1];
-        StackAPfile << std::dec << "METAID " << 
-            M.getSourceFileName()  <<
-            "#" << loc << 
-            "#" << tInfo.names.find(type_meta)->second << 
-            "#" << std::to_string((uint64_t)(Meta)) <<
-            "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
-            "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
-            "#" << "Argument" <<
-            "#" << CallerName <<
-            "#" << 0 << 
-            "#" << 0 << 
-            "#" << (uint64_t)ArgValue << 
-            "#" << (uint64_t)ArgValue <<
-            "#" << tid <<  
-            "\n" ;
-
-        
-
-        
-        std::string metaString = M.getSourceFileName() + "#" +  
-                                std::to_string(line) + "#" + 
-                                std::to_string(col) + "#" + 
-                                tInfo.names.find(type_meta)->second +  "#" + 
-                                std::to_string((uint64_t)(Meta)) +  "#" + 
-                                std::to_string(tInfo.hashes.find(type_meta)->second.i64[0]) +  "#" + 
-                                std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]) +  "#" + 
-                                "Argument" +  "#" + 
-                                CallerName +  "#" + 
-                                std::to_string(0) +  "#" + 
-                                std::to_string(0) +  "#" + 
-                                std::to_string((uint64_t)ArgTy) +  "#" + 
-                                std::to_string((uint64_t)ArgTy) +  "#" + 
-                                std::to_string(tid) + "#" ;
-        
-        ArgMetas.push_back(llvm::MDString::get(C, metaString));
-    }
-
-    llvm::ArrayRef<llvm::Metadata *> ArgTys1(ArgMetas.data(), ArgMetas.size());
-    llvm::MDNode *MDArgTysNode = llvm::MDNode::get(C, ArgTys1);
-    FuncTy.setMetadata("TYCHE_MD_ARGS", MDArgTysNode);
-  
-
-    file.close();
-}
 
 /*
  * Test if the cast from (SrcTy) to (DstTy) can be ignored or not.
@@ -4197,6 +4092,232 @@ static llvm::Constant *inferMallocType(TypeEntry &entry,
 static size_t getSize(llvm::Value *Size) {
   auto *K = llvm::dyn_cast<llvm::ConstantInt>(Size);
   return (K == nullptr ? 0 : K->getZExtValue());
+}
+
+
+static void emitTyCHEFunctionInfo(llvm::Module &M, llvm::Function &FuncTy, TypeInfo &tInfo,
+               CheckInfo &cInfo, std::set<llvm::Instruction *> &Ignore)
+{
+
+    
+    std::ofstream StackAPfile(StackAPFileName, std::ios::app);
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+    std::vector<llvm::Metadata *> ArgMetas;
+    llvm::LLVMContext& C = FuncTy.getContext();
+    for (auto itr = FuncTy.getArgumentList().begin(); 
+              itr != FuncTy.getArgumentList().end(); itr++)
+    {
+        llvm::Value *ArgValue = &*itr;
+
+        llvm::DIType *ArgTy = nullptr;
+        TypeEntry entry;
+        llvm::Constant *Meta = getDeclaredType(entry, M, ArgValue, tInfo, &ArgTy, true);
+        Meta = (Meta == nullptr ? Int8TyMeta : Meta);
+
+        llvm::Argument *Arg = llvm::dyn_cast<llvm::Argument>(ArgValue);
+        unsigned idx = Arg->getArgNo();
+        
+
+        llvm::DIType* type_meta = nullptr;
+        bool found = false;
+        uint64_t tid = 0;
+        for (auto &elem : tInfo.cache)
+        {
+          if (elem.second.typeMeta == Meta)
+          {
+              type_meta = elem.first;
+              tid = elem.second.type_id;     
+              found = true;
+          }
+
+        }
+
+        std::string loc = "";
+        uint64_t line;
+        uint64_t col;
+
+        std::srand(std::time(0));
+        line  = UINT64_MAX;
+        col = UINT64_MAX;
+    
+        loc += std::to_string(line) + "#" + std::to_string(col);
+
+        auto CallerName = std::string(FuncTy.getName());
+        file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+                  "][Caller Name: " << CallerName  <<
+                  "][Allocator Name: " <<  "Argument" << 
+                  "][Location: " << line << "," << col << 
+                  "][Inlined Location: " << 0 << "," << 0 << 
+                  "][BB ID: " << (uint64_t)ArgValue << 
+                  "][Inst ID: " << (uint64_t)(ArgValue) <<
+                  "]\n";
+
+        // I.print(file); file << "\n";
+        
+        StackAPfile << TypeIDCache[tid-1];
+        StackAPfile << std::dec << "METAID " << 
+            M.getSourceFileName()  <<
+            "#" << loc << 
+            "#" << tInfo.names.find(type_meta)->second << 
+            "#" << std::to_string((uint64_t)(Meta)) <<
+            "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
+            "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+            "#" << "Argument" <<
+            "#" << CallerName <<
+            "#" << 0 << 
+            "#" << 0 << 
+            "#" << (uint64_t)ArgValue << 
+            "#" << (uint64_t)ArgValue <<
+            "#" << tid <<  
+            "\n" ;
+
+        
+
+        
+        std::string metaString = M.getSourceFileName() + "#" +  
+                                std::to_string(line) + "#" + 
+                                std::to_string(col) + "#" + 
+                                tInfo.names.find(type_meta)->second +  "#" + 
+                                std::to_string((uint64_t)(Meta)) +  "#" + 
+                                std::to_string(tInfo.hashes.find(type_meta)->second.i64[0]) +  "#" + 
+                                std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]) +  "#" + 
+                                "Argument" +  "#" + 
+                                CallerName +  "#" + 
+                                std::to_string(0) +  "#" + 
+                                std::to_string(0) +  "#" + 
+                                std::to_string((uint64_t)ArgTy) +  "#" + 
+                                std::to_string((uint64_t)ArgTy) +  "#" + 
+                                std::to_string(tid) + "#" ;
+        
+        ArgMetas.push_back(llvm::MDString::get(C, metaString));
+    }
+
+    llvm::ArrayRef<llvm::Metadata *> ArgTys1(ArgMetas.data(), ArgMetas.size());
+    llvm::MDNode *MDArgTysNode = llvm::MDNode::get(C, ArgTys1);
+    FuncTy.setMetadata("TYCHE_MD_ARGS", MDArgTysNode);
+  
+    for (auto &BB : FuncTy) 
+    {
+      for (auto &I : BB) 
+      {
+         if (llvm::isa<llvm::ReturnInst>(&I))
+         {
+            auto *Return = llvm::dyn_cast<llvm::ReturnInst>(&I);
+
+
+            // STEP (4) Insert the object meta data:
+            llvm::DIType *AllocTy = nullptr;
+            TypeEntry entry;
+            llvm::Constant *Meta = getDeclaredType(entry, M, &I, tInfo, &AllocTy, true);
+            // if (Meta == nullptr) {
+            //   // Fall back on type inference.
+            //   Meta = inferMallocType(entry, M, FuncTy, &I, tInfo, &AllocTy);
+            // }
+            Meta = (Meta == nullptr ? Int8TyMeta : Meta);
+
+
+            llvm::DIType* type_meta = nullptr;
+            bool found = false;
+            uint64_t tid = 0;
+            for (auto &elem : tInfo.cache)
+            {
+              if (elem.second.typeMeta == Meta)
+              {
+                  type_meta = elem.first;
+                  tid = elem.second.type_id;     
+                  found = true;
+              }
+
+            }
+
+
+
+            const llvm::DebugLoc &location = I.getDebugLoc();
+            std::string loc = "";
+            uint64_t line;
+            uint64_t col;
+            if (location) {
+              line = location.getLine();
+              col = location.getCol();
+            }
+            else 
+            {
+              std::srand(std::time(0));
+              line  = UINT64_MAX;
+              col = UINT64_MAX;
+            }
+
+            loc += std::to_string(line) + "#" + std::to_string(col);
+
+            llvm::Function * caller =  I.getParent()->getParent();
+            auto CallerName = (caller != nullptr) ? std::string(caller->getName()) : std::string("NULL");
+            file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+                      "][Caller Name: " << CallerName  <<
+                      "][Allocator Name: " <<  "Return" << 
+                      "][Location: " << line << "," << col << 
+                      "][Inlined Location: " << I.getDebugLoc().getInlinedLocation().first << "," << I.getDebugLoc().getInlinedLocation().second << 
+                      "][BB ID: " << (uint64_t)I.getParent() << 
+                      "][Inst ID: " << (uint64_t)(&I) <<
+                      "]\n";
+
+            I.print(file); file << "\n";
+            
+            StackAPfile << TypeIDCache[tid-1];
+            StackAPfile << std::dec << "METAID " << 
+                M.getSourceFileName()  <<
+                "#" << loc << 
+                "#" << tInfo.names.find(type_meta)->second << 
+                "#" << std::to_string((uint64_t)(Meta)) <<
+                "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
+                "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+                "#" << "Alloca" <<
+                "#" << CallerName <<
+                "#" << I.getDebugLoc().getInlinedLocation().first << 
+                "#" << I.getDebugLoc().getInlinedLocation().second << 
+                "#" << (uint64_t)I.getParent() << 
+                "#" << (uint64_t)(&I) <<
+                "#" << tid <<  
+                "\n" ;
+
+
+
+
+
+            llvm::LLVMContext& C = I.getContext();
+            llvm::SmallVector<llvm::Metadata *, 32> Ops;
+
+            Ops.push_back(llvm::MDString::get(C, M.getSourceFileName()));
+            Ops.push_back(llvm::MDString::get(C, std::to_string(line)));
+            Ops.push_back(llvm::MDString::get(C, std::to_string(col))); 
+            Ops.push_back(llvm::MDString::get(C, tInfo.names.find(type_meta)->second));
+            Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(Meta)))); 
+            Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[0])));
+            Ops.push_back(llvm::MDString::get(C, std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]))); 
+            Ops.push_back(llvm::MDString::get(C, "Return"));
+            Ops.push_back(llvm::MDString::get(C, CallerName));
+            Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().first)));
+            Ops.push_back(llvm::MDString::get(C, std::to_string(I.getDebugLoc().getInlinedLocation().second)));
+            Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)((uint64_t)I.getParent()))));
+            Ops.push_back(llvm::MDString::get(C, std::to_string((uint64_t)(&I)))); 
+            Ops.push_back(llvm::MDString::get(C, std::to_string(tid)));
+
+
+
+            
+            auto *N =  llvm::MDTuple::get(C, Ops);
+            //llvm::MDNode* N = llvm::MDNode::get(C, llvm::MDString::get(C, std::to_string(123456)));
+            I.setMetadata("TYCHE_MD", N);
+         }
+      }
+    }
+
+
+
+    file.close();
+
+
+
 }
 
 /*

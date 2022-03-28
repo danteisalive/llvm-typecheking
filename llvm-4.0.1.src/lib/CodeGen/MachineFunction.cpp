@@ -926,9 +926,26 @@ void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS)
   const llvm::Function *F = MF.getFunction();
   MDNode *Metadata = F->getMetadata("TYCHE_MD_ARGS");
   
+  int numOfReturnMeta = 0;
+  for (auto &BB : *F) 
+  {
+    for (auto &I : BB) 
+    {
+        if (llvm::isa<llvm::ReturnInst>(&I))
+        {
+            auto *Return = llvm::dyn_cast<llvm::ReturnInst>(&I);
+            llvm::MDNode *Metadata = Return->getMetadata("TYCHE_MD");
+            if (Metadata != nullptr)
+            {
+              numOfReturnMeta++;
+            }
+        }
+    }
+  }
+
   OS << "NUM " << Objects.size() << " " << 
                   ((Metadata == nullptr) ? 0 : Metadata->getNumOperands()) << " " << 
-                  1 << "\n";
+                  numOfReturnMeta << "\n";
 
   if (Metadata == nullptr)
   {
@@ -1003,6 +1020,39 @@ void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS)
     }
 
   }
+
+  for (auto &BB : *F) 
+  {
+    for (auto &I : BB) 
+    {
+        if (llvm::isa<llvm::ReturnInst>(&I))
+        {
+            auto *Return = llvm::dyn_cast<llvm::ReturnInst>(&I);
+            llvm::MDNode *Metadata = Return->getMetadata("TYCHE_MD");
+            if (Metadata != nullptr)
+            {
+                // const Instruction *Inst = llvm::dyn_cast<llvm::AllocaInst>(allocInst);
+                // just concatante all the operands together
+                std::string meta = "RETMETA ";
+                for (size_t i = 0; i < Metadata->getNumOperands() ; i++)
+                {
+                    llvm::Metadata *MD = Metadata->getOperand(i).get();
+                    MDString *MDS = dyn_cast<MDString>(MD);
+                    llvm::StringRef str = MDS->getString();
+                    meta += std::string(str) + "#";
+                }
+
+                OS << meta << "\n";
+            }
+            else 
+            {
+                OS << "RETMETA NOMETA\n";
+            }
+        }
+    }
+  }
+
+
 }
 
 void MachineFrameInfo::print(const MachineFunction &MF, raw_ostream &OS) const{
