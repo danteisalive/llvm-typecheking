@@ -1418,31 +1418,6 @@ static bool placeFlattenedLayoutEntry(FlattenedLayoutInfo &flattenedLayout,
   return false;
 }
 
-static void emitTyCHEInfo(llvm::Function FuncTy)
-{
-
-    std::error_code EC;
-    llvm::raw_fd_ostream file (APFileName, EC, llvm::sys::fs::OpenFlags::F_Append);
-  
-    file << "Filename: " <<  (*Module).getSourceFileName() << "\n";
-    file << "\t" << FuncTy.getName() << "[" << FuncTy.isVarArg() << "]" << "\n";
-    
-    // auto i = FuncTy.getArgumentList().begin();
-    
-    // llvm::Value *Bounds = &*i;
-
-    // llvm::DIType * type =  getDeclaredTypeAnnotation(&FuncTy);
-    // llvm::DITypeRefArray Types = FuncTy->getTypeArray();
-    // llvm::DIType *RetTy = Types[0].resolve();
-    // file << "\t"; RetTy->print(file); file << "\n";
-    // unsigned argNum = 0;
-    // for (auto Arg : Types) {
-    //   llvm::DIType *ArgTy = Arg.resolve();
-    //   file << "\t"; ArgTy->print(file); file << "\n";
-    // }
-
-  
-}
 
 
 static int64_t compileLayoutToFlattenLayoutForTyChe(llvm::Module &M,
@@ -3068,6 +3043,114 @@ static llvm::Constant *getDeclaredType(TypeEntry &entry,
   // file.close();
 
   return (entry.isInt8 ? nullptr : entry.typeMeta);
+}
+
+
+
+static void emitTyCHEFunctionInfo(llvm::Module &M, llvm::Function &FuncTy, TypeInfo &tInfo,
+               CheckInfo &cInfo, std::set<llvm::Instruction *> &Ignore)
+{
+
+    
+    std::ofstream StackAPfile(StackAPFileName, std::ios::app);
+    std::error_code EC;
+    llvm::raw_fd_ostream file("tyche.debug", EC, llvm::sys::fs::F_Append);
+    std::vector<llvm::Metadata *> ArgMetas;
+    llvm::LLVMContext& C = FuncTy.getContext();
+    for (auto itr = FuncTy.getArgumentList().begin(); 
+              itr != FuncTy.getArgumentList().end(); itr++)
+    {
+        llvm::Value *ArgValue = &*itr;
+
+        llvm::DIType *ArgTy = nullptr;
+        TypeEntry entry;
+        llvm::Constant *Meta = getDeclaredType(entry, M, ArgValue, tInfo, &ArgTy, true);
+        Meta = (Meta == nullptr ? Int8TyMeta : Meta);
+
+        llvm::Argument *Arg = llvm::dyn_cast<llvm::Argument>(ArgValue);
+        unsigned idx = Arg->getArgNo();
+        
+
+        llvm::DIType* type_meta = nullptr;
+        bool found = false;
+        uint64_t tid = 0;
+        for (auto &elem : tInfo.cache)
+        {
+          if (elem.second.typeMeta == Meta)
+          {
+              type_meta = elem.first;
+              tid = elem.second.type_id;     
+              found = true;
+          }
+
+        }
+
+        std::string loc = "";
+        uint64_t line;
+        uint64_t col;
+
+        std::srand(std::time(0));
+        line  = UINT64_MAX;
+        col = UINT64_MAX;
+    
+        loc += std::to_string(line) + "#" + std::to_string(col);
+
+        auto CallerName = std::string(FuncTy.getName());
+        file << "EffectiveSan::\nLLVM IR Location (Inlined): [" << M.getSourceFileName() << 
+                  "][Caller Name: " << CallerName  <<
+                  "][Allocator Name: " <<  "Argument" << 
+                  "][Location: " << line << "," << col << 
+                  "][Inlined Location: " << 0 << "," << 0 << 
+                  "][BB ID: " << (uint64_t)ArgValue << 
+                  "][Inst ID: " << (uint64_t)(ArgValue) <<
+                  "]\n";
+
+        // I.print(file); file << "\n";
+        
+        StackAPfile << TypeIDCache[tid-1];
+        StackAPfile << std::dec << "METAID " << 
+            M.getSourceFileName()  <<
+            "#" << loc << 
+            "#" << tInfo.names.find(type_meta)->second << 
+            "#" << std::to_string((uint64_t)(Meta)) <<
+            "#" << tInfo.hashes.find(type_meta)->second.i64[0] <<
+            "#" << tInfo.hashes.find(type_meta)->second.i64[1] << 
+            "#" << "Argument" <<
+            "#" << CallerName <<
+            "#" << 0 << 
+            "#" << 0 << 
+            "#" << (uint64_t)ArgValue << 
+            "#" << (uint64_t)ArgValue <<
+            "#" << tid <<  
+            "\n" ;
+
+        
+
+        
+        std::string metaString = M.getSourceFileName() + "#" +  
+                                std::to_string(line) + "#" + 
+                                std::to_string(col) + "#" + 
+                                tInfo.names.find(type_meta)->second +  "#" + 
+                                std::to_string((uint64_t)(Meta)) +  "#" + 
+                                std::to_string(tInfo.hashes.find(type_meta)->second.i64[0]) +  "#" + 
+                                std::to_string(tInfo.hashes.find(type_meta)->second.i64[1]) +  "#" + 
+                                "Argument" +  "#" + 
+                                CallerName +  "#" + 
+                                std::to_string(0) +  "#" + 
+                                std::to_string(0) +  "#" + 
+                                std::to_string((uint64_t)ArgTy) +  "#" + 
+                                std::to_string((uint64_t)ArgTy) +  "#" + 
+                                std::to_string(tid) + "#" ;
+        
+        ArgMetas.push_back(llvm::MDString::get(C, metaString));
+    }
+
+    llvm::ArrayRef<llvm::Metadata *> ArgTys1(ArgMetas.data(), ArgMetas.size());
+    llvm::MDNode *MDArgTysNode = llvm::MDNode::get(C, ArgTys1);
+    FuncTy.setMetadata("TYCHE_MD_ARGS", MDArgTysNode);
+  
+
+    file.close();
 }
 
 /*
@@ -5354,14 +5437,19 @@ struct EffectiveSan : public llvm::ModulePass {
         std::set<llvm::Instruction *> Ignore;
 
         /*
-        * Step #1: Replace malloc() with typed version:
+        * Step #1: emit malloc() type metadata:
         */
         replaceMallocs(M, F, tInfo, cInfo);
 
         /*
-        * Step #2: Replace allocas with typed version:
+        * Step #2: emit allocas type metadata:
         */
         replaceAllocas(M, F, tInfo, cInfo, Ignore);
+        
+        /*
+        * Step #3: emit function arguments and return type metadata:
+        */
+        emitTyCHEFunctionInfo(M, F, tInfo, cInfo, Ignore);
 
         /*
         * Step #3: Do bounds-check/type-check instrumentation:

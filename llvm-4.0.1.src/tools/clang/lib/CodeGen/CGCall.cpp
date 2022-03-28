@@ -1515,6 +1515,7 @@ CodeGenModule::GenEffectiveSanArgs(const CGFunctionInfo &FI,
   ArrayRef<llvm::Metadata *> ArgTys1(ArgTys.data(), ArgTys.size());
   llvm::MDNode *MDArgTysNode = llvm::MDNode::get(getLLVMContext(), ArgTys1);
   F->setMetadata("effectiveSanArgs", MDArgTysNode);
+  
 }
 
 llvm::FunctionType *

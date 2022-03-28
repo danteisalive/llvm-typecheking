@@ -922,7 +922,10 @@ unsigned MachineFrameInfo::estimateStackSize(const MachineFunction &MF) const {
 
 void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS) const{
   
-  OS << "N " << Objects.size() << "\n";
+  
+  auto fn = MF.getFunction(); fn = fn;
+
+  OS << "NUM " << Objects.size() << " " << "\n";
   
   if (Objects.empty()) 
   {
@@ -950,12 +953,11 @@ void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS)
     if (allocInst != NULL)
     {
         llvm::MDNode *Metadata = allocInst->getMetadata("TYCHE_MD");
-        std::string meta = "METAID ";
         if (Metadata != nullptr)
         {
-            //const Instruction *Inst = llvm::dyn_cast<llvm::AllocaInst>(allocInst);
+            // const Instruction *Inst = llvm::dyn_cast<llvm::AllocaInst>(allocInst);
             // just concatante all the operands together
-            
+            std::string meta = "OBJECTMETA ";
             for (size_t i = 0; i < Metadata->getNumOperands() ; i++)
             {
                 llvm::Metadata *MD = Metadata->getOperand(i).get();
@@ -963,13 +965,18 @@ void MachineFrameInfo::dumpFrameInfo(const MachineFunction &MF, raw_ostream &OS)
                 llvm::StringRef str = MDS->getString();
                 meta += std::string(str) + "#";
             }
-          
+
+            OS << meta << "\n";
         }
-        OS << meta << "\n";
+        else 
+        {
+            OS << "OBJECTMETA NOMETA\n";
+        }
+        
     }
     else 
     {
-      OS << "NOMETA\n";
+        OS << "OBJECTMETA NOMETA\n";
     }
 
   }
