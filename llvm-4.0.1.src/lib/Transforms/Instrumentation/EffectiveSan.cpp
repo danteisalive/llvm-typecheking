@@ -4138,8 +4138,8 @@ static void emitTyCHEFunctionInfo(llvm::Module &M, llvm::Function &FuncTy, TypeI
         uint64_t col;
 
         std::srand(std::time(0));
-        line  = UINT64_MAX;
-        col = UINT64_MAX;
+        line  = INT64_MAX;
+        col = INT64_MAX;
     
         loc += std::to_string(line) + "#" + std::to_string(col);
 
@@ -4244,8 +4244,8 @@ static void emitTyCHEFunctionInfo(llvm::Module &M, llvm::Function &FuncTy, TypeI
             else 
             {
               std::srand(std::time(0));
-              line  = UINT64_MAX;
-              col = UINT64_MAX;
+              line  = INT64_MAX;
+              col = INT64_MAX;
             }
 
             loc += std::to_string(line) + "#" + std::to_string(col);
@@ -4390,8 +4390,8 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     else 
     {
       std::srand(std::time(0));
-      line  = UINT64_MAX;
-      col = UINT64_MAX;
+      line  = INT64_MAX;
+      col = INT64_MAX;
     }
 
     loc += std::to_string(line) + "#" + std::to_string(col);
@@ -4505,8 +4505,8 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     else 
     {
       std::srand(std::time(0));
-      line  = std::rand();
-      col = std::rand();
+      line  = INT64_MAX;
+      col = INT64_MAX;
     }
 
     loc += std::to_string(line) + "#" + std::to_string(col);
@@ -4597,8 +4597,8 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     else 
     {
       std::srand(std::time(0));
-      line  = UINT64_MAX;
-      col = UINT64_MAX;
+      line  = INT64_MAX;
+      col = INT64_MAX;
     }
 
     loc += std::to_string(line) + "#" + std::to_string(col);
@@ -4689,8 +4689,8 @@ static void replaceMalloc(llvm::Module &M, llvm::Function &F,
     else 
     {
       std::srand(std::time(0));
-      line  = UINT64_MAX;
-      col = UINT64_MAX;
+      line  = INT64_MAX;
+      col = INT64_MAX;
     }
 
     loc += std::to_string(line) + "#" + std::to_string(col);
@@ -4928,8 +4928,8 @@ static void replaceAlloca(llvm::Module &M, llvm::Function &F,
     else 
     {
       std::srand(std::time(0));
-      line  = UINT64_MAX;
-      col = UINT64_MAX;
+      line  = INT64_MAX;
+      col = INT64_MAX;
     }
 
     loc += std::to_string(line) + "#" + std::to_string(col);
